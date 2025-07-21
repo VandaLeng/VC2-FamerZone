@@ -48,8 +48,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/admin/trashed-users', [AdminController::class, 'getTrashedUsers']);
     Route::post('/admin/users/{id}/restore', [AdminController::class, 'restoreUser']);
 
-
-
     // Roles
     Route::get('/roles', [RoleController::class, 'index']); 
     Route::post('/roles', [RoleController::class, 'store']);

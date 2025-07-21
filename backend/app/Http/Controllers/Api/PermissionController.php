@@ -24,7 +24,7 @@ class PermissionController extends Controller
 
         $permission = Permission::create([
             'name' => $request->name,
-            'guard_name' => 'web', // <-- force it to web
+            'guard_name' => 'web', 
         ]);
 
         return response()->json([
@@ -45,7 +45,11 @@ class PermissionController extends Controller
         $role = Role::findByName($request->role, 'web');
         $role->givePermissionTo($request->permission);
 
-        return response()->json(['message' => 'Permission assigned to role']);
+            return response()->json([
+            'message' => 'Permission assigned to role',
+            'role' => $role->name,
+            'permissions' => $role->permissions
+        ]);
     }
 
 
