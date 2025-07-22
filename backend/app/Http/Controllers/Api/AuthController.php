@@ -17,12 +17,16 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
         ]);
 
         $user->assignRole('user');
@@ -56,7 +60,6 @@ class AuthController extends Controller
             'user' => $user,
         ]);
     }
-
 
     public function logout(Request $request)
     {
