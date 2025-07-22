@@ -21,7 +21,7 @@ class AdminSeeder extends Seeder
         ], [
             'name' => 'admin',
             'password' => bcrypt('password'),
-            'image' => 'default.jpg',
+            // 'image' => 'default.jpg',
         ]);
 
         $admin->assignRole($adminRole);
