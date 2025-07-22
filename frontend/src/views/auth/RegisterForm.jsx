@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../services/registerUser';
 
-export default function RegisterForm({ currentLanguage = 'en', onClose, onRegisterSuccess }) {
-
+export default function RegisterForm({ currentLanguage = 'en', onClose }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,10 +12,8 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
     address: '',
   });
 
-  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const texts = {
@@ -47,8 +43,7 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
       passwordRequirements: 'លេខសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់៨តួរអក្សរ',
       creating: 'កំពុងបង្កើតគណនី...',
       close: 'បិទ',
-      registrationSuccess: 'ចុះឈ្មោះបានជោគជ័យ!',
-      registrationFailed: 'ចុះឈ្មោះបរាជ័យ។ សូមព្យាយាមម្តងទៀត។',
+      // Removed API-related messages
     },
     en: {
       title: 'Create Account',
@@ -76,8 +71,7 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
       passwordRequirements: 'Password must be at least 8 characters long',
       creating: 'Creating account...',
       close: 'Close',
-      registrationSuccess: 'Registration successful!',
-      registrationFailed: 'Registration failed. Please try again.',
+      // Removed API-related messages
     },
   };
 
@@ -89,13 +83,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
       ...prev,
       [name]: value,
     }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
   };
 
   const validateForm = () => {
@@ -124,60 +111,23 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
       newErrors.confirmPassword = currentLanguage === 'kh' ? 'លេខសម្ងាត់មិនត្រូវគ្នា' : 'Passwords do not match';
     }
 
-    setErrors(newErrors);
+    // No need to setErrors here since we're not handling API errors
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    setErrors({});
-
     if (!validateForm()) {
-      return;
+      return; // Validation fails, do nothing (UI-only, no submission)
     }
 
-    setIsLoading(true);
-
-    try {
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.confirmPassword,
-        role: formData.role,
-        phone: formData.phone || null,
-        address: formData.address || null,
-      };
-
-      console.log('Sending userData:', userData);
-      const response = await registerUser(userData);
-      console.log('Registration response:', response.data);
-
-      alert(currentTexts.registrationSuccess);
-
-      if (onRegisterSuccess) {
-        onRegisterSuccess();
-      } else {
-        navigate('/');
-      }
-    } catch (error) {
-      console.error('Registration error:', error.response ? error.response.data : error.message);
-
-      if (error.response?.data?.errors) {
-        const backendErrors = {};
-        for (const key in error.response.data.errors) {
-          backendErrors[key] = error.response.data.errors[key].join(' ');
-        }
-        setErrors(backendErrors);
-      } else {
-        const message = error.response?.data?.message || currentTexts.registrationFailed;
-        alert(`Error: ${message}`);
-        // Optionally log the full error for debugging
-        console.error('Full error:', error);
-      }
-    } finally {
-      setIsLoading(false); // Ensure loading state is reset
+    // For UI-only, you can add a mock success action (e.g., alert or navigation)
+    alert(currentLanguage === 'kh' ? 'ការចុះឈ្មោះជោគជ័យ (ការបង្ហាញតែ UI)' : 'Registration successful (UI-only demo)');
+    if (onClose) {
+      onClose();
+    } else {
+      navigate('/');
     }
   };
 
@@ -244,7 +194,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 border-gray-200 hover:border-gray-300"
                 />
               </div>
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
 
             {/* Email */}
@@ -267,7 +216,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 border-gray-200 hover:border-gray-300"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
           </div>
 
@@ -309,7 +257,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
               <p className="mt-1 text-xs text-gray-500">{currentTexts.passwordRequirements}</p>
             </div>
 
@@ -349,7 +296,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   )}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
           </div>
 
@@ -422,7 +368,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 border-gray-200 hover:border-gray-300"
                 />
               </div>
-              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
             </div>
 
             {/* Address */}
@@ -446,7 +391,6 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
                   className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 resize-none border-gray-200 hover:border-gray-300"
                 />
               </div>
-              {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
             </div>
           </div>
 
@@ -454,20 +398,9 @@ export default function RegisterForm({ currentLanguage = 'en', onClose, onRegist
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full max-w-md bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full max-w-md bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>{currentTexts.creating}</span>
-                </div>
-              ) : (
-                currentTexts.register
-              )}
+              {currentTexts.register}
             </button>
           </div>
 
