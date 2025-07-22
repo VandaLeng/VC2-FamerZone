@@ -8,8 +8,9 @@ import About from './views/user/AboutPage';
 import LearningCenter from './views/user/LearningCenterPage';
 import Contact from './views/user/ContactPage';
 import Footer from './components/Footer';
-import RegisterForm from './components/RegisterForm';
-import LoginForm from './components/LoginForm';
+import RegisterForm from './views/auth/RegisterForm';
+import LoginForm from './views/auth/LoginForm';
+
 
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState('kh');

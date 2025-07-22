@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/registerUser';
+import { registerUser } from '../../services/registerUser';
 
 export default function RegisterForm({ currentLanguage = 'en', onClose, onRegisterSuccess }) {
 
