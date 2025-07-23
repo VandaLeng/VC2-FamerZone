@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../stores/api';
 
 export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSuccess }) {
   const [formData, setFormData] = useState({
@@ -11,7 +12,6 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Language texts
   const texts = {
     kh: {
       title: 'ចូលប្រើ',
@@ -96,30 +96,33 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
 
-      console.log('Login data:', formData);
+      localStorage.setItem('auth_token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.user));
 
       alert(currentTexts.loginSuccess);
       if (onLoginSuccess) {
-        onLoginSuccess();
+        onLoginSuccess(response.user);
       } else {
         navigate('/');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      alert(currentTexts.loginFailed);
+      setErrors({ general: error.message || currentTexts.loginFailed });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
-    navigate('/forgot-password'); // Navigate to forgot password page
+    navigate('/forgot-password');
   };
 
   const handleRegister = () => {
-    navigate('/register'); // Navigate to register page
+    navigate('/register');
   };
 
   const handleClose = () => {
@@ -133,7 +136,6 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="relative bg-gradient-to-r from-green-600 to-green-700 text-white p-6 rounded-t-2xl mb-6">
           <button
             onClick={handleClose}
@@ -143,7 +145,6 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-
           <div className="flex items-center space-x-3">
             <div className="bg-white bg-opacity-20 p-2 rounded-lg">
               <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -156,10 +157,7 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
             </div>
           </div>
         </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {currentTexts.email} <span className="text-red-500">*</span>
@@ -181,8 +179,6 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
             </div>
             {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
           </div>
-
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {currentTexts.password} <span className="text-red-500">*</span>
@@ -230,8 +226,7 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
               </button>
             </div>
           </div>
-
-          {/* Submit Button */}
+          {errors.general && <p className="text-sm text-red-600 text-center">{errors.general}</p>}
           <div className="flex justify-center">
             <button
               type="submit"
@@ -251,8 +246,6 @@ export default function LoginForm({ currentLanguage = 'en', onClose, onLoginSucc
               )}
             </button>
           </div>
-
-          {/* Register Link */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
               {currentTexts.noAccount}{' '}
