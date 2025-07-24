@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FarmerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use ItemController as GlobalItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,3 +96,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::middleware(['auth:sanctum', 'permission:manage users'])->group(function () {
 //     Route::get('/admin/users', [AdminController::class, 'getUsers']);
 // });
+
+use App\Http\Controllers\Api\ItemController;
+
+Route::apiResource('items', ItemController::class);
+
