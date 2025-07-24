@@ -1,4 +1,4 @@
-import { MapPin, Search, Star, Heart, Phone, MessageCircle, SlidersHorizontal, Grid, List, ChevronDown, X, MapIcon, TrendingUp, Users, Package, ArrowRight, Shield, Truck, Award } from "lucide-react"
+import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from "lucide-react";
 
 function ProductCard({
   product,
@@ -12,13 +12,13 @@ function ProductCard({
   viewMode = "grid",
   provinces, // Add provinces as a prop
 }) {
-  const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name
+  const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
   const productDescription =
-    currentLanguage === "kh" ? product.descriptionKh || product.description : product.description
-  const farmerName = currentLanguage === "kh" ? product.farmer.nameKh || product.farmer.name : product.farmer.name
+    currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
+  const farmerName = currentLanguage === "kh" ? product.farmer.nameKh || product.farmer.name : product.farmer.name;
 
   // Get province name
-  const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province
+  const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
 
   if (viewMode === "list") {
     return (
@@ -141,7 +141,7 @@ function ProductCard({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // Grid view
@@ -219,7 +219,7 @@ function ProductCard({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ProductCard
+export default ProductCard;
