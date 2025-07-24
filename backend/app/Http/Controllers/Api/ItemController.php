@@ -71,6 +71,7 @@ class ItemController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'province' => 'sometimes|required|string|max:100',
             'category_id' => 'sometimes|required|exists:categories,id',
+            'user_id' => 'sometimes|exists:users,id', // Added to allow optional update
         ]);
 
         if ($validator->fails()) {
@@ -79,20 +80,25 @@ class ItemController extends Controller
 
         $data = $validator->validated();
 
+        // Handle image update only if a new file is uploaded
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
-
             $path = $request->file('image')->store('items', 'public');
             if (!$path) {
                 return response()->json(['success' => false, 'message' => 'Image upload failed'], 500);
             }
             $data['image'] = $path;
+        } elseif (!isset($data['image']) && $item->image) {
+            // Preserve existing image if no new one is provided
+            $data['image'] = $item->image;
         }
 
         $item->update($data);
+
+        // Refresh the model to get latest data
+        $item->refresh();
 
         return response()->json(['success' => true, 'message' => 'Item updated successfully', 'data' => $item], 200);
     }
