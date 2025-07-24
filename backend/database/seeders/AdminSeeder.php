@@ -20,8 +20,13 @@ class AdminSeeder extends Seeder
             'email' => 'admin@gmail.com',
         ], [
             'name' => 'admin',
+<<<<<<< HEAD
             'password' => bcrypt('password'),
             // 'image' => 'default.jpg',
+=======
+            'password' => bcrypt('password')
+
+>>>>>>> 1f3c2f04c229ff4bbea80f7c98d648c2e47ffef6
         ]);
 
         $admin->assignRole($adminRole);

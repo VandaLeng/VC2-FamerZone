@@ -1,0 +1,625 @@
+/* Hero Section Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40%, 43% {
+    transform: translateY(-10px);
+  }
+  70% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Hero Section Styles */
+.hero-title {
+  animation: fadeInUp 1.2s ease-out 0.3s both;
+}
+
+.hero-subtitle {
+  animation: fadeInUp 1.2s ease-out 0.6s both;
+}
+
+.hero-description {
+  animation: fadeInUp 1.2s ease-out 0.9s both;
+}
+
+.hero-search {
+  animation: fadeInUp 1.2s ease-out 1.2s both;
+}
+
+.hero-cta {
+  animation: fadeInUp 1.2s ease-out 1.5s both;
+}
+
+.hero-cards {
+  animation: fadeInRight 1.4s ease-out 0.8s both;
+}
+
+.hero-card {
+  animation: scaleIn 0.8s ease-out both;
+}
+
+.hero-card:nth-child(1) {
+  animation-delay: 1s;
+}
+
+.hero-card:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+.hero-card:nth-child(3) {
+  animation-delay: 1.4s;
+}
+
+.hero-card:nth-child(4) {
+  animation-delay: 1.6s;
+}
+
+.hero-stat {
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero-stat:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.hero-stat:nth-child(2) {
+  animation-delay: 1.5s;
+}
+
+/* Background Overlay Animation */
+.hero-overlay {
+  background: linear-gradient(45deg, rgba(21, 128, 61, 0.7), rgba(21, 128, 61, 0.8));
+  animation: pulse 4s ease-in-out infinite;
+}
+
+/* Stats Section Animations */
+.stats-card {
+  animation: slideInUp 0.8s ease-out both;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stats-card:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.stats-card:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.stats-card:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.stats-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.stats-icon {
+  animation: bounce 2s infinite;
+}
+
+.stats-number {
+  animation: fadeInUp 1s ease-out 0.8s both;
+}
+
+/* Map Section Animations */
+.map-section {
+  animation: fadeInUp 1s ease-out both;
+}
+
+.map-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.map-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.map-button:hover:before {
+  left: 100%;
+}
+
+.map-button:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 15px 35px rgba(21, 128, 61, 0.4);
+}
+
+.map-container {
+  animation: slideDown 0.8s ease-out both;
+}
+
+/* Product Card Animations */
+.product-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.6s ease-out both;
+}
+
+.product-card:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.product-card:nth-child(even) {
+  animation-delay: 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1) rotate(2deg);
+}
+
+.favorite-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.favorite-btn:hover {
+  animation: heartBeat 0.6s ease-in-out;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.favorite-active {
+  animation: heartBeat 0.6s ease-in-out;
+}
+
+.order-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.order-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.order-btn:hover:before {
+  left: 100%;
+}
+
+.order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+}
+
+.order-btn:active {
+  transform: translateY(0);
+}
+
+.ordering {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.ordered {
+  animation: bounce 0.6s ease-in-out;
+  background-color: #10b981 !important;
+}
+
+/* Badge Animations */
+.popular-badge {
+  animation: wiggle 2s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+.stock-badge {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Filter Section Animations */
+.filter-section {
+  animation: slideDown 0.6s ease-out both;
+}
+
+.category-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #15803d;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.category-btn:hover:before,
+.category-btn.active:before {
+  width: 100%;
+}
+
+.category-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Search and Sort Animations */
+.search-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 8px 30px rgba(234, 179, 8, 0.3);
+}
+
+.sort-dropdown {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sort-dropdown:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* View Mode Toggle Animations */
+.view-toggle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.view-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Mobile Filter Panel Animation */
+.mobile-filters {
+  animation: slideDown 0.4s ease-out both;
+}
+
+/* Loading Animation */
+.loading-card {
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Section Animations */
+.section-animate {
+  animation: fadeInUp 1s ease-out both;
+}
+
+.section-title {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.section-divider {
+  animation: progressBar 1s ease-out 0.3s both;
+}
+
+/* Farmer Info Animations */
+.farmer-avatar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.farmer-avatar:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Rating Stars Animation */
+.rating-stars {
+  animation: fadeInLeft 0.6s ease-out both;
+}
+
+.star {
+  transition: all 0.2s ease;
+  animation: scaleIn 0.3s ease-out both;
+}
+
+.star:nth-child(1) { animation-delay: 0s; }
+.star:nth-child(2) { animation-delay: 0.1s; }
+.star:nth-child(3) { animation-delay: 0.2s; }
+.star:nth-child(4) { animation-delay: 0.3s; }
+.star:nth-child(5) { animation-delay: 0.4s; }
+
+/* Contact Buttons Animation */
+.contact-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contact-btn:hover {
+  transform: scale(1.15) rotate(5deg);
+  background-color: rgba(21, 128, 61, 0.1);
+}
+
+/* Price Animation */
+.price-display {
+  animation: fadeInRight 0.8s ease-out 0.3s both;
+  transition: all 0.3s ease;
+}
+
+.price-display:hover {
+  transform: scale(1.05);
+  color: #15803d;
+}
+
+/* No Results Animation */
+.no-results {
+  animation: fadeInUp 1s ease-out both;
+}
+
+.no-results-icon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* List View Specific Animations */
+.list-card {
+  animation: slideInUp 0.6s ease-out both;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-card:hover {
+  transform: translateX(8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Hover Effects for Interactive Elements */
+.interactive-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Success Animation */
+@keyframes success {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-animation {
+  animation: success 0.6s ease-in-out;
+}
+
+/* Stagger Animation for Product Grids */
+.product-grid .product-card:nth-child(1) { animation-delay: 0s; }
+.product-grid .product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-grid .product-card:nth-child(3) { animation-delay: 0.2s; }
+.product-grid .product-card:nth-child(4) { animation-delay: 0.3s; }
+.product-grid .product-card:nth-child(5) { animation-delay: 0.4s; }
+.product-grid .product-card:nth-child(6) { animation-delay: 0.5s; }
+.product-grid .product-card:nth-child(7) { animation-delay: 0.6s; }
+.product-grid .product-card:nth-child(8) { animation-delay: 0.7s; }
+
+/* Smooth transitions for all interactive elements */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced button hover effects */
+button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Background gradient animation for hero */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(-45deg, #15803d, #059669, #10b981, #047857);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Responsive animations */
+@media (max-width: 768px) {
+  .hero-title {
+    animation-duration: 0.8s;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
