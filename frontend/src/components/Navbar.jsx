@@ -5,7 +5,6 @@ import '../styles/NavbarStyle.css';
 export default function Navbar({ currentLanguage, setCurrentLanguage }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,17 +21,11 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
     setIsProfileOpen(!isProfileOpen);
   };
 
-  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleRegister = () => {
-    navigate('/register');
-  };
-
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
     setIsProfileOpen(false);
+    navigate('/');
   };
 
   useEffect(() => {
@@ -82,6 +75,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
   };
 
   const currentTexts = texts[currentLanguage];
+  const userData = localStorage.getItem('user_data') ? JSON.parse(localStorage.getItem('user_data')) : null;
+  const isLoggedIn = !!localStorage.getItem('auth_token');
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -153,16 +148,16 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
             </button>
 
             {/* User Profile or Login/Register Buttons */}
-            {isLoggedIn ? (
+            {isLoggedIn && userData ? (
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={toggleProfile}
                   className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 group"
                 >
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-semibold text-sm">U</span>
+                    <span className="text-green-600 font-semibold text-sm">{userData.name.charAt(0)}</span>
                   </div>
-                  <span className="text-gray-700 font-medium text-sm hidden lg:block">User</span>
+                  <span className="text-gray-700 font-medium text-sm hidden lg:block">{userData.name}</span>
                   <svg
                     className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
                       isProfileOpen ? 'rotate-180' : ''
@@ -180,11 +175,11 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                     <div className="px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-green-600 font-semibold">U</span>
+                          <span className="text-green-600 font-semibold">{userData.name.charAt(0)}</span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 text-sm">User</p>
-                          <p className="text-gray-500 text-xs">user@example.com</p>
+                          <p className="font-medium text-gray-900 text-sm">{userData.name}</p>
+                          <p className="text-gray-500 text-xs">{userData.email}</p>
                         </div>
                       </div>
                     </div>
@@ -281,13 +276,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
               <div className="flex items-center space-x-3">
                 <button
                   type="button"
-                  onClick={handleRegister}
+                  onClick={() => navigate('/register')}
                   className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-medium text-sm transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   {currentTexts.register}
                 </button>
                 <button
-                  onClick={handleLogin}
+                  onClick={() => navigate('/login')}
                   className="text-gray-600 hover:text-green-600 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 hover:bg-green-50"
                 >
                   {currentTexts.login}
@@ -351,15 +346,15 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
               </Link>
 
               <div className="px-3 py-4 border-t border-gray-100 mt-4 space-y-3">
-                {isLoggedIn && (
+                {isLoggedIn && userData && (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
                       <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <span className="text-green-600 font-semibold">U</span>
+                        <span className="text-green-600 font-semibold">{userData.name.charAt(0)}</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">User</p>
-                        <p className="text-gray-500 text-xs">user@example.com</p>
+                        <p className="font-medium text-gray-900 text-sm">{userData.name}</p>
+                        <p className="text-gray-500 text-xs">{userData.email}</p>
                       </div>
                     </div>
                     <Link
@@ -416,28 +411,29 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                   <span>{currentTexts.phone}</span>
                 </div>
 
-                {isLoggedIn ? (
+                {!isLoggedIn && (
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => navigate('/register')}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
+                    >
+                      {currentTexts.register}
+                    </button>
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-medium transition-all duration-200"
+                    >
+                      {currentTexts.login}
+                    </button>
+                  </div>
+                )}
+                {isLoggedIn && (
                   <button
                     onClick={handleLogout}
                     className="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
                   >
                     {currentTexts.logout}
                   </button>
-                ) : (
-                  <div className="space-y-3">
-                    <button
-                      onClick={handleRegister}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
-                    >
-                      {currentTexts.register}
-                    </button>
-                    <button
-                      onClick={handleLogin}
-                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-medium transition-all duration-200"
-                    >
-                      {currentTexts.login}
-                    </button>
-                  </div>
                 )}
               </div>
             </div>
