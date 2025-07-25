@@ -5,12 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // Register new user
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -19,6 +18,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
+            'role' => 'nullable|string|exists:roles,name', // Optional role from frontend
         ]);
 
         $user = User::create([
@@ -29,16 +29,24 @@ class AuthController extends Controller
             'address' => $validated['address'] ?? null,
         ]);
 
-        $user->assignRole('user');
+        // Assign role from request or default to 'user'
+        $role = $validated['role'] ?? 'user';
+        $user->assignRole($role);
 
-        return response()->json(['message' => 'User registered successfully']);
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => $user,
+            'access_token' => $user->createToken('auth_token')->plainTextToken,
+            'token_type' => 'Bearer',
+        ], 201);
     }
 
+    // Login existing user
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         $user = User::where('email', $credentials['email'])->with('roles')->first();
@@ -61,10 +69,13 @@ class AuthController extends Controller
         ]);
     }
 
+    // Logout current user
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json([
+            'message' => 'Logged out successfully',
+        ]);
     }
 }
