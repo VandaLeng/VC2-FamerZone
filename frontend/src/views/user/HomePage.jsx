@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import '../../styles/HomeStyle.css';
 
 export default function HomePage({ currentLanguage }) {
-    const [isVisible, setIsVisible] = useState({})
+    const [isVisible, setIsVisible] = useState({});
     const [isVideoOpen, setIsVideoOpen] = useState(false);
 
     // Intersection Observer hook for scroll animations
@@ -14,19 +14,19 @@ export default function HomePage({ currentLanguage }) {
                         setIsVisible((prev) => ({
                             ...prev,
                             [entry.target.id]: true,
-                        }))
+                        }));
                     }
-                })
+                });
             },
-            { threshold: 0.1, rootMargin: "50px" },
-        )
+            { threshold: 0.1, rootMargin: "50px" }
+        );
 
         // Observe all sections
-        const sections = document.querySelectorAll("[data-animate]")
-        sections.forEach((section) => observer.observe(section))
+        const sections = document.querySelectorAll("[data-animate]");
+        sections.forEach((section) => observer.observe(section));
 
-        return () => observer.disconnect()
-    }, [])
+        return () => observer.disconnect();
+    }, []);
 
     // Language texts
     const texts = {
@@ -134,9 +134,9 @@ export default function HomePage({ currentLanguage }) {
             joinAsBuyer: "Join as Buyer",
             joinAsFarmer: "Join as Farmer",
         },
-    }
+    };
 
-    const currentTexts = texts[currentLanguage]
+    const currentTexts = texts[currentLanguage];
 
     return (
         <div className="min-h-screen bg-cream-50 overflow-hidden">
@@ -201,40 +201,29 @@ export default function HomePage({ currentLanguage }) {
             <section id="stats" data-animate className="bg-white py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div
-                            className={`p-6 transform transition-all duration-700 ${isVisible.stats ? "animate-count-up translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
-                        >
-                            <div className="text-4xl font-bold text-green-600 mb-2 animate-number-count">500+</div>
-                            <p className="text-gray-600 font-medium">{currentTexts.activeFarmers}</p>
-                        </div>
-                        <div
-                            className={`p-6 transform transition-all duration-700 delay-200 ${isVisible.stats ? "animate-count-up translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
-                        >
-                            <div className="text-4xl font-bold text-yellow-600 mb-2 animate-number-count">1000+</div>
-                            <p className="text-gray-600 font-medium">{currentTexts.freshProducts}</p>
-                        </div>
-                        <div
-                            className={`p-6 transform transition-all duration-700 delay-400 ${isVisible.stats ? "animate-count-up translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
-                        >
-                            <div className="text-4xl font-bold text-brown-600 mb-2 animate-number-count">2500+</div>
-                            <p className="text-gray-600 font-medium">{currentTexts.happyCustomers}</p>
-                        </div>
+                        {[
+                            { number: "500+", text: currentTexts.activeFarmers, color: "text-green-600" },
+                            { number: "1000+", text: currentTexts.freshProducts, color: "text-yellow-600" },
+                            { number: "2500+", text: currentTexts.happyCustomers, color: "text-brown-600" },
+                        ].map((stat, index) => (
+                            <div
+                                key={index}
+                                className={`p-6 transform transition-all duration-700 hover-lift hover-glow ${isVisible.stats ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 200}`}
+                            >
+                                <div className={`text-4xl font-bold ${stat.color} mb-2 animate-number-count`}>{stat.number}</div>
+                                <p className="text-gray-600 font-medium">{stat.text}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* Enhanced Features Section */}
-            {/* Professional Features Section */}
-            <section
-                id="features"
-                data-animate
-                className="py-20 bg-gray-50"
-            >
+            {/* Features Section */}
+            <section id="features" data-animate className="py-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div
-                        className={`text-center mb-16 transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-                            }`}
+                        className={`text-center mb-16 transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                     >
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.featuresTitle}
@@ -258,7 +247,7 @@ export default function HomePage({ currentLanguage }) {
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                     </svg>
-                                )
+                                ),
                             },
                             {
                                 title: currentTexts.feature2Title,
@@ -269,7 +258,7 @@ export default function HomePage({ currentLanguage }) {
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
-                                )
+                                ),
                             },
                             {
                                 title: currentTexts.feature3Title,
@@ -280,7 +269,7 @@ export default function HomePage({ currentLanguage }) {
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                )
+                                ),
                             },
                             {
                                 title: currentTexts.feature4Title,
@@ -291,14 +280,12 @@ export default function HomePage({ currentLanguage }) {
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
-                                )
+                                ),
                             },
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                                    }`}
-                                style={{ transitionDelay: `${index * 100}ms` }}
+                                className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift hover-glow ${isVisible.features ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 100}`}
                             >
                                 {/* Image Section */}
                                 <div className="relative h-48 overflow-hidden">
@@ -308,17 +295,15 @@ export default function HomePage({ currentLanguage }) {
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-
-                                    {/* Icon overlay */}
-                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
-                                            feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
-                                                feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
-                                                    'bg-purple-500/90 text-white'
-                                        }`}>
+                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${
+                                        feature.color === 'green' ? 'bg-green-500/90 text-white' :
+                                        feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
+                                        feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                        'bg-purple-500/90 text-white'
+                                    }`}>
                                         {feature.icon}
                                     </div>
                                 </div>
-
                                 {/* Content */}
                                 <div className="p-6">
                                     <h3 className="font-semibold text-gray-900 text-lg mb-3 group-hover:text-gray-700 transition-colors duration-200">
@@ -327,14 +312,13 @@ export default function HomePage({ currentLanguage }) {
                                     <p className="text-gray-600 text-sm leading-relaxed">
                                         {feature.desc}
                                     </p>
-
-                                    {/* Learn more link */}
                                     <div className="mt-4">
-                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
-                                                    feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                        'text-purple-600 hover:text-purple-700'
-                                            }`}>
+                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
+                                            feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                            feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                            'text-purple-600 hover:text-purple-700'
+                                        }`}>
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -347,8 +331,7 @@ export default function HomePage({ currentLanguage }) {
                     </div>
 
                     {/* Bottom Section */}
-                    <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                        }`}>
+                    <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
                         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 max-w-4xl mx-auto">
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
                                 {currentLanguage === "kh" ? "ចាប់ផ្តើមជាមួយយើង" : "Ready to get started?"}
@@ -370,13 +353,11 @@ export default function HomePage({ currentLanguage }) {
             </section>
 
             {/* How It Works Section */}
-            {/* Professional How It Works Section */}
             <section id="how-it-works" data-animate className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div
-                        className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-                            }`}
+                        className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -384,24 +365,19 @@ export default function HomePage({ currentLanguage }) {
                             </svg>
                             Simple Process
                         </div>
-
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.howItWorksTitle}
                         </h2>
-
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                             Connect directly with local farmers in three simple steps
                         </p>
                     </div>
 
-                    {/* Steps Container */}
+                    {/* Steps Grid */}
                     <div className="relative">
-                        {/* Connection Line (Desktop) */}
                         <div className="hidden lg:block absolute top-24 left-1/2 transform -translate-x-1/2 w-2/3 h-0.5 bg-gray-200">
                             <div className="absolute left-0 w-1/2 h-full bg-green-500 rounded-full"></div>
                         </div>
-
-                        {/* Steps Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
                             {[
                                 {
@@ -414,7 +390,7 @@ export default function HomePage({ currentLanguage }) {
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
-                                    )
+                                    ),
                                 },
                                 {
                                     title: currentTexts.step2Title,
@@ -426,7 +402,7 @@ export default function HomePage({ currentLanguage }) {
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-10 0V9a1 1 0 011-1h8a1 1 0 011 1v4H7z" />
                                         </svg>
-                                    )
+                                    ),
                                 },
                                 {
                                     title: currentTexts.step3Title,
@@ -438,26 +414,21 @@ export default function HomePage({ currentLanguage }) {
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                         </svg>
-                                    )
+                                    ),
                                 },
                             ].map((step, index) => (
                                 <div
                                     key={index}
-                                    className={`relative transition-all duration-300 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                                        }`}
-                                    style={{ transitionDelay: `${index * 150}ms` }}
+                                    className={`relative transition-all duration-300 hover-lift hover-glow ${isVisible["how-it-works"] ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 150}`}
                                 >
-                                    {/* Step Card */}
                                     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
-                                        {/* Step Number */}
-                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
+                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${
+                                            step.color === 'green' ? 'bg-green-100 text-green-600' :
                                             step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                'bg-orange-100 text-orange-600'
-                                            }`}>
+                                            'bg-orange-100 text-orange-600'
+                                        }`}>
                                             {step.icon}
                                         </div>
-
-                                        {/* Image */}
                                         <div className="relative mb-6 overflow-hidden rounded-lg">
                                             <img
                                                 src={step.image}
@@ -466,38 +437,35 @@ export default function HomePage({ currentLanguage }) {
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
                                         </div>
-
-                                        {/* Content */}
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
+                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${
+                                                    step.color === 'green' ? 'bg-green-100 text-green-700' :
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-orange-100 text-orange-700'
-                                                    }`}>
+                                                    'bg-orange-100 text-orange-700'
+                                                }`}>
                                                     Step {step.number}
                                                 </span>
                                             </div>
-
                                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
                                                 {step.title}
                                             </h3>
-
                                             <p className="text-gray-600 leading-relaxed">
                                                 {step.desc}
                                             </p>
                                         </div>
                                     </div>
-
-                                    {/* Progress Indicator */}
-                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
+                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${
+                                        step.color === 'green' ? 'bg-green-500' :
                                         step.color === 'blue' ? 'bg-blue-500' :
-                                            'bg-orange-500'
-                                        }`}>
+                                        'bg-orange-500'
+                                    }`}>
                                         <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                            <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
+                                            <div className={`w-2 h-2 rounded-full ${
+                                                step.color === 'green' ? 'bg-green-500' :
                                                 step.color === 'blue' ? 'bg-blue-500' :
-                                                    'bg-orange-500'
-                                                }`}></div>
+                                                'bg-orange-500'
+                                            }`}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -505,10 +473,8 @@ export default function HomePage({ currentLanguage }) {
                         </div>
                     </div>
 
-                    {/* Call to Action */}
                     <div
-                        className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                            }`}
+                        className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
                         <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             <span>Get Started Today</span>
@@ -520,17 +486,11 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
 
-            {/* Professional Product Categories Section */}
-            <section
-                id="categories"
-                data-animate
-                className="py-20 bg-gray-50 relative"
-            >
+            {/* Categories Section */}
+            <section id="categories" data-animate className="py-20 bg-gray-50 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
                     <div
-                        className={`text-center mb-16 transform transition-all duration-500 ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-                            }`}
+                        className={`text-center mb-16 transform transition-all duration-500 ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                     >
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.categoriesTitle}
@@ -541,8 +501,6 @@ export default function HomePage({ currentLanguage }) {
                                 : "Discover high-quality agricultural products from local farmers"}
                         </p>
                     </div>
-
-                    {/* Categories Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             {
@@ -550,60 +508,52 @@ export default function HomePage({ currentLanguage }) {
                                 image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
                                 color: "green",
                                 count: "150+ varieties",
-                                description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables"
+                                description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables",
                             },
                             {
                                 name: currentTexts.fruits,
                                 image: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
                                 color: "orange",
                                 count: "80+ varieties",
-                                description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits"
+                                description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits",
                             },
                             {
                                 name: currentTexts.grains,
                                 image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
                                 color: "amber",
                                 count: "25+ varieties",
-                                description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains"
+                                description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains",
                             },
                             {
                                 name: currentTexts.livestock,
                                 image: "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
                                 color: "blue",
                                 count: "Fresh daily",
-                                description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products"
+                                description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products",
                             },
                         ].map((category, index) => (
                             <div
                                 key={index}
-                                className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                                    }`}
-                                style={{ transitionDelay: `${index * 100}ms` }}
+                                className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift hover-glow ${isVisible.categories ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 100}`}
                             >
-                                {/* Image Container */}
                                 <div className="relative h-48 overflow-hidden bg-gray-100">
                                     <img
                                         src={category.image || "/placeholder.svg"}
                                         alt={category.name}
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
-
-                                    {/* Subtle overlay for better text readability */}
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
-
-                                    {/* Count badge */}
                                     <div className="absolute top-3 right-3">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                                            category.color === 'green' ? 'bg-green-100 text-green-800' :
                                             category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                                category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                                    'bg-blue-100 text-blue-800'
-                                            }`}>
+                                            category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                            'bg-blue-100 text-blue-800'
+                                        }`}>
                                             {category.count}
                                         </span>
                                     </div>
                                 </div>
-
-                                {/* Content */}
                                 <div className="p-6">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
@@ -613,13 +563,12 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-
-                                            {/* Action link */}
-                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
+                                                category.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                                 category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                    category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                        'text-blue-600 hover:text-blue-700'
-                                                }`}>
+                                                category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                'text-blue-600 hover:text-blue-700'
+                                            }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -628,18 +577,15 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Bottom accent line */}
-                                <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
+                                <div className={`h-1 w-full transition-all duration-300 ${
+                                    category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
                                     category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                        category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                            'bg-blue-500 group-hover:bg-blue-600'
-                                    }`}></div>
+                                    category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                    'bg-blue-500 group-hover:bg-blue-600'
+                                }`}></div>
                             </div>
                         ))}
                     </div>
-
-                    {/* Call to Action */}
                     <div className="mt-12 text-center">
                         <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
@@ -651,21 +597,12 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
 
-
             {/* Learning Center Section */}
-            <section
-                id="learning"
-                data-animate
-                className="py-20 bg-white"
-            >
+            <section id="learning" data-animate className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        {/* Text Content */}
                         <div
-                            className={`transform transition-all duration-700 ${isVisible.learning
-                                ? "translate-x-0 opacity-100"
-                                : "-translate-x-10 opacity-0"
-                                }`}
+                            className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}
                         >
                             <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
                                 {currentTexts.learningTitle}
@@ -680,13 +617,8 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.watchVideos}
                             </button>
                         </div>
-
-                        {/* Video Thumbnail */}
                         <div
-                            className={`relative transform transition-all duration-700 ${isVisible.learning
-                                ? "translate-x-0 opacity-100"
-                                : "translate-x-10 opacity-0"
-                                }`}
+                            className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}
                         >
                             <div
                                 className="relative group animate-float cursor-pointer"
@@ -705,11 +637,7 @@ export default function HomePage({ currentLanguage }) {
                                 />
                                 <div className="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-40">
                                     <div className="bg-white bg-opacity-90 p-4 rounded-full transform transition-all duration-300 group-hover:scale-110 animate-pulse">
-                                        <svg
-                                            className="h-12 w-12 text-green-600"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
+                                        <svg className="h-12 w-12 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z" />
                                         </svg>
                                     </div>
@@ -733,16 +661,13 @@ export default function HomePage({ currentLanguage }) {
                         className="relative w-full max-w-4xl mx-auto bg-black rounded-lg shadow-lg"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Close Button */}
                         <button
                             className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-yellow-500"
                             onClick={() => setIsVideoOpen(false)}
                             aria-label="Close video"
                         >
-                            &times;
+                            ×
                         </button>
-
-                        {/* Responsive video container */}
                         <div className="aspect-w-16 aspect-h-9">
                             <iframe
                                 className="w-full h-full rounded-lg"
@@ -758,18 +683,12 @@ export default function HomePage({ currentLanguage }) {
             )}
 
             {/* CTA Section */}
-            <section
-                id="cta"
-                data-animate
-                className="py-20 bg-gradient-to-r from-green-600 to-yellow-500 relative overflow-hidden"
-            >
-                {/* Animated Background Elements */}
+            <section id="cta" data-animate className="py-20 bg-gradient-to-r from-green-600 to-yellow-500 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
                     <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/15 rounded-full animate-float-delayed"></div>
                     <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float-slow"></div>
                 </div>
-
                 <div
                     className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative transform transition-all duration-700 ${isVisible.cta ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
@@ -788,6 +707,5 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
         </div>
-    )
+    );
 }
-
