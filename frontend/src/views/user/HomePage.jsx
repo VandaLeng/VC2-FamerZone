@@ -484,139 +484,132 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
 
-            {/* Enhanced Product Categories */}
+            {/* Professional Product Categories Section */}
             <section
                 id="categories"
                 data-animate
-                className="py-24 bg-gradient-to-br from-green-50/40 to-yellow-50/40 relative overflow-hidden"
+                className="py-20 bg-gray-50 relative"
             >
-                {/* Background decorative elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-10 left-10 w-40 h-40 bg-green-200/10 rounded-full blur-3xl animate-float-gentle"></div>
-                    <div className="absolute bottom-10 right-10 w-32 h-32 bg-yellow-200/10 rounded-full blur-2xl animate-float-delayed"></div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header */}
                     <div
-                        className={`text-center mb-20 transform transition-all duration-700 ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                        className={`text-center mb-16 transform transition-all duration-500 ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
                             }`}
                     >
-                        <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.categoriesTitle}
                         </h2>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                             {currentLanguage === "kh"
                                 ? "ស្វែងរកផលិតផលកសិកម្មគុណភាពខ្ពស់ពីកសិករក្នុងស្រុក"
                                 : "Discover high-quality agricultural products from local farmers"}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Categories Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             {
                                 name: currentTexts.vegetables,
-                                image:
-                                    "https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                                gradient: "from-green-500/90 to-emerald-600/90",
-                                bgGradient: "from-green-50 to-emerald-50",
+                                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                color: "green",
                                 count: "150+ varieties",
+                                description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables"
                             },
                             {
                                 name: currentTexts.fruits,
-                                image:
-                                    "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                                gradient: "from-orange-500/90 to-red-500/90",
-                                bgGradient: "from-orange-50 to-red-50",
+                                image: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                color: "orange",
                                 count: "80+ varieties",
+                                description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits"
                             },
                             {
                                 name: currentTexts.grains,
-                                image:
-                                    "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                                gradient: "from-yellow-500/90 to-amber-600/90",
-                                bgGradient: "from-yellow-50 to-amber-50",
+                                image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                color: "amber",
                                 count: "25+ varieties",
+                                description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains"
                             },
                             {
                                 name: currentTexts.livestock,
-                                image:
-                                    "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                                gradient: "from-blue-500/90 to-indigo-600/90",
-                                bgGradient: "from-blue-50 to-indigo-50",
+                                image: "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                color: "blue",
                                 count: "Fresh daily",
+                                description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products"
                             },
                         ].map((category, index) => (
                             <div
                                 key={index}
-                                className={`group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-[1.02] ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                                className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
                                     }`}
-                                style={{ animationDelay: `${index * 150}ms` }}
+                                style={{ transitionDelay: `${index * 100}ms` }}
                             >
-                                {/* Image Section */}
-                                <div className="relative h-56 overflow-hidden">
+                                {/* Image Container */}
+                                <div className="relative h-48 overflow-hidden bg-gray-100">
                                     <img
                                         src={category.image || "/placeholder.svg"}
                                         alt={category.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
 
-                                    {/* Gradient Overlay */}
-                                    <div
-                                        className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
-                                    ></div>
+                                    {/* Subtle overlay for better text readability */}
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
 
-                                    {/* Count Badge */}
-                                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                                        <span className="text-xs font-semibold text-gray-700">{category.count}</span>
-                                    </div>
-
-                                    {/* Category Name Overlay */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                                        <h3 className="text-2xl font-bold text-white mb-2 transform transition-transform duration-300 group-hover:-translate-y-1">
-                                            {category.name}
-                                        </h3>
-                                        <div className="w-12 h-1 bg-white/80 rounded-full transform transition-all duration-500 group-hover:w-20"></div>
+                                    {/* Count badge */}
+                                    <div className="absolute top-3 right-3">
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
+                                                category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
+                                                    category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                                        'bg-blue-100 text-blue-800'
+                                            }`}>
+                                            {category.count}
+                                        </span>
                                     </div>
                                 </div>
 
-                                {/* Content Section */}
-                                <div className={`p-6 bg-gradient-to-br ${category.bgGradient} transition-all duration-300`}>
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-gray-600 mb-1">
-                                                {currentLanguage === "kh" ? "ផលិតផលមាន" : "Available products"}
+                                {/* Content */}
+                                <div className="p-6">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <h3 className="font-semibold text-gray-900 text-lg mb-1 group-hover:text-gray-700 transition-colors duration-200">
+                                                {category.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 mb-3">
+                                                {category.description}
                                             </p>
-                                            <p className="font-semibold text-gray-800">{category.count}</p>
-                                        </div>
 
-                                        {/* Arrow Icon */}
-                                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                            </svg>
+                                            {/* Action link */}
+                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                    category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                        category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                            'text-blue-600 hover:text-blue-700'
+                                                }`}>
+                                                {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
+                                                <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Hover Glow Effect */}
-                                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                                    <div
-                                        className={`absolute inset-0 rounded-3xl bg-gradient-to-t ${category.gradient.replace("/90", "/20")} blur-xl`}
-                                    ></div>
-                                </div>
-
-                                {/* Border Glow */}
-                                <div
-                                    className={`absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-gradient-to-r ${category.gradient.replace("/90", "/50")} transition-all duration-500`}
-                                ></div>
+                                {/* Bottom accent line */}
+                                <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
+                                        category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
+                                            category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                                'bg-blue-500 group-hover:bg-blue-600'
+                                    }`}></div>
                             </div>
                         ))}
                     </div>
 
                     {/* Call to Action */}
-                    <div className="mt-16 text-center">
-                        <button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <div className="mt-12 text-center">
+                        <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
+                            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
                         </button>
                     </div>
                 </div>
