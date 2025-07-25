@@ -193,7 +193,7 @@ const AboutPage = ({ currentLanguage }) => {
       <section className="relative h-[85vh] bg-cream overflow-hidden animate-fade-in">
         <div className="grid lg:grid-cols-2 h-[85vh]">
           {/* Left Content */}
-          <div className="flex items-center justify-center p-8 lg:p-16 bg-gradient-to-br from-green-900 to-green-800 relative animate-slide-up">
+          <div className="flex items-center justify-center p-8 lg:p-16 bg-gradient-to-br from-green-900 to-green-800 relative">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div
@@ -259,7 +259,7 @@ const AboutPage = ({ currentLanguage }) => {
           </div>
 
           {/* Right Image */}
-          <div className="relative overflow-hidden animate-slide-up">
+          <div className="relative overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
               alt="Modern Cambodian Agriculture"
