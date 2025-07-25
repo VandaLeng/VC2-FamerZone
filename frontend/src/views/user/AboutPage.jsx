@@ -409,7 +409,7 @@ const AboutPage = ({ currentLanguage }) => {
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '100ms' }}>
               <div className="relative mb-6">
                 {/* Decorative Ring */}
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 {/* Profile Image */}
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
@@ -441,7 +441,7 @@ const AboutPage = ({ currentLanguage }) => {
 
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               <div className="relative mb-6">
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#228B22]/20 group-hover:border-[#228B22]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#228B22]/20 group-hover:border-[#228B22]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
                   <img
@@ -471,7 +471,7 @@ const AboutPage = ({ currentLanguage }) => {
 
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '300ms' }}>
               <div className="relative mb-6">
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#8B4513]/20 group-hover:border-[#8B4513]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#8B4513]/20 group-hover:border-[#8B4513]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
                   <img
