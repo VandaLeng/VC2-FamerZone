@@ -224,259 +224,295 @@ export default function HomePage({ currentLanguage }) {
             </section>
 
             {/* Enhanced Features Section */}
+            {/* Professional Features Section */}
             <section
                 id="features"
                 data-animate
-                className="py-20 bg-gradient-to-br from-green-50/30 to-yellow-50/30 relative overflow-hidden"
+                className="py-20 bg-gray-50"
             >
-                {/* Background decorative elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-20 left-10 w-32 h-32 bg-green-200/10 rounded-full blur-2xl animate-float-gentle"></div>
-                    <div className="absolute bottom-20 right-10 w-24 h-24 bg-yellow-200/10 rounded-full blur-xl animate-float-delayed"></div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header */}
                     <div
-                        className={`text-center mb-16 transform transition-all duration-700 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+                        className={`text-center mb-16 transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                            }`}
                     >
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.featuresTitle}</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                            {currentTexts.featuresTitle}
+                        </h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            {currentLanguage === "kh"
+                                ? "មុខងារសំខាន់ៗដែលធ្វើអ្វីសម្រាប់អ្នក"
+                                : "Key features that make your agricultural business thrive"}
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             {
                                 title: currentTexts.feature1Title,
                                 desc: currentTexts.feature1Desc,
-                                bg: "bg-green-50",
-                                borderColor: "border-green-200",
-                                hoverBorder: "hover:border-green-400",
-                                image:
-                                    "https://media.istockphoto.com/id/2221605330/photo/young-cabbage-after-watering-growing-in-the-garden-bed-home-gardening-concept-handheld-phone.jpg?s=612x612&w=0&k=20&c=UAYykpxX3INo8Mn2wP0zq4DCr3_vXszjf48Hu5RCUpU=",
-                                gradient: "from-green-500/10 to-emerald-500/5",
+                                color: "green",
+                                image: "https://media.istockphoto.com/id/2221605330/photo/young-cabbage-after-watering-growing-in-the-garden-bed-home-gardening-concept-handheld-phone.jpg?s=612x612&w=0&k=20&c=UAYykpxX3INo8Mn2wP0zq4DCr3_vXszjf48Hu5RCUpU=",
+                                icon: (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                )
                             },
                             {
                                 title: currentTexts.feature2Title,
                                 desc: currentTexts.feature2Desc,
-                                bg: "bg-yellow-50",
-                                borderColor: "border-yellow-200",
-                                hoverBorder: "hover:border-yellow-400",
-                                image:
-                                    "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=UOuur8q5SRru_fy1OdDybUlm9BuCq9Pw2XjLDkZ5aCY=",
-                                gradient: "from-yellow-500/10 to-orange-500/5",
+                                color: "blue",
+                                image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=UOuur8q5SRru_fy1OdDybUlm9BuCq9Pw2XjLDkZ5aCY=",
+                                icon: (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                )
                             },
                             {
                                 title: currentTexts.feature3Title,
                                 desc: currentTexts.feature3Desc,
-                                bg: "bg-blue-50",
-                                borderColor: "border-blue-200",
-                                hoverBorder: "hover:border-blue-400",
-                                image:
-                                    "https://media.istockphoto.com/id/1216988317/photo/a-man-is-delivering-a-bag-of-vegetables-and-fruit.jpg?s=612x612&w=0&k=20&c=4DfRUtmdVwwLEeS7DdFOacPglRbg-Q_vYcsFlkot_X0=",
-                                gradient: "from-blue-500/10 to-cyan-500/5",
+                                color: "orange",
+                                image: "https://media.istockphoto.com/id/1216988317/photo/a-man-is-delivering-a-bag-of-vegetables-and-fruit.jpg?s=612x612&w=0&k=20&c=4DfRUtmdVwwLEeS7DdFOacPglRbg-Q_vYcsFlkot_X0=",
+                                icon: (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                )
                             },
                             {
                                 title: currentTexts.feature4Title,
                                 desc: currentTexts.feature4Desc,
-                                bg: "bg-purple-50",
-                                borderColor: "border-purple-200",
-                                hoverBorder: "hover:border-purple-400",
-                                image:
-                                    "https://media.istockphoto.com/id/2156905193/photo/phone-payment-and-people-at-organic-market-with-fresh-groceries-sustainable-business-and.jpg?s=612x612&w=0&k=20&c=pU7KjjhZ2ItPIWYVPV1DQ-TrTCe__bfp-Xg0VN0e1NE=",
-                                gradient: "from-purple-500/10 to-pink-500/5",
+                                color: "purple",
+                                image: "https://media.istockphoto.com/id/2156905193/photo/phone-payment-and-people-at-organic-market-with-fresh-groceries-sustainable-business-and.jpg?s=612x612&w=0&k=20&c=pU7KjjhZ2ItPIWYVPV1DQ-TrTCe__bfp-Xg0VN0e1NE=",
+                                icon: (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                    </svg>
+                                )
                             },
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className={`group relative bg-white border-2 ${feature.borderColor} ${feature.hoverBorder} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] ${isVisible.features ? "animate-slide-in-up opacity-100" : "translate-y-10 opacity-0"}`}
-                                style={{ animationDelay: `${index * 100}ms` }}
+                                className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                                    }`}
+                                style={{ transitionDelay: `${index * 100}ms` }}
                             >
-                                {/* Image Section with Gradient Overlay */}
+                                {/* Image Section */}
                                 <div className="relative h-48 overflow-hidden">
                                     <img
                                         src={feature.image || "/placeholder.svg"}
                                         alt={feature.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
-                                    <div
-                                        className={`absolute inset-0 bg-gradient-to-t ${feature.gradient} group-hover:opacity-80 transition-opacity duration-300`}
-                                    ></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
 
-                                    {/* Floating number indicator */}
-                                    <div className="absolute top-4 right-4 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md">
-                                        <span className="text-gray-700 font-bold text-sm">{index + 1}</span>
+                                    {/* Icon overlay */}
+                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
+                                            feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
+                                                feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                                    'bg-purple-500/90 text-white'
+                                        }`}>
+                                        {feature.icon}
                                     </div>
                                 </div>
 
-                                {/* Content Section */}
-                                <div className={`p-6 ${feature.bg} transition-colors duration-300`}>
-                                    <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center group-hover:text-gray-900 transition-colors duration-300">
+                                {/* Content */}
+                                <div className="p-6">
+                                    <h3 className="font-semibold text-gray-900 text-lg mb-3 group-hover:text-gray-700 transition-colors duration-200">
                                         {feature.title}
                                     </h3>
-                                    <p className="text-gray-600 text-center leading-relaxed text-sm group-hover:text-gray-700 transition-colors duration-300">
+                                    <p className="text-gray-600 text-sm leading-relaxed">
                                         {feature.desc}
                                     </p>
 
-                                    {/* Decorative bottom accent */}
-                                    <div className="mt-4 flex justify-center">
-                                        <div
-                                            className={`w-12 h-1 bg-gradient-to-r ${feature.gradient.replace("/10", "/60").replace("/5", "/40")} rounded-full transform transition-all duration-500 group-hover:w-16`}
-                                        ></div>
+                                    {/* Learn more link */}
+                                    <div className="mt-4">
+                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                                    feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                        'text-purple-600 hover:text-purple-700'
+                                            }`}>
+                                            {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
+                                            <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
-
-                                {/* Hover glow effect */}
-                                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-t from-transparent via-white/5 to-white/10"></div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Bottom Section */}
+                    <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                        }`}>
+                        <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 max-w-4xl mx-auto">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                                {currentLanguage === "kh" ? "ចាប់ផ្តើមជាមួយយើង" : "Ready to get started?"}
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                                {currentLanguage === "kh"
+                                    ? "ចាប់ផ្តើមលក់ផលិតផលកសិកម្មរបស់អ្នកនៅថ្ងៃនេះ"
+                                    : "Start selling your agricultural products today and connect with customers directly"}
+                            </p>
+                            <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <span>{currentLanguage === "kh" ? "ចាប់ផ្តើមឥឡូវ" : "Get Started Now"}</span>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* How It Works Section */}
-            <section id="how-it-works" data-animate className="relative py-24 bg-gradient-to-br from-slate-50 via-white to-gray-50 overflow-hidden">
-                {/* Background Elements */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-emerald-200/30 to-teal-200/30 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-20 right-10 w-72 h-72 bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-orange-200/20 to-pink-200/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-                </div>
-
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Professional How It Works Section */}
+            <section id="how-it-works" data-animate className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header */}
                     <div
-                        className={`text-center mb-20 transition-all duration-1000 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
+                        className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
                             }`}
                     >
-                        {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm font-semibold mb-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             Simple Process
                         </div>
 
-                        <h2 className="text-4xl lg:text-6xl font-black mb-6">
-                            <span className="bg-gradient-to-r from-gray-900 via-emerald-800 to-teal-700 bg-clip-text text-transparent">
-                                {currentTexts.howItWorksTitle}
-                            </span>
+                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                            {currentTexts.howItWorksTitle}
                         </h2>
 
-                        {/* <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                             Connect directly with local farmers in three simple steps
-                        </p> */}
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-                        {[
-                            {
-                                title: currentTexts.step1Title,
-                                desc: currentTexts.step1Desc,
-                                number: "1",
-                                bgGradient: "bg-gradient-to-br from-emerald-500 to-teal-600",
-                                shadowColor: "shadow-emerald-500/25",
-                                borderColor: "border-emerald-200",
-                                iconBg: "bg-emerald-50",
-                                iconColor: "text-emerald-600",
-                                image: "https://media.istockphoto.com/id/1062685620/photo/sales-of-fresh-and-organic-fruits-and-vegetables-at-the-green-market-or-farmers-market.jpg?s=612x612&w=0&k=20&c=ZQH45iwu1T-sq6ECmZhrjPzTJNV48_C6G4o12B9OXTY=",
-                            },
-                            {
-                                title: currentTexts.step2Title,
-                                desc: currentTexts.step2Desc,
-                                number: "2",
-                                bgGradient: "bg-gradient-to-br from-blue-500 to-indigo-600",
-                                shadowColor: "shadow-blue-500/25",
-                                borderColor: "border-blue-200",
-                                iconBg: "bg-blue-50",
-                                iconColor: "text-blue-600",
-                                image: "https://media.istockphoto.com/id/870915532/photo/man-holding-crate-ob-fresh-vegetables.jpg?s=612x612&w=0&k=20&c=k2dXOI-wxUy7lX77Pm90vU6TJXmAAv5VtK60ZZHIyCA=",
-                            },
-                            {
-                                title: currentTexts.step3Title,
-                                desc: currentTexts.step3Desc,
-                                number: "3",
-                                bgGradient: "bg-gradient-to-br from-orange-500 to-red-600",
-                                shadowColor: "shadow-orange-500/25",
-                                borderColor: "border-orange-200",
-                                iconBg: "bg-orange-50",
-                                iconColor: "text-orange-600",
-                                image: "https://media.istockphoto.com/id/1587031865/photo/close-up-hands-of-young-delivery-man-delivering-package-to-customer-attractive-postman-in-red.jpg?s=612x612&w=0&k=20&c=8mMgYk4T3_6byRvLaKFgBenaiNPsN-LYk8PP2F5SoYo=",
-                            },
-                        ].map((step, index) => (
-                            <div
-                                key={index}
-                                className={`group relative transition-all duration-700 hover:scale-105 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-                                    }`}
-                                style={{ transitionDelay: `${index * 300}ms` }}
-                            >
-                                {/* Card */}
-                                <div className={`relative h-full p-8 bg-white/80 backdrop-blur-sm rounded-3xl border ${step.borderColor} shadow-xl hover:shadow-2xl ${step.shadowColor} transition-all duration-500 group-hover:border-opacity-50`}>
+                    {/* Steps Container */}
+                    <div className="relative">
+                        {/* Connection Line (Desktop) */}
+                        <div className="hidden lg:block absolute top-24 left-1/2 transform -translate-x-1/2 w-2/3 h-0.5 bg-gray-200">
+                            <div className="absolute left-0 w-1/2 h-full bg-green-500 rounded-full"></div>
+                        </div>
 
-                                    {/* Step Number - Top Corner */}
-                                    <div className={`absolute -top-4 -right-4 ${step.bgGradient} text-white w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl shadow-xl transform rotate-3 group-hover:rotate-6 transition-transform duration-300`}>
-                                        {step.number}
-                                    </div>
+                        {/* Steps Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+                            {[
+                                {
+                                    title: currentTexts.step1Title,
+                                    desc: currentTexts.step1Desc,
+                                    number: "01",
+                                    color: "green",
+                                    image: "https://media.istockphoto.com/id/1062685620/photo/sales-of-fresh-and-organic-fruits-and-vegetables-at-the-green-market-or-farmers-market.jpg?s=612x612&w=0&k=20&c=ZQH45iwu1T-sq6ECmZhrjPzTJNV48_C6G4o12B9OXTY=",
+                                    icon: (
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    )
+                                },
+                                {
+                                    title: currentTexts.step2Title,
+                                    desc: currentTexts.step2Desc,
+                                    number: "02",
+                                    color: "blue",
+                                    image: "https://media.istockphoto.com/id/870915532/photo/man-holding-crate-ob-fresh-vegetables.jpg?s=612x612&w=0&k=20&c=k2dXOI-wxUy7lX77Pm90vU6TJXmAAv5VtK60ZZHIyCA=",
+                                    icon: (
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-10 0V9a1 1 0 011-1h8a1 1 0 011 1v4H7z" />
+                                        </svg>
+                                    )
+                                },
+                                {
+                                    title: currentTexts.step3Title,
+                                    desc: currentTexts.step3Desc,
+                                    number: "03",
+                                    color: "orange",
+                                    image: "https://media.istockphoto.com/id/1587031865/photo/close-up-hands-of-young-delivery-man-delivering-package-to-customer-attractive-postman-in-red.jpg?s=612x612&w=0&k=20&c=8mMgYk4T3_6byRvLaKFgBenaiNPsN-LYk8PP2F5SoYo=",
+                                    icon: (
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                    )
+                                },
+                            ].map((step, index) => (
+                                <div
+                                    key={index}
+                                    className={`relative transition-all duration-300 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                                        }`}
+                                    style={{ transitionDelay: `${index * 150}ms` }}
+                                >
+                                    {/* Step Card */}
+                                    <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
+                                        {/* Step Number */}
+                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
+                                            step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                                'bg-orange-100 text-orange-600'
+                                            }`}>
+                                            {step.icon}
+                                        </div>
 
-                                    {/* Image Container */}
-                                    <div className="relative mb-8">
-                                        <div className="relative overflow-hidden rounded-2xl group-hover:scale-105 transition-transform duration-500">
+                                        {/* Image */}
+                                        <div className="relative mb-6 overflow-hidden rounded-lg">
                                             <img
                                                 src={step.image}
                                                 alt={step.title}
-                                                className="w-full h-56 object-cover"
+                                                className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
                                             />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
                                         </div>
 
-                                        {/* Floating Icon */}
-                                        <div className={`absolute -bottom-6 left-6 ${step.iconBg} ${step.iconColor} w-12 h-12 rounded-xl flex items-center justify-center shadow-lg border-4 border-white group-hover:scale-110 transition-transform duration-300`}>
-                                            {index === 0 && (
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                                </svg>
-                                            )}
-                                            {index === 1 && (
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-10 0V9a1 1 0 011-1h8a1 1 0 011 1v4H7z" />
-                                                </svg>
-                                            )}
-                                            {index === 2 && (
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                                </svg>
-                                            )}
+                                        {/* Content */}
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
+                                                    step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-orange-100 text-orange-700'
+                                                    }`}>
+                                                    Step {step.number}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                                                {step.title}
+                                            </h3>
+
+                                            <p className="text-gray-600 leading-relaxed">
+                                                {step.desc}
+                                            </p>
                                         </div>
                                     </div>
 
-                                    {/* Content */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors duration-300">
-                                            {step.title}
-                                        </h3>
-                                        <p className="text-gray-600 leading-relaxed text-lg">
-                                            {step.desc}
-                                        </p>
+                                    {/* Progress Indicator */}
+                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
+                                        step.color === 'blue' ? 'bg-blue-500' :
+                                            'bg-orange-500'
+                                        }`}>
+                                        <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
+                                            <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
+                                                step.color === 'blue' ? 'bg-blue-500' :
+                                                    'bg-orange-500'
+                                                }`}></div>
+                                        </div>
                                     </div>
-
-                                    {/* Bottom Accent Line */}
-                                    <div className={`absolute bottom-0 left-8 right-8 h-1 ${step.bgGradient} rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
                                 </div>
-
-                                {/* Connecting Line */}
-                                {index < 2 && (
-                                    <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 z-10">
-                                        <div className="w-12 h-0.5 bg-gradient-to-r from-gray-300 to-transparent"></div>
-                                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-gray-300 rounded-full"></div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Bottom CTA */}
-                    <div className={`text-center mt-20 transition-all duration-1000 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-                        }`}>
-                        <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                    {/* Call to Action */}
+                    <div
+                        className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                            }`}
+                    >
+                        <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             <span>Get Started Today</span>
-                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
                         </button>
@@ -558,9 +594,9 @@ export default function HomePage({ currentLanguage }) {
                                     {/* Count badge */}
                                     <div className="absolute top-3 right-3">
                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
-                                                category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                                    category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                                        'bg-blue-100 text-blue-800'
+                                            category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
+                                                category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                                    'bg-blue-100 text-blue-800'
                                             }`}>
                                             {category.count}
                                         </span>
@@ -580,9 +616,9 @@ export default function HomePage({ currentLanguage }) {
 
                                             {/* Action link */}
                                             <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                                    category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                        category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                            'text-blue-600 hover:text-blue-700'
+                                                category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                    category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                        'text-blue-600 hover:text-blue-700'
                                                 }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -595,9 +631,9 @@ export default function HomePage({ currentLanguage }) {
 
                                 {/* Bottom accent line */}
                                 <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
-                                        category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                            category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                                'bg-blue-500 group-hover:bg-blue-600'
+                                    category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
+                                        category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                            'bg-blue-500 group-hover:bg-blue-600'
                                     }`}></div>
                             </div>
                         ))}
