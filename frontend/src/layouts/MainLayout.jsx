@@ -1,12 +1,14 @@
-import React from 'react';
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, currentLanguage, setCurrentLanguage }) {
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
-      <header className="bg-blue-600 text-white p-4 text-xl font-semibold">
-        Student Performance Tracker
-      </header>
-      <main className="p-6">{children}</main>
+    <div className="flex flex-col min-h-screen">
+      <Navbar currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage} />
+      <main className="flex-grow container mx-auto px-4 py-6">
+        {children}
+      </main>
+      <Footer currentLanguage={currentLanguage} />
     </div>
   );
 }
