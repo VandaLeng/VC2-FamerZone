@@ -6,6 +6,7 @@ use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FarmerController;
+use App\Http\Controllers\API\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -95,3 +96,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::middleware(['auth:sanctum', 'permission:manage users'])->group(function () {
 //     Route::get('/admin/users', [AdminController::class, 'getUsers']);
 // });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
+});
