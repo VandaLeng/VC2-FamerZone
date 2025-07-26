@@ -1,335 +1,665 @@
 import React, { useState } from 'react';
 
-const LearningCenter = ({ currentLanguage = 'en' }) => {
+const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  // Function to get translated value with fallback
+  const getTranslation = (key, defaultValue, context = {}) => {
+    const langContent = content[currentLanguage] || content['en'];
+    if (typeof context === 'object' && context !== null && context.id) {
+      const courseIndex = context.id - 1;
+      if (key.startsWith('courses[')) {
+        const subKey = key.replace(`courses[${courseIndex}].`, '');
+        return langContent.courses?.[courseIndex]?.[subKey] || defaultValue;
+      }
+    }
+    return langContent[key] !== undefined ? langContent[key] : defaultValue;
+  };
 
   const content = {
     en: {
-      heroTitle: "Agricultural Learning Center",
-      heroSubtitle: "Empowering Cambodian Farmers with Modern Knowledge",
-      heroDescription: "Access comprehensive educational resources, tutorials, and modern farming techniques to improve your agricultural practices and business success.",
+      heroTitle: "Discover Agricultural Learning Resources",
+      heroSubtitle: "Curated Recommendations for Modern Farming Education",
+      heroDescription: "Explore the best online agricultural courses, tutorials, and resources from trusted educational platforms. Connect directly with training providers for personalized guidance.",
       
-      categoriesTitle: "Learning Categories",
       categories: [
-        { id: 'all', title: 'All Courses', count: '24' },
-        { id: 'crops', title: 'Crop Management', count: '8' },
-        { id: 'livestock', title: 'Livestock Care', count: '6' },
-        { id: 'business', title: 'Farm Business', count: '5' },
-        { id: 'technology', title: 'Modern Technology', count: '5' }
+        { id: 'all', title: 'All Resources', count: '48' },
+        { id: 'crops', title: 'Crop Management', count: '16' },
+        { id: 'livestock', title: 'Livestock Care', count: '12' },
+        { id: 'business', title: 'Agri-Business', count: '10' },
+        { id: 'technology', title: 'Smart Farming', count: '10' }
       ],
-      
-      featuredTitle: "Featured Learning Paths",
-      featuredCourses: [
+
+      courses: [
         {
           id: 1,
           category: 'crops',
-          title: "Rice Cultivation Excellence",
-          description: "Master traditional and modern rice farming techniques for maximum yield and quality.",
-          duration: "2.5 hours",
-          lessons: "12 lessons",
-          level: "Beginner to Advanced",
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "Advanced Rice Cultivation",
+          description: "Master both traditional and modern rice farming techniques for maximum yield and sustainability through expert-led video courses.",
+          duration: "6 weeks",
+          lessons: "24 lessons",
+          level: "Intermediate",
+          rating: 4.8,
+          students: 1250,
+          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Prof. Sambo Khen",
+          highlights: ['SRI Method', 'Pest Management', 'Soil Health', 'Water Management'],
+          platforms: [
+            {
+              name: "Coursera - Rice Production",
+              url: "https://www.coursera.org/learn/rice-production",
+              type: "Video Course",
+              price: "Free with Certificate Option"
+            },
+            {
+              name: "YouTube - Modern Rice Farming",
+              url: "https://youtube.com/playlist?list=rice-farming-techniques",
+              type: "Video Playlist",
+              price: "Free"
+            },
+            {
+              name: "edX - Sustainable Agriculture",
+              url: "https://www.edx.org/course/sustainable-agriculture",
+              type: "Online Course",
+              price: "Free Audit"
+            }
+          ],
+          contact: {
+            name: "Prof. Sambo Khen",
+            phone: "+855 12 345 678",
+            email: "sambo.khen@agri-cambodia.edu",
+            organization: "Cambodia Agricultural Institute"
+          }
         },
         {
           id: 2,
           category: 'crops',
-          title: "Vegetable Garden Optimization",
-          description: "Learn efficient vegetable growing methods, pest control, and harvest timing for better profits.",
-          duration: "1.8 hours",
-          lessons: "9 lessons",
-          level: "Intermediate",
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "Organic Vegetable Production",
+          description: "Learn sustainable vegetable farming without chemicals through comprehensive online resources and expert guidance.",
+          duration: "4 weeks",
+          lessons: "16 lessons",
+          level: "Beginner",
+          rating: 4.9,
+          students: 890,
+          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Ms. Sreypov Lim",
+          highlights: ['Organic Certification', 'Composting', 'Natural Pesticides', 'Market Premium'],
+          platforms: [
+            {
+              name: "FutureLearn - Organic Farming",
+              url: "https://www.futurelearn.com/courses/organic-farming",
+              type: "Interactive Course",
+              price: "Free Access"
+            },
+            {
+              name: "Khan Academy - Agriculture Basics",
+              url: "https://www.khanacademy.org/science/agriculture",
+              type: "Video Lessons",
+              price: "Free"
+            },
+            {
+              name: "Udemy - Organic Vegetable Gardening",
+              url: "https://www.udemy.com/course/organic-vegetable-gardening/",
+              type: "Video Course",
+              price: "$49.99"
+            }
+          ],
+          contact: {
+            name: "Ms. Sreypov Lim",
+            phone: "+855 12 567 890",
+            email: "sreypov.lim@organic-cambodia.org",
+            organization: "Cambodia Organic Farmers Association"
+          }
         },
         {
           id: 3,
           category: 'livestock',
-          title: "Sustainable Livestock Management",
-          description: "Comprehensive guide to raising healthy livestock while maintaining environmental sustainability.",
-          duration: "3.2 hours",
-          lessons: "15 lessons",
-          level: "Beginner",
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "Modern Poultry Management",
+          description: "Comprehensive poultry farming education covering breeding, health management, and business optimization through online platforms.",
+          duration: "5 weeks",
+          lessons: "20 lessons",
+          level: "Intermediate",
+          rating: 4.7,
+          students: 650,
+          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Dr. Pisach Teng",
+          highlights: ['Disease Prevention', 'Feed Optimization', 'Housing Design', 'Profit Analysis'],
+          platforms: [
+            {
+              name: "FAO E-learning - Poultry Production",
+              url: "https://www.fao.org/elearning/course/poultry-production",
+              type: "Professional Course",
+              price: "Free"
+            },
+            {
+              name: "YouTube - Poultry Farming Channel",
+              url: "https://youtube.com/channel/poultry-farming-guide",
+              type: "Video Tutorials",
+              price: "Free"
+            },
+            {
+              name: "Coursera - Animal Husbandry",
+              url: "https://www.coursera.org/learn/animal-husbandry",
+              type: "University Course",
+              price: "Free Audit"
+            }
+          ],
+          contact: {
+            name: "Dr. Pisach Teng",
+            phone: "+855 17 234 567",
+            email: "pisach.teng@livestock-cambodia.edu",
+            organization: "Royal University of Agriculture"
+          }
         },
         {
           id: 4,
           category: 'business',
-          title: "Digital Marketing for Farmers",
-          description: "Learn to market your products online, build customer relationships, and increase sales through FramerZone.",
-          duration: "2.0 hours",
-          lessons: "10 lessons",
+          title: "Digital Agricultural Marketing",
+          description: "Master online marketing strategies to sell agricultural products directly to consumers through digital platforms and social media.",
+          duration: "3 weeks",
+          lessons: "12 lessons",
           level: "Beginner",
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          rating: 4.6,
+          students: 420,
+          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Mr. Virak Chan",
+          highlights: ['Social Media Marketing', 'E-commerce Setup', 'Customer Relations', 'Price Strategy'],
+          platforms: [
+            {
+              name: "Google Digital Marketing Course",
+              url: "https://learndigital.withgoogle.com/digitalgarage",
+              type: "Certification Course",
+              price: "Free"
+            },
+            {
+              name: "Facebook Blueprint",
+              url: "https://www.facebook.com/business/learn",
+              type: "Social Media Marketing",
+              price: "Free"
+            },
+            {
+              name: "Skillshare - Digital Marketing",
+              url: "https://www.skillshare.com/browse/business/marketing",
+              type: "Creative Courses",
+              price: "Free Trial"
+            }
+          ],
+          contact: {
+            name: "Mr. Virak Chan",
+            phone: "+855 96 789 012",
+            email: "virak.chan@digital-agri.com",
+            organization: "Cambodia Digital Agriculture Hub"
+          }
         },
         {
           id: 5,
           category: 'technology',
-          title: "Smart Farming Tools & Techniques",
-          description: "Discover modern agricultural technology, sensors, and data-driven farming approaches.",
-          duration: "2.8 hours",
-          lessons: "13 lessons",
+          title: "Smart Irrigation Systems",
+          description: "Learn to design and implement automated irrigation systems using sensors and mobile technology through online engineering courses.",
+          duration: "4 weeks",
+          lessons: "18 lessons",
           level: "Advanced",
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          rating: 4.8,
+          students: 320,
+          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Eng. Sopheak Ros",
+          highlights: ['Sensor Technology', 'Mobile Apps', 'Water Conservation', 'Cost Analysis'],
+          platforms: [
+            {
+              name: "MIT OpenCourseWare - Water Systems",
+              url: "https://ocw.mit.edu/courses/water-systems/",
+              type: "University Course",
+              price: "Free"
+            },
+            {
+              name: "Arduino Project Hub",
+              url: "https://create.arduino.cc/projecthub/projects/tags/irrigation",
+              type: "DIY Projects",
+              price: "Free"
+            },
+            {
+              name: "Coursera - IoT Agriculture",
+              url: "https://www.coursera.org/learn/iot-agriculture",
+              type: "Technical Course",
+              price: "Free Audit"
+            }
+          ],
+          contact: {
+            name: "Eng. Sopheak Ros",
+            phone: "+855 78 345 678",
+            email: "sopheak.ros@smartfarm-cambodia.tech",
+            organization: "Cambodia Smart Agriculture Tech"
+          }
         },
         {
           id: 6,
           category: 'business',
-          title: "Financial Planning for Farmers",
-          description: "Master budgeting, cost analysis, and financial planning to maximize your farm's profitability.",
-          duration: "1.5 hours",
-          lessons: "8 lessons",
+          title: "Agricultural Finance & Investment",
+          description: "Master financial planning, investment strategies, and funding opportunities for agricultural businesses through expert-led online courses.",
+          duration: "3 weeks",
+          lessons: "14 lessons",
           level: "Intermediate",
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          rating: 4.5,
+          students: 280,
+          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "Ms. Chanthy Sok",
+          highlights: ['Loan Applications', 'Investment Planning', 'Risk Management', 'Profit Optimization'],
+          platforms: [
+            {
+              name: "World Bank Open Learning Campus",
+              url: "https://olc.worldbank.org/content/agricultural-finance",
+              type: "Professional Development",
+              price: "Free"
+            },
+            {
+              name: "Coursera - Agricultural Finance",
+              url: "https://www.coursera.org/learn/agricultural-finance",
+              type: "University Course",
+              price: "Free Audit"
+            },
+            {
+              name: "LinkedIn Learning - Business Finance",
+              url: "https://www.linkedin.com/learning/topics/business-finance",
+              type: "Professional Course",
+              price: "Free Trial"
+            }
+          ],
+          contact: {
+            name: "Ms. Chanthy Sok",
+            phone: "+855 15 456 789",
+            email: "chanthy.sok@agrifinance-cambodia.com",
+            organization: "Cambodia Agricultural Finance Institute"
+          }
         }
       ],
-      
-      quickTipsTitle: "Quick Learning Tips",
-      quickTips: [
-        {
-          title: "Soil Health Check",
-          description: "Test your soil pH and nutrients every season for optimal crop growth.",
-          time: "5 min read"
-        },
-        {
-          title: "Water Conservation",
-          description: "Implement drip irrigation to reduce water usage by up to 50%.",
-          time: "3 min read"
-        },
-        {
-          title: "Pest Prevention",
-          description: "Natural pest control methods that protect crops without harmful chemicals.",
-          time: "7 min read"
-        },
-        {
-          title: "Harvest Timing",
-          description: "Know the perfect time to harvest different crops for maximum quality.",
-          time: "4 min read"
-        }
-      ],
-      
-      resourcesTitle: "Additional Resources",
-      resources: [
-        {
-          title: "Agricultural Calendar",
-          description: "Season-specific planting and harvesting guide for Cambodia",
-          type: "PDF Guide"
-        },
-        {
-          title: "Disease Identification Chart",
-          description: "Visual guide to common plant diseases and treatment methods",
-          type: "Interactive Tool"
-        },
-        {
-          title: "Market Prices Tracker",
-          description: "Real-time agricultural product prices across different regions",
-          type: "Live Data"
-        },
-        {
-          title: "Weather Forecast Integration",
-          description: "Weather-based farming recommendations and alerts",
-          type: "Daily Updates"
-        }
-      ],
-      
-      ctaTitle: "Ready to Start Learning?",
-      ctaText: "Join thousands of Cambodian farmers who are improving their skills and increasing their income through our comprehensive learning platform.",
-      ctaButton: "Start Learning Now",
-      
-      commonButtons: {
-        startCourse: "Start Course",
-        viewAll: "View All",
-        download: "Download",
-        watchNow: "Watch Now",
-        readMore: "Read More"
+
+      stats: {
+        title: "Learning Resources Impact",
+        data: [
+          { label: "Curated Resources", value: "500+" },
+          { label: "Expert Instructors", value: "45+" },
+          { label: "Partner Platforms", value: "25+" },
+          { label: "Success Stories", value: "94%" }
+        ]
+      },
+
+      buttons: {
+        viewResources: "View Resources",
+        learnMore: "Learn More",
+        contactInstructor: "Contact Instructor",
+        visitPlatform: "Visit Platform",
+        getRecommendations: "Get Recommendations"
       }
     },
     kh: {
-      heroTitle: "មជ្ឈមណ្ឌលសិក្សាកសិកម្ម",
-      heroSubtitle: "ពង្រឹងកសិករកម្ពុជាដោយចំណេះដឹងទំនើប",
-      heroDescription: "ចូលដំណើរការធនធានអប់រំទូលំទូលាយ ការបង្រៀន និងបច្ចេកទេសកសិកម្មទំនើបដើម្បីកែលម្អការអនុវត្តកសិកម្ម និងភាពជោគជ័យក្នុងអាជីវកម្មរបស់អ្នក។",
+      heroTitle: "ស្វែងរកធនធានសិក្សាកសិកម្ម",
+      heroSubtitle: "ការណែនាំដែលបានជ្រើសរើសសម្រាប់ការអប់រំកសិកម្មទំនើប",
+      heroDescription: "ស្វែងយល់មេរៀនកសិកម្មអនឡាញ ការបង្រៀន និងធនធានល្អបំផុតពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន។ ទាក់ទងដោយផ្ទាល់ជាមួយអ្នកផ្តល់ការបណ្តុះបណ្តាលសម្រាប់ការណែនាំផ្ទាល់ខ្លួន។",
       
-      categoriesTitle: "ប្រភេទការសិក្សា",
       categories: [
-        { id: 'all', title: 'គ្រប់មេរៀន', count: '24' },
-        { id: 'crops', title: 'ការគ្រប់គ្រងដំណាំ', count: '8' },
-        { id: 'livestock', title: 'ការថែទាំសត្វ', count: '6' },
-        { id: 'business', title: 'អាជីវកម្មកសិដ្ឋាន', count: '5' },
-        { id: 'technology', title: 'បច្ចេកវិទ្យាទំនើប', count: '5' }
+        { id: 'all', title: 'គ្រប់ធនធាន', count: '48' },
+        { id: 'crops', title: 'ការគ្រប់គ្រងដំណាំ', count: '16' },
+        { id: 'livestock', title: 'ការថែទាំសត្វ', count: '12' },
+        { id: 'business', title: 'អាជីវកម្មកសិ', count: '10' },
+        { id: 'technology', title: 'កសិកម្មឆ្លាតវៃ', count: '10' }
       ],
-      
-      featuredTitle: "មេរៀនពិសេស",
-      featuredCourses: [
+
+      courses: [
         {
           id: 1,
           category: 'crops',
-          title: "ការដាំស្រូវប្រកបដោយឧត្តមភាព",
-          description: "ស្វែងយល់បច្ចេកទេសដាំស្រូវបែបប្រពៃណី និងទំនើបសម្រាប់ទទួលបានផលិតភាព និងគុណភាពអតិបរមា។",
-          duration: "2.5 ម៉ោង",
-          lessons: "12 មេរៀន",
-          level: "កម្រិតដំបូងដល់កម្រិតខ្ពស់",
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "ការដាំស្រូវកម្រិតខ្ពស់",
+          description: "ស្វែងយល់បច្ចេកទេសដាំស្រូវបែបបុរាណ និងទំនើបសម្រាប់ទិន្នផលអតិបរមា និងនិរន្តរភាព។",
+          duration: "6 សប្តាហ៍",
+          lessons: "24 មេរៀន",
+          level: "កម្រិតមធ្យម",
+          rating: 4.8,
+          students: 1250,
+          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "លោកបណ្ឌិត សំបូខេន",
+          highlights: ['វិធី SRI', 'ការគ្រប់គ្រងសត្វល្អ', 'សុខភាពដី', 'ការគ្រប់គ្រងទឹក'],
+          platforms: [
+            {
+              name: "Coursera - ផលិតកម្មស្រូវ",
+              url: "https://www.coursera.org/learn/rice-production",
+              type: "វគ្គវីដេអូ",
+              price: "ឥតគិតថ្លៃជាមួយជម្រើសសញ្ញាបត្រ"
+            },
+            {
+              name: "YouTube - ការដាំស្រូវទំនើប",
+              url: "https://youtube.com/playlist?list=rice-farming-techniques",
+              type: "បញ្ជីវីដេអូ",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "edX - កសិកម្មនិរន្តរភាព",
+              url: "https://www.edx.org/course/sustainable-agriculture",
+              type: "វគ្គអនឡាញ",
+              price: "អង្កេតឥតគិតថ្លៃ"
+            }
+          ],
+          contact: {
+            name: "លោកបណ្ឌិត សំបូខេន",
+            phone: "+855 12 345 678",
+            email: "sambo.khen@agri-cambodia.edu",
+            organization: "វិទ្យាស្ថានកសិកម្មកម្ពុជា"
+          }
         },
         {
           id: 2,
           category: 'crops',
-          title: "ការបង្កើនប្រសិទ្ធភាពច្បារបន្លែ",
-          description: "រៀនវិធីដាំបន្លែប្រកបដោយប្រសិទ្ធភាព ការគ្រប់គ្រងសត្វកាត់ និងពេលវេលាប្រមូលផលសម្រាប់ការចំណេញកាន់តែប្រសើរ។",
-          duration: "1.8 ម៉ោង",
-          lessons: "9 មេរៀន",
-          level: "កម្រិតមធ្យម",
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "ការផលិតបន្ទះបន្លែសរីរាង្គ",
+          description: "ស្វែងយល់ពីការដាំបន្លែសរីរាង្គដោយគ្មានគីមីតាមរយៈធនធានអនឡាញ និងការណែនាំពីអ្នកជំនាញ។",
+          duration: "4 សប្តាហ៍",
+          lessons: "16 មេរៀន",
+          level: "កម្រិតចាប់ផ្តើម",
+          rating: 4.9,
+          students: 890,
+          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "នាង ស្រីពៅ លីម",
+          highlights: ['សញ្ញាបត្រសរីរាង្គ', 'ការផលិតលាមក', 'ថ្នាំកសិកម្មធម្មជាតិ', 'តម្លៃផ្សារខ្ពស់'],
+          platforms: [
+            {
+              name: "FutureLearn - កសិកម្មសរីរាង្គ",
+              url: "https://www.futurelearn.com/courses/organic-farming",
+              type: "វគ្គអន្តរកម្ម",
+              price: "ចូលប្រើឥតគិតថ្លៃ"
+            },
+            {
+              name: "Khan Academy - មូលដ្ឋានកសិកម្ម",
+              url: "https://www.khanacademy.org/science/agriculture",
+              type: "មេរៀនវីដេអូ",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Udemy - ការដាំឱសថសរីរាង្គ",
+              url: "https://www.udemy.com/course/organic-vegetable-gardening/",
+              type: "វគ្គវីដេអូ",
+              price: "$49.99"
+            }
+          ],
+          contact: {
+            name: "នាង ស្រីពៅ លីម",
+            phone: "+855 12 567 890",
+            email: "sreypov.lim@organic-cambodia.org",
+            organization: "សមាគមអ្នកចម្ការសរីរាង្គកម្ពុជា"
+          }
         },
         {
           id: 3,
           category: 'livestock',
-          title: "ការគ្រប់គ្រងសត្វចិញ្ចឹមប្រកបដោយចីរភាព",
-          description: "មគ្គុទេសក៍ទូលំទូលាយក្នុងការចិញ្ចឹមសត្វមានសុខភាពល្អខណៈពេលរក្សាចីរភាពបរិស្ថាន។",
-          duration: "3.2 ម៉ោង",
-          lessons: "15 មេរៀន",
-          level: "កម្រិតដំបូង",
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "ការគ្រប់គ្រងសត្វក្តាន់ទំនើប",
+          description: "ការអប់រំកសិកម្មសត្វក្តាន់ទូលំទូលាយដោយគ្របដណ្តប់លើការបង្កាត់ ការគ្រប់គ្រងសុខភាព និងការប្រសើរអាជីវកម្មតាមរយៈវេទិកាអនឡាញ។",
+          duration: "5 សប្តាហ៍",
+          lessons: "20 មេរៀន",
+          level: "កម្រិតមធ្យម",
+          rating: 4.7,
+          students: 650,
+          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "លោកវេជ្ជបណ្ឌិត ពិសាច ទេង",
+          highlights: ['ការបង្ការជំងឺ', 'ការប្រសើរអាហារ', 'ការរចនាផ្ទះ', 'ការវិភាគប្រាក់ចំណេញ'],
+          platforms: [
+            {
+              name: "FAO E-learning - ផលិតកម្មសត្វក្តាន់",
+              url: "https://www.fao.org/elearning/course/poultry-production",
+              type: "វគ្គអាជីព",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "YouTube - ចនលផលិតកម្មសត្វក្តាន់",
+              url: "https://youtube.com/channel/poultry-farming-guide",
+              type: "មេរៀនវីដេអូ",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Coursera - ការថែទាំសត្វ",
+              url: "https://www.coursera.org/learn/animal-husbandry",
+              type: "វគ្គសាកលវិទ្យាល័យ",
+              price: "អង្កេតឥតគិតថ្លៃ"
+            }
+          ],
+          contact: {
+            name: "លោកវេជ្ជបណ្ឌិត ពិសាច ទេង",
+            phone: "+855 17 234 567",
+            email: "pisach.teng@livestock-cambodia.edu",
+            organization: "សាកលវិទ្យាល័យភូមិន្ទកសិកម្ម"
+          }
         },
         {
           id: 4,
           category: 'business',
-          title: "ការទីផ្សារឌីជីថលសម្រាប់កសិករ",
-          description: "រៀនទីផ្សារផលិតផលរបស់អ្នកតាមអនឡាញ សាងសង់ទំនាក់ទំនងអតិថិជន និងបង្កើនការលក់តាមរយៈ FramerZone។",
-          duration: "2.0 ម៉ោង",
-          lessons: "10 មេរៀន",
-          level: "កម្រិតដំបូង",
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          title: "ទីផ្សារកសិកម្មឌីជីថល",
+          description: "គ្រប់គ្រងយុទ្ធសាស្ត្រទីផ្សារអនឡាញដើម្បីលក់ផលិតផលកសិកម្មដោយផ្ទាល់ទៅកាន់អ្នកប្រើប្រាស់តាមរយៈវេទិកាឌីជីថល និងបណ្តាញសង្គម�।",
+          duration: "3 សប្តាហ៍",
+          lessons: "12 មេរៀន",
+          level: "កម្រិតចាប់ផ្តើម",
+          rating: 4.6,
+          students: 420,
+          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "លោក វីរៈ ចាន់",
+          highlights: ['ទីផ្សារបណ្តាញសង្គម', 'ការដំឡើងអេ-វណ្ណៈ', 'ទំនាក់ទំនងអតិថិជន', 'យុទ្ធសាស្ត្រតម្លៃ'],
+          platforms: [
+            {
+              name: "វគ្គទីផ្សារឌីជីថល Google",
+              url: "https://learndigital.withgoogle.com/digitalgarage",
+              type: "វគ្គសញ្ញាបត្រ",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Facebook Blueprint",
+              url: "https://www.facebook.com/business/learn",
+              type: "ទីផ្សារបណ្តាញសង្គម",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Skillshare - ទីផ្សារឌីជីថល",
+              url: "https://www.skillshare.com/browse/business/marketing",
+              type: "វគ្គច្នៃប្រឌិត",
+              price: "ការសាកល្បងឥតគិតថ្លៃ"
+            }
+          ],
+          contact: {
+            name: "លោក វីរៈ ចាន់",
+            phone: "+855 96 789 012",
+            email: "virak.chan@digital-agri.com",
+            organization: "មជ្ឈមណ្ឌលកសិកម្មឌីជីថលកម្ពុជា"
+          }
         },
         {
           id: 5,
           category: 'technology',
-          title: "ឧបករណ៍ និងបច្ចេកទេសកសិកម្មឆ្លាតវៃ",
-          description: "ស្វែងរកបច្ចេកវិទ្យាកសិកម្មទំនើប ឧបករណ៍ចាប់សញ្ញាណ និងវិធីសាស្រ្តកសិកម្មដោយផ្អែកលើទិន្នន័យ។",
-          duration: "2.8 ម៉ោង",
-          lessons: "13 មេរៀន",
+          title: "ប្រព័ន្ធស្រោចស៊ីឆ្លាតវៃ",
+          description: "ស្វែងយល់ពីការរចនា និងការអនុវត្តប្រព័ន្ធស្រោចស៊ីអូតូម៉ាទិកដោយប្រើឧបករណ៍ហ្វឹកហាត់ និងបច្ចេកវិទ្យាទូរស័ព្ទតាមរយៈវគ្គវិស្វកម្មអនឡាញ។",
+          duration: "4 សប្តាហ៍",
+          lessons: "18 មេរៀន",
           level: "កម្រិតខ្ពស់",
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          rating: 4.8,
+          students: 320,
+          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "លោកវិស្វករ សុផាក រ៉ុស",
+          highlights: ['បច្ចេកវិទ្យាឧបករណ៍', 'កម្មវិធីទូរស័ព្ទ', 'ការអភិរក្សទឹក', 'ការវិភាគថ្លៃដើម'],
+          platforms: [
+            {
+              name: "MIT OpenCourseWare - ប្រព័ន្ធទឹក",
+              url: "https://ocw.mit.edu/courses/water-systems/",
+              type: "វគ្គសាកលវិទ្យាល័យ",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Arduino Project Hub",
+              url: "https://create.arduino.cc/projecthub/projects/tags/irrigation",
+              type: "គម្រោង DIY",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Coursera - IoT កសិកម្ម",
+              url: "https://www.coursera.org/learn/iot-agriculture",
+              type: "វគ្គបច្ចេកទេស",
+              price: "អង្កេតឥតគិតថ្លៃ"
+            }
+          ],
+          contact: {
+            name: "លោកវិស្វករ សុផាក រ៉ុស",
+            phone: "+855 78 345 678",
+            email: "sopheak.ros@smartfarm-cambodia.tech",
+            organization: "បច្ចេកវិទ្យាកសិកម្មឆ្លាតវៃកម្ពុជា"
+          }
         },
         {
           id: 6,
           category: 'business',
-          title: "ការរៀបចំផែនការហិរញ្ញវត្ថុសម្រាប់កសិករ",
-          description: "ស្វែងយល់ការងារថវិកា ការវិភាគថ្លៃដើម និងការរៀបចំផែនការហិរញ្ញវត្ថុដើម្បីបង្កើនការចំណេញកសិដ្ឋានអតិបរមា។",
-          duration: "1.5 ម៉ោង",
-          lessons: "8 មេរៀន",
+          title: "ហិរញ្ញវត្ថុ និងការវិនិយោគកសិកម្ម",
+          description: "គ្រប់គ្រងផែនការហិរញ្ញវត្ថុ យុទ្ធសាស្ត្រវិនិយោគ និងឱកាសហិរញ្ញប្បទានសម្រាប់អាជីវកម្មកសិកម្មតាមរយៈវគ្គអនឡាញដឹកនាំដោយអ្នកជំនាញ។",
+          duration: "3 សប្តាហ៍",
+          lessons: "14 មេរៀន",
           level: "កម្រិតមធ្យម",
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          rating: 4.5,
+          students: 280,
+          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          instructor: "នាង ចន្ទី សុខ",
+          highlights: ['ការដាក់ពាក្យឥណទាន', 'ផែនការវិនិយោគ', 'ការគ្រប់គ្រងហានិភ័យ', 'ការប្រសើរប្រាក់ចំណេញ'],
+          platforms: [
+            {
+              name: "World Bank Open Learning Campus",
+              url: "https://olc.worldbank.org/content/agricultural-finance",
+              type: "ការអភិវឌ្ឍអាជីព",
+              price: "ឥតគិតថ្លៃ"
+            },
+            {
+              name: "Coursera - ហិរញ្ញវត្ថុកសិកម្ម",
+              url: "https://www.coursera.org/learn/agricultural-finance",
+              type: "វគ្គសាកលវិទ្យាល័យ",
+              price: "អង្កេតឥតគិតថ្លៃ"
+            },
+            {
+              name: "LinkedIn Learning - ហិរញ្ញវត្ថុអាជីវកម្ម",
+              url: "https://www.linkedin.com/learning/topics/business-finance",
+              type: "វគ្គអាជីព",
+              price: "ការសាកល្បងឥតគិតថ្លៃ"
+            }
+          ],
+          contact: {
+            name: "នាង ចន្ទី សុខ",
+            phone: "+855 15 456 789",
+            email: "chanthy.sok@agrifinance-cambodia.com",
+            organization: "វិទ្យាស្ថានហិរញ្ញវត្ថុកសិកម្មកម្ពុជា"
+          }
         }
       ],
-      
-      quickTipsTitle: "ការណែនាំរហ័ស",
-      quickTips: [
-        {
-          title: "ការពិនិត្យសុខភាពដី",
-          description: "ធ្វើតេស្តកម្រិតអាស៊ីត និងសារធាតុចិញ្ចឹមដីរៀងរាល់រដូវសម្រាប់ការលូតលាស់ដ៏ល្អបំផុតរបស់ដំណាំ។",
-          time: "អាន 5 នាទី"
-        },
-        {
-          title: "ការអភិរក្សទឹក",
-          description: "ប្រើប្រាស់ប្រព័ន្ធស្រោចកាំបិតដើម្បីកាត់បន្ថយការប្រើប្រាស់ទឹកដល់ 50%។",
-          time: "អាន 3 នាទី"
-        },
-        {
-          title: "ការការពារសត្វកាត់",
-          description: "វិធីសាស្រ្តគ្រប់គ្រងសត្វកាត់ធម្មជាតិដែលការពារដំណាំដោយមិនប្រើសារធាតុគីមី។",
-          time: "អាន 7 នាទី"
-        },
-        {
-          title: "ពេលវេលាប្រមូលផល",
-          description: "ដឹងពេលវេលាល្អឥតខ្ចោះក្នុងការប្រមូលផលដំណាំផ្សេងៗសម្រាប់គុណភាពអតិបរមា។",
-          time: "អាន 4 នាទី"
-        }
-      ],
-      
-      resourcesTitle: "ធនធានបន្ថែម",
-      resources: [
-        {
-          title: "ប្រតិទិនកសិកម្ម",
-          description: "មគ្គុទេសក៍ការដាំ និងប្រមូលផលតាមរដូវកាលសម្រាប់កម្ពុជា",
-          type: "មគ្គុទេសក៍ PDF"
-        },
-        {
-          title: "តារាងកំណត់អត្តសញ្ញាណជំងឺ",
-          description: "មគ្គុទេសក៍មើលឃើញជំងឺរុក្ខជាតិទូទៅ និងវិធីសាស្រ្តព្យាបាល",
-          type: "ឧបករណ៍អន្តរកម្ម"
-        },
-        {
-          title: "កម្មវិធីតាមដានតម្លៃទីផ្សារ",
-          description: "តម្លៃផលិតផលកសិកម្មក្នុងពេលពិតប្រាកដនៅទូទាំងតំបន់ផ្សេងៗ",
-          type: "ទិន្នន័យបន្តផ្ទាល់"
-        },
-        {
-          title: "ការរួមបញ្ចូលព្យាករណ៍អាកាសធាតុ",
-          description: "ការណែនាំកសិកម្មដោយផ្អែកលើអាកាសធាតុ និងការជូនដំណឹង",
-          type: "ការអាប់ដេតប្រចាំថ្ងៃ"
-        }
-      ],
-      
-      ctaTitle: "តើអ្នករៀបចំដើម្បីចាប់ផ្តើមរៀនហើយឬនៅ?",
-      ctaText: "ចូលរួមជាមួយកសិករកម្ពុជារាប់ពាន់នាក់ដែលកំពុងកែលម្អជំនាញ និងបង្កើនប្រាក់ចំណូលរបស់ពួកគេតាមរយៈវេទិកាសិក្សាទូលំទូលាយរបស់យើង។",
-      ctaButton: "ចាប់ផ្តើមសិក្សាឥឡូវនេះ",
-      
-      commonButtons: {
-        startCourse: "ចាប់ផ្តើមមេរៀន",
-        viewAll: "មើលទាំងអស់",
-        download: "ទាញយក",
-        watchNow: "មើលឥឡូវនេះ",
-        readMore: "អានបន្ថែម"
+
+      stats: {
+        title: "ផលប៉ះពាល់នៃធនធានសិក្សា",
+        data: [
+          { label: "ធនធានដែលបានជ្រើសរើស", value: "500+" },
+          { label: "គ្រូបង្រៀនជំនាញ", value: "45+" },
+          { label: "វេទិកាដៃគូ", value: "25+" },
+          { label: "រឿងជោគជ័យ", value: "94%" }
+        ]
+      },
+
+      buttons: {
+        viewResources: "មើលធនធាន",
+        learnMore: "ស្វែងយល់បន្ថែម",
+        contactInstructor: "ទាក់ទងគ្រូបង្រៀន",
+        visitPlatform: "ទៅកាន់វេទិកា",
+        getRecommendations: "ទទួលការណែនាំ"
       }
     }
   };
 
-  const currentContent = content[currentLanguage || 'en'];
-  
   const filteredCourses = activeCategory === 'all' 
-    ? currentContent.featuredCourses 
-    : currentContent.featuredCourses.filter(course => course.category === activeCategory);
+    ? (getTranslation('courses', []).map(course => ({
+        ...course,
+        title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
+        description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
+        duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
+        lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
+        level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
+        instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
+        highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
+        platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
+        contact: {
+          ...course.contact,
+          name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
+          organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
+        }
+      })))
+    : (getTranslation('courses', []).filter(course => course.category === activeCategory).map(course => ({
+        ...course,
+        title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
+        description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
+        duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
+        lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
+        level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
+        instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
+        highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
+        platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
+        contact: {
+          ...course.contact,
+          name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
+          organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
+        }
+      })));
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-800 via-green-700 to-green-600 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-yellow-400 opacity-10"></div>
+      <section className="relative bg-gradient-to-br from-green-900 via-green-800 to-emerald-700 text-white overflow-hidden h-[85vh]">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+            alt="Agricultural field"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 via-green-800/80 to-transparent"></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                  {currentContent.heroTitle}
+              <div className="space-y-6">
+                <div className="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full text-sm font-semibold">
+                  {getTranslation('heroBadge', currentLanguage === 'en' ? 'Curated Learning Resources' : 'ធនធានសិក្សាដែលបានជ្រើសរើស')}
+                </div>
+                <h1 className="text-4xl sm:text-6xl font-bold leading-tight">
+                  {getTranslation('heroTitle', 'Discover Agricultural Learning Resources')}
                 </h1>
                 <p className="text-xl sm:text-2xl text-green-100 font-medium">
-                  {currentContent.heroSubtitle}
+                  {getTranslation('heroSubtitle', 'Curated Recommendations for Modern Farming Education')}
                 </p>
-                <p className="text-lg text-green-50 leading-relaxed">
-                  {currentContent.heroDescription}
+                <p className="text-lg text-green-50 leading-relaxed max-w-2xl">
+                  {getTranslation('heroDescription', 'Explore the best online agricultural resources.')}
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
-                  {currentContent.ctaButton}
+                <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center">
+                  {getTranslation('buttons.getRecommendations', 'Get Recommendations')}
                 </button>
-                <button className="border-2 border-white text-white hover:bg-white hover:text-green-800 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300">
-                  {currentContent.commonButtons.viewAll}
+                <button className="border-2 border-white text-white hover:bg-white hover:text-green-800 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center">
+                  {getTranslation('buttons.viewResources', 'View Resources')}
                 </button>
               </div>
             </div>
             
             <div className="relative">
-              <div className="relative bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl p-8 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                  alt="Agricultural Learning" 
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
-                />
-                <div className="absolute -bottom-4 -right-4 bg-white text-green-800 px-6 py-3 rounded-full font-bold text-sm shadow-lg">
-                  24+ {currentLanguage === 'en' ? 'Courses' : 'មេរៀន'}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <h3 className="font-bold mb-2">{getTranslation('heroSection.onlineCourses', currentLanguage === 'en' ? 'Online Courses' : 'មេរៀនអនឡាញ')}</h3>
+                    <p className="text-sm text-green-100">{getTranslation('heroSection.courseRecommendations', currentLanguage === 'en' ? 'Expert-curated course recommendations' : 'ការណែនាំមេរៀនដោយអ្នកជំនាញ')}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 transform translate-y-8">
+                    <h3 className="font-bold mb-2">{getTranslation('heroSection.directContact', currentLanguage === 'en' ? 'Direct Contact' : 'ទាក់ទងផ្ទាល់')}</h3>
+                    <p className="text-sm text-green-100">{getTranslation('heroSection.connectInstructors', currentLanguage === 'en' ? 'Connect with expert instructors' : 'ទាក់ទងជាមួយគ្រូបង្រៀនជំនាញ')}</p>
+                  </div>
+                </div>
+                <div className="space-y-4 pt-8">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <h3 className="font-bold mb-2">{getTranslation('heroSection.platformAccess', currentLanguage === 'en' ? 'Platform Access' : 'ចូលប្រើវេទិកា')}</h3>
+                    <p className="text-sm text-green-100">{getTranslation('heroSection.trustedPlatforms', currentLanguage === 'en' ? 'Links to trusted learning platforms' : 'តំណភ្ជាប់ទៅវេទិកាសិក្សាដែលអាចទុកចិត្តបាន')}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -337,311 +667,316 @@ const LearningCenter = ({ currentLanguage = 'en' }) => {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-cream">
+      {/* Categories Filter */}
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              {currentContent.categoriesTitle}
-            </h2>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {currentContent.categories.map((category) => (
+          <div className="flex flex-wrap justify-center gap-4">
+            {getTranslation('categories', []).map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
                 className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
                   activeCategory === category.id
-                    ? 'bg-green-800 text-white shadow-lg transform scale-105'
-                    : 'bg-white text-gray-700 hover:bg-green-50 hover:text-green-800 border border-gray-200'
+                    ? 'bg-green-600 text-white shadow-lg transform scale-105'
+                    : 'bg-white text-gray-700 hover:bg-green-50 hover:text-green-600 border border-gray-200 hover:border-green-200'
                 }`}
               >
                 {category.title} ({category.count})
               </button>
-            ))}
+            )) || <p>{currentLanguage === 'en' ? 'No categories available' : 'គ្មានប្រភេទអាចរកបាន'}</p>}
           </div>
         </div>
       </section>
 
-      {/* Featured Courses Section */}
-      <section className="py-16">
+      {/* Learning Resources Grid */}
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              {currentContent.featuredTitle}
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {currentLanguage === 'en' ? 'Recommended Learning Resources' : 'ធនធានសិក្សាដែលបានណែនាំ'}
             </h2>
+            <p className="text-xl text-gray-600">
+              {currentLanguage === 'en' 
+                ? 'Carefully selected courses and tutorials from trusted educational platforms'
+                : 'មេរៀន និងការបង្រៀនដែលបានជ្រើសរើសដោយយកចិត្តទុកដាក់ពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន'}
+            </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((course) => (
-              <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {filteredCourses?.map((course) => (
+              <div key={course.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="relative">
                   <img 
                     src={course.image} 
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-4 left-4 bg-green-800 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {course.level}
+                  <div className="absolute top-4 left-4 flex gap-2">
+                    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      {course.level}
+                    </span>
+                    <span className="bg-yellow-500 text-gray-900 px-3 py-1 rounded-full text-sm font-semibold">
+                      {course.rating}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-4 right-4">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      Online
+                    </span>
                   </div>
                 </div>
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3 leading-tight">
-                    {course.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    {course.description}
-                  </p>
-                  
-                  <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{course.duration}</span>
-                    <span>{course.lessons}</span>
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                      {course.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {course.description}
+                    </p>
                   </div>
                   
-                  <button className="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
-                    {currentContent.commonButtons.startCourse}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Tips Section */}
-      <section className="py-16 bg-cream">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              {currentContent.quickTipsTitle}
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {currentContent.quickTips.map((tip, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="text-green-800 text-2xl font-bold mb-3">
-                  {String(index + 1).padStart(2, '0')}
-                </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">
-                  {tip.title}
-                </h3>
-                <p className="text-gray-600 mb-3 text-sm leading-relaxed">
-                  {tip.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">{tip.time}</span>
-                  <button className="text-green-800 hover:text-green-600 font-semibold text-sm">
-                    {currentContent.commonButtons.readMore}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Additional Resources Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              {currentContent.resourcesTitle}
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {currentContent.resources.map((resource, index) => (
-              <div key={index} className="bg-gradient-to-r from-green-50 to-yellow-50 rounded-xl p-8 border border-green-100 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">
-                      {resource.title}
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      {resource.description}
-                    </p>
-                    <span className="inline-block bg-green-800 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      {resource.type}
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-4">
+                      <span>
+                        {course.duration}
+                      </span>
+                      <span>
+                        {course.lessons}
+                      </span>
+                    </div>
+                    <span className="flex items-center text-green-600">
+                      {course.students}
                     </span>
                   </div>
-                  <button className="ml-6 bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-semibold transition-all duration-300">
-                    {currentContent.commonButtons.download}
-                  </button>
+
+                  <div className="border-t pt-4 mb-4">
+                    <div className="text-sm text-gray-600 mb-2">
+                      <strong>{currentLanguage === 'en' ? 'Expert:' : 'អ្នកជំនាញ៖'}</strong> {course.instructor}
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {course.highlights?.slice(0, 3).map((highlight, index) => (
+                        <span key={index} className="bg-green-50 text-green-700 px-2 py-1 rounded text-xs">
+                          {highlight}
+                        </span>
+                      )) || <p>{currentLanguage === 'en' ? 'No highlights available' : 'គ្មានចំណុចសំខាន់អាចរកបាន'}</p>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="bg-blue-50 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-blue-600">
+                        {currentLanguage === 'en' ? 'Multiple Platforms' : 'វេទិកាច្រើន'}
+                      </div>
+                      <div className="text-xs text-blue-500">
+                        {currentLanguage === 'en' ? 'Free & Paid Options' : 'ជម្រើសឥតគិតថ្លៃ និងមានបង់ថ្លៃ'}
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setSelectedCourse(course)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
+                    >
+                      {getTranslation('buttons.viewResources', 'View Resources')}
+                    </button>
+                  </div>
                 </div>
               </div>
-            ))}
+            )) || <p>{currentLanguage === 'en' ? 'No courses available' : 'គ្មានមេរៀនអាចរកបាន'}</p>}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-green-800 to-green-700 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            {currentContent.ctaTitle}
-          </h2>
-          <p className="text-xl text-green-100 mb-8 leading-relaxed">
-            {currentContent.ctaText}
-          </p>
-          <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-12 py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
-            {currentContent.ctaButton}
-          </button>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-cream">
+      <section className="py-16 bg-green-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <div className="text-4xl font-bold text-green-800 mb-2">24+</div>
-              <div className="text-gray-600 font-medium">
-                {currentLanguage === 'en' ? 'Learning Modules' : 'ម៉ូឌុលសិក្សា'}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">{getTranslation('stats.title', 'Learning Resources Impact')}</h2>
+          </div>
+          <div className="grid md:grid-cols-4 gap-8">
+            {getTranslation('stats.data', []).map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-4xl font-bold mb-2">{stat.value}</div>
+                <div className="text-green-200">{stat.label}</div>
               </div>
-            </div>
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <div className="text-4xl font-bold text-green-800 mb-2">5,000+</div>
-              <div className="text-gray-600 font-medium">
-                {currentLanguage === 'en' ? 'Active Learners' : 'អ្នកសិក្សាសកម្ម'}
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <div className="text-4xl font-bold text-green-800 mb-2">15+</div>
-              <div className="text-gray-600 font-medium">
-                {currentLanguage === 'en' ? 'Expert Instructors' : 'គ្រូបង្រៀនជំនាញ'}
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <div className="text-4xl font-bold text-green-800 mb-2">98%</div>
-              <div className="text-gray-600 font-medium">
-                {currentLanguage === 'en' ? 'Success Rate' : 'អត្រាជោគជ័យ'}
-              </div>
-            </div>
+            )) || <p>{currentLanguage === 'en' ? 'No stats available' : 'គ្មានស្ថិតិអាចរកបាន'}</p>}
           </div>
         </div>
       </section>
 
-      {/* Video Modal */}
-      {selectedVideo && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {selectedVideo.title}
-                </h3>
-                <button
-                  onClick={() => setSelectedVideo(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                >
-                  ×
-                </button>
+      {/* Course Detail Modal */}
+      {selectedCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <img 
+                src={selectedCourse.image} 
+                alt={selectedCourse.title}
+                className="w-full h-64 object-cover rounded-t-2xl"
+              />
+              <button
+                onClick={() => setSelectedCourse(null)}
+                className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl"
+              >
+                ×
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  {currentLanguage === 'en' ? 'Online Resources Available' : 'ធនធានអនឡាញអាចរកបាន'}
+                </span>
               </div>
-              <div className="aspect-video bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl text-gray-400 mb-4">▶</div>
-                  <p className="text-gray-600">Video Player Placeholder</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Duration: {selectedVideo.duration}
-                  </p>
+            </div>
+            
+            <div className="p-8">
+              <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedCourse.title}</h2>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{selectedCourse.description}</p>
+                  
+                  <div className="grid md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="font-semibold">{selectedCourse.duration}</div>
+                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Duration' : 'រយៈពេល'}</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="font-semibold">{selectedCourse.lessons}</div>
+                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Lessons' : 'មេរៀន'}</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="font-semibold">{selectedCourse.students}</div>
+                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Students' : 'សិស្ស'}</div>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{currentLanguage === 'en' ? 'Course Highlights' : 'ចំណុចសំខាន់នៃមេរៀន'}</h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {selectedCourse.highlights?.map((highlight, index) => (
+                        <div key={index} className="flex items-center">
+                          <span className="text-gray-700">{highlight}</span>
+                        </div>
+                      )) || <p>{currentLanguage === 'en' ? 'No highlights available' : 'គ្មានចំណុចសំខាន់អាចរកបាន'}</p>}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{currentLanguage === 'en' ? 'Recommended Learning Platforms' : 'វេទិកាសិក្សាដែលបានណែនាំ'}</h3>
+                    <div className="space-y-4">
+                      {selectedCourse.platforms?.map((platform, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-semibold text-gray-900">{platform.name}</h4>
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
+                              {platform.type}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-green-600 font-medium">{platform.price}</span>
+                            <a
+                              href={platform.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors"
+                            >
+                              {getTranslation('buttons.visitPlatform', 'Visit Platform')}
+                            </a>
+                          </div>
+                        </div>
+                      )) || <p>{currentLanguage === 'en' ? 'No platforms available' : 'គ្មានវេទិកាអាចរកបាន'}</p>}
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-yellow-800 mb-2">
+                      {currentLanguage === 'en' ? 'Note:' : 'ចំណាំ៖'}
+                    </h4>
+                    <p className="text-yellow-700 text-sm">
+                      {currentLanguage === 'en' 
+                        ? 'These are curated recommendations from trusted educational platforms. For personalized guidance and additional support, contact the expert instructor directly.'
+                        : 'ទាំងនេះគឺជាការណែនាំដែលបានជ្រើសរើសពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន។ សម្រាប់ការណែនាំផ្ទាល់ខ្លួន និងការគាំទ្របន្ថែម សូមទាក់ទងគ្រូបង្រៀនជំនាញដោយផ្ទាល់�।'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-1">
+                  <div className="bg-gray-50 rounded-2xl p-6 sticky top-6">
+                    <div className="text-center mb-6">
+                      <div className="text-sm text-gray-500 mb-1">
+                        {currentLanguage === 'en' ? 'Expert Instructor' : 'គ្រូបង្រៀនជំនាញ'}
+                      </div>
+                      <div className="text-2xl font-bold text-green-600 mb-2">
+                        {selectedCourse.instructor}
+                      </div>
+                      <div className="flex items-center justify-center mb-2">
+                        <span className="font-semibold">{selectedCourse.rating}/5.0</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-4 mb-6 border-2 border-green-200">
+                      <h4 className="font-semibold text-green-800 mb-3">
+                        {currentLanguage === 'en' ? 'Contact Information' : 'ព័ត៌មានទំនាក់ទំនង'}
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm">
+                          <a href={`tel:${selectedCourse.contact?.phone}`} className="text-blue-600 hover:underline">
+                            {selectedCourse.contact?.phone || 'N/A'}
+                          </a>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <a href={`mailto:${selectedCourse.contact?.email}`} className="text-blue-600 hover:underline break-all">
+                            {selectedCourse.contact?.email || 'N/A'}
+                          </a>
+                        </div>
+                        <div className="flex items-start text-sm">
+                          <span className="text-gray-700">
+                            {selectedCourse.contact?.organization || 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center">
+                        {getTranslation('buttons.contactInstructor', 'Contact Instructor')}
+                      </button>
+                      
+                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center">
+                        {getTranslation('buttons.viewResources', 'View Resources')}
+                      </button>
+                    </div>
+
+                    <div className="mt-6 text-center">
+                      <p className="text-xs text-gray-500">
+                        {currentLanguage === 'en' 
+                          ? 'Contact the instructor for personalized guidance and enrollment assistance'
+                          : 'ទាក់ទងគ្រូបង្រៀនសម្រាប់ការណែនាំផ្ទាល់ខ្លួន និងជំនួយក្នុងការចុះឈ្មោះ'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-600 leading-relaxed">
-                {selectedVideo.description}
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Success Stories Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              {currentLanguage === 'en' ? 'Success Stories' : 'រឿងរ៉ាវជោគជ័យ'}
-            </h2>
-            <p className="text-xl text-gray-600">
-              {currentLanguage === 'en' 
-                ? 'Real farmers, real results from our learning platform' 
-                : 'កសិករពិត លទ្ធផលពិតពីវេទិកាសិក្សារបស់យើង'}
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: currentLanguage === 'en' ? 'Sophea Chan' : 'ចាន់ សុភា',
-                location: currentLanguage === 'en' ? 'Battambang Province' : 'ខេត្តបាត់ដំបង',
-                story: currentLanguage === 'en' 
-                  ? 'Increased rice yield by 40% using modern techniques learned from FramerZone courses.'
-                  : 'បានបង្កើនទិន្នផលស្រូវ 40% ដោយប្រើបច្ចេកទេសទំនើបពីមេរៀន FramerZone។',
-                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80'
-              },
-              {
-                name: currentLanguage === 'en' ? 'Dara Pich' : 'ពេជ្រ ដារា',
-                location: currentLanguage === 'en' ? 'Siem Reap Province' : 'ខេត្តសៀមរាប',
-                story: currentLanguage === 'en'
-                  ? 'Started online vegetable sales and tripled income within 6 months of joining FramerZone.'
-                  : 'ចាប់ផ្តើមលក់បន្លែតាមអនឡាញ និងបានបង្កើនប្រាក់ចំណូល 3 ដងក្នុងរយៈពេល 6 ខែ។',
-                image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80'
-              },
-              {
-                name: currentLanguage === 'en' ? 'Ratana Srey' : 'ស្រី រតនា',
-                location: currentLanguage === 'en' ? 'Kandal Province' : 'ខេត្តកណ្តាល',
-                story: currentLanguage === 'en'
-                  ? 'Reduced farming costs by 30% through sustainable practices and smart resource management.'
-                  : 'កាត់បន្ថយចំណាយកសិកម្ម 30% តាមរយៈការអនុវត្តប្រកបដោយចីរភាព។',
-                image: 'https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80'
-              }
-            ].map((story, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                <img 
-                  src={story.image} 
-                  alt={story.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-1">
-                    {story.name}
-                  </h3>
-                  <p className="text-green-600 font-medium mb-3 text-sm">
-                    {story.location}
-                  </p>
-                  <p className="text-gray-600 leading-relaxed">
-                    "{story.story}"
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-r from-yellow-400 to-yellow-300">
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-            {currentLanguage === 'en' 
-              ? 'Stay Updated with Agricultural Tips' 
-              : 'ទទួលបានព័ត៌មានថ្មីៗអំពីកសិកម្ម'}
+          <h2 className="text-4xl font-bold mb-6">
+            {currentLanguage === 'en' ? 'Ready to Start Learning?' : 'តើអ្នករៀបចំចាប់ផ្តើមរៀនហើយឬនៅ?'}
           </h2>
-          <p className="text-lg text-gray-700 mb-8">
-            {currentLanguage === 'en'
-              ? 'Get weekly tips, seasonal guides, and exclusive learning content delivered to your inbox.'
-              : 'ទទួលបានការណែនាំប្រចាំសប្តាហ៍ មគ្គុទេសក៍តាមរដូវកាល និងមាតិកាសិក្សាផ្តាច់មុខ។'}
+          <p className="text-xl text-green-100 mb-8 leading-relaxed">
+            {currentLanguage === 'en' 
+              ? 'Connect with expert instructors and access curated learning resources from top educational platforms worldwide.'
+              : 'ទាក់ទងជាមួយគ្រូបង្រៀនជំនាញ និងចូលប្រើធនធានសិក្សាដែលបានជ្រើសរើសពីវេទិកាអប់រំកំពូលទូទាំងពិភពលោក។'}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder={currentLanguage === 'en' ? 'Enter your email' : 'បញ្ចូលអ៊ីម៉ែលរបស់អ្នក'}
-              className="flex-1 px-6 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            <button className="bg-green-800 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300">
-              {currentLanguage === 'en' ? 'Subscribe' : 'ចុះឈ្មោះ'}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+              {getTranslation('buttons.getRecommendations', 'Get Recommendations')}
+            </button>
+            <button className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300">
+              {getTranslation('buttons.contactInstructor', 'Contact Expert')}
             </button>
           </div>
         </div>
@@ -650,4 +985,4 @@ const LearningCenter = ({ currentLanguage = 'en' }) => {
   );
 };
 
-export default LearningCenter;
+export default EnhancedLearningCenter;
