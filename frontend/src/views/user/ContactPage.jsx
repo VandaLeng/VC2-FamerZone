@@ -282,7 +282,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-yellow-50">
       {/* Hero Section */}
-      {/* Updated Hero Section */}
       <div className="relative h-[85vh] bg-gradient-to-br from-emerald-900 via-green-800 to-teal-700 text-white overflow-hidden">
         {/* Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -387,17 +386,22 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
       </div>
 
       {/* Contact Information */}
-      <div className="py-20 bg-white">
-        <div className="container mx-auto px-6">
+      <div className="py-20 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-12 left-12 w-28 h-28 bg-[#FFD700]/10 rounded-full animate-float"></div>
+          <div className="absolute bottom-16 right-16 w-20 h-20 bg-[#228B22]/15 rounded-full animate-float-delayed"></div>
+          <div className="absolute top-1/3 left-1/3 w-16 h-16 bg-[#FFD700]/10 rounded-full animate-float-slow"></div>
+        </div>
+        <div className="container mx-auto px-6 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#333333] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#333333] mb-4 animate-text-shimmer">
               {currentContent.contactInfoTitle}
             </h2>
             <div className="w-20 h-1 bg-[#FFD700] mx-auto"></div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {Object.entries(currentContent.contactInfo).map(([key, info]) => (
-              <div key={key} className="group">
+            {Object.entries(currentContent.contactInfo).map(([key, info], index) => (
+              <div key={key} className={`group animate-slide-in-up animate-delay-${(index + 1) * 100}`}>
                 <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 border-[#228B22] h-full">
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold text-[#2D5016] mb-4 group-hover:text-[#228B22] transition-colors">
@@ -451,17 +455,17 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
       <div className="py-16 bg-gradient-to-r from-yellow-50 to-orange-50">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 animate-text-shimmer">
               {currentContent.formTitle}
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 animate-slide-in-up">
               {currentContent.formSubtitle}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl p-8 relative overflow-hidden">
+          <div className="bg-white rounded-lg shadow-xl p-8 relative overflow-hidden animate-slide-in-up animate-delay-100">
             {formSubmitted && (
-              <div className="absolute inset-0 bg-green-500 bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
+              <div className="absolute inset-0 bg-green-500 bg-opacity-90 flex items-center justify-center z-10 rounded-lg animate-fade-in">
                 <div className="text-white text-center">
                   <div className="text-6xl mb-4">✓</div>
                   <h3 className="text-2xl font-bold mb-2">
@@ -474,121 +478,128 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
+            <form onSubmit={handleSubmit}>
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="animate-slide-in-up animate-delay-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {currentContent.form.name} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder={currentContent.form.namePlaceholder}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                  />
+                </div>
+
+                <div className="animate-slide-in-up animate-delay-300">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {currentContent.form.email} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder={currentContent.form.emailPlaceholder}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="animate-slide-in-up animate-delay-400">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {currentContent.form.phone}
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder={currentContent.form.phonePlaceholder}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                  />
+                </div>
+
+                <div className="animate-slide-in-up animate-delay-500">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {currentContent.form.userType} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="userType"
+                    value={formData.userType}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                  >
+                    <option value="">Select...</option>
+                    {Object.entries(currentContent.form.userTypes).map(([key, value]) => (
+                      <option key={key} value={key}>{value}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mb-6 animate-slide-in-up animate-delay-600">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentContent.form.name} <span className="text-red-500">*</span>
+                  {currentContent.form.subject} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
+                  name="subject"
+                  value={formData.subject}
                   onChange={handleInputChange}
-                  placeholder={currentContent.form.namePlaceholder}
+                  placeholder={currentContent.form.subjectPlaceholder}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
                   required
                 />
               </div>
 
-              <div>
+              <div className="mb-6 animate-slide-in-up animate-delay-700">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentContent.form.email} <span className="text-red-500">*</span>
+                  {currentContent.form.message} <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                <textarea
+                  name="message"
+                  value={formData.message}
                   onChange={handleInputChange}
-                  placeholder={currentContent.form.emailPlaceholder}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                  placeholder={currentContent.form.messagePlaceholder}
+                  rows={6}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 resize-none"
                   required
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentContent.form.phone}
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder={currentContent.form.phonePlaceholder}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-                />
+                ></textarea>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentContent.form.userType} <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="userType"
-                  value={formData.userType}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-                  required
-                >
-                  <option value="">Select...</option>
-                  {Object.entries(currentContent.form.userTypes).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {currentContent.form.subject} <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleInputChange}
-                placeholder={currentContent.form.subjectPlaceholder}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-                required
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {currentContent.form.message} <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder={currentContent.form.messagePlaceholder}
-                rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 resize-none"
-                required
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-4 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              disabled={formSubmitted}
-            >
-              {formSubmitted ?
-                (currentLanguage === 'kh' ? 'កំពុងផ្ញើ...' : 'Sending...') :
-                currentContent.form.submit
-              }
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-4 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 animate-bounce-subtle"
+                disabled={formSubmitted}
+              >
+                {formSubmitted ?
+                  (currentLanguage === 'kh' ? 'កំពុងផ្ញើ...' : 'Sending...') :
+                  currentContent.form.submit
+                }
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
       {/* Services Section */}
-      <div className="py-20 bg-white">
-        <div className="container mx-auto px-6">
+      <div className="py-20 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-12 left-12 w-28 h-28 bg-[#FFD700]/10 rounded-full animate-float"></div>
+          <div className="absolute bottom-16 right-16 w-20 h-20 bg-[#228B22]/15 rounded-full animate-float-delayed"></div>
+          <div className="absolute top-1/3 left-1/3 w-16 h-16 bg-[#FFD700]/10 rounded-full animate-float-slow"></div>
+        </div>
+        <div className="container mx-auto px-6 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#333333] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#333333] mb-4 animate-text-shimmer">
               {currentContent.servicesTitle}
             </h2>
             <div className="w-20 h-1 bg-[#FFD700] mx-auto mb-6"></div>
@@ -596,7 +607,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {currentContent.services.map((service, index) => (
-              <div key={index} className="group h-full">
+              <div key={index} className={`group h-full animate-slide-in-up animate-delay-${(index + 1) * 100}`}>
                 <div className="bg-gradient-to-br from-[#F5F5DC] to-[#FAF0E6] p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-3 border-t-4 border-[#FFD700] h-full flex flex-col">
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold text-[#2D5016] mb-4 group-hover:text-[#228B22] transition-colors">
@@ -626,17 +637,16 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         </div>
       </div>
 
-
       {/* FAQ Section */}
       <div className="py-16 bg-gradient-to-r from-yellow-50 to-orange-50">
         <div className="container mx-auto px-6 max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 animate-text-shimmer">
             {currentContent.faqTitle}
           </h2>
 
           <div className="space-y-4">
             {currentContent.faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg border border-green-100 overflow-hidden">
+              <div key={index} className={`bg-white rounded-lg shadow-lg border border-green-100 overflow-hidden animate-slide-in-up animate-delay-${(index + 1) * 100}`}>
                 <button
                   onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
                   className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-green-50 transition-colors duration-200"
@@ -647,7 +657,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
                   </span>
                 </button>
                 {openFAQ === index && (
-                  <div className="px-6 pb-4 text-gray-600 border-t border-green-100">
+                  <div className="px-6 pb-4 text-gray-600 border-t border-green-100 animate-fade-in">
                     <p className="pt-4">{faq.answer}</p>
                   </div>
                 )}
@@ -656,34 +666,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           </div>
         </div>
       </div>
-
-      {/* Footer CTA */}
-      <div className="py-16 bg-gradient-to-r from-blue-600 to-teal-500 text-white relative overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
-          <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/15 rounded-full animate-float-delayed"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float-slow"></div>
-        </div>
-        <div className="container mx-auto px-6 text-center relative">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-text-shimmer">
-            {currentLanguage === 'kh' ? 'រួចរាល់ហើយក្នុងការចាប់ផ្តើម?' : 'Ready to Get Started?'}
-          </h2>
-          <p className="text-xl mb-8 text-white opacity-90 animate-slide-in-up animate-delay-100">
-            {currentLanguage === 'kh'
-              ? 'ចូលរួមជាមួយសហគមន៍កសិកម្មកម្ពុជា ហើយចាប់ផ្តើមធ្វើការជាមួយ FramerZone ថ្ងៃនេះ'
-              : 'Join Cambodia\'s agricultural community and start working with FramerZone today'}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animate-delay-200">
-            <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
-              {currentLanguage === 'kh' ? 'ចាប់ផ្តើមការលក់' : 'Start Selling'}
-            </button>
-            <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
-              {currentLanguage === 'kh' ? 'រកមើលផលិតផល' : 'Browse Products'}
-            </button>
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 };
