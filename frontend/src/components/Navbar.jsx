@@ -1,82 +1,88 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import '../styles/NavbarStyle.css';
+"use client"
+import { useState, useRef, useEffect } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import "../styles/NavbarStyle.css" // Ensure this path is correct
 
-export default function Navbar({ currentLanguage, setCurrentLanguage }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef(null);
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const profileRef = useRef(null)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   const toggleLanguage = () => {
-    setCurrentLanguage(currentLanguage === 'kh' ? 'en' : 'kh');
-  };
+    setCurrentLanguage(currentLanguage === "kh" ? "en" : "kh")
+  }
 
   const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
+    setIsProfileOpen(!isProfileOpen)
+  }
 
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-    setIsProfileOpen(false);
-    navigate('/');
-  };
+  const handleLogin = () => {
+    navigate("/login")
+  }
 
+  const handleRegister = () => {
+    navigate("/register")
+  }
+
+  // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
+        setIsProfileOpen(false)
       }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
+    }
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   const texts = {
     kh: {
-      home: 'ទំព័រដើម',
-      products: 'ផលិតផល',
-      about: 'អំពីពួកយើង',
-      learningCenter: 'មជ្ឈមណ្ឌលសិក្សា',
-      contact: 'ទំនាក់ទំនង',
-      login: 'ចូលប្រើ',
-      register: 'ចុះឈ្មោះ',
-      phone: '+855 (0) 12 345 678',
-      profile: 'ប្រវត្តិរូប',
-      settings: 'ការកំណត់',
-      orders: 'ការបញ្ជាទិញ',
-      logout: 'ចាកចេញ',
-      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+      home: "ទំព័រដើម",
+      products: "ផលិតផល",
+      about: "អំពីពួកយើង",
+      learningCenter: "មជ្ឈមណ្ឌលសិក្សា",
+      contact: "ទំនាក់ទំនង",
+      login: "ចូលប្រើ",
+      register: "ចុះឈ្មោះ",
+      phone: "+855 (0) 12 345 678",
+      profile: "ប្រវត្តិរូប",
+      settings: "ការកំណត់",
+      orders: "ការបញ្ជាទិញ",
+      logout: "ចាកចេញ",
+      dashboard: "ផ្ទាំងគ្រប់គ្រង",
+      switchLang: "ប្តូរទៅភាសាអង់គ្លេស",
     },
     en: {
-      home: 'Home',
-      products: 'Products',
-      about: 'About Us',
-      learningCenter: 'Learning Center',
-      contact: 'Contact',
-      login: 'Login',
-      register: 'Register',
-      phone: '+855 (0) 12 345 678',
-      profile: 'Profile',
-      settings: 'Settings',
-      orders: 'Orders',
-      logout: 'Logout',
-      dashboard: 'Dashboard',
+      home: "Home",
+      products: "Products",
+      about: "About Us",
+      learningCenter: "Learning Center",
+      contact: "Contact",
+      login: "Login",
+      register: "Register",
+      phone: "+855 (0) 12 345 678",
+      profile: "Profile",
+      settings: "Settings",
+      orders: "Orders",
+      logout: "Logout",
+      dashboard: "Dashboard",
+      switchLang: "Switch to Khmer",
     },
-  };
+  }
+  const currentTexts = texts[currentLanguage]
 
-  const currentTexts = texts[currentLanguage];
-  const userData = localStorage.getItem('user_data') ? JSON.parse(localStorage.getItem('user_data')) : null;
-  const isLoggedIn = !!localStorage.getItem('auth_token');
+  // Ensure userData is available before accessing its properties
+  const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
+  const userName = userData?.name || "User"
+  const userEmail = userData?.email || "user@example.com"
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -99,31 +105,31 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === '/' ? 'active' : ''}`}
+              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === "/" ? "active" : ""}`}
             >
               {currentTexts.home}
             </Link>
             <Link
               to="/products"
-              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === '/products' ? 'active' : ''}`}
+              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === "/products" ? "active" : ""}`}
             >
               {currentTexts.products}
             </Link>
             <Link
               to="/about"
-              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === '/about' ? 'active' : ''}`}
+              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === "/about" ? "active" : ""}`}
             >
               {currentTexts.about}
             </Link>
             <Link
               to="/learning-center"
-              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === '/learning-center' ? 'active' : ''}`}
+              className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/learning-center" ? "active" : ""}`}
             >
               {currentTexts.learningCenter}
             </Link>
             <Link
               to="/contact"
-              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === '/contact' ? 'active' : ''}`}
+              className={`nav-link text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-sm tracking-wide ${location.pathname === "/contact" ? "active" : ""}`}
             >
               {currentTexts.contact}
             </Link>
@@ -144,23 +150,23 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                   d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
                 />
               </svg>
-              <span>{currentLanguage === 'kh' ? 'EN' : 'ខ្មែរ'}</span>
+              <span>{currentLanguage === "kh" ? "EN" : "ខ្មែរ"}</span>
             </button>
 
             {/* User Profile or Login/Register Buttons */}
-            {isLoggedIn && userData ? (
+            {isLoggedIn ? (
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={toggleProfile}
                   className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 group"
                 >
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-semibold text-sm">{userData.name.charAt(0)}</span>
+                    <span className="text-green-600 font-semibold text-sm">{userInitial}</span>
                   </div>
-                  <span className="text-gray-700 font-medium text-sm hidden lg:block">{userData.name}</span>
+                  <span className="text-gray-700 font-medium text-sm hidden lg:block">{userName}</span>
                   <svg
                     className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                      isProfileOpen ? 'rotate-180' : ''
+                      isProfileOpen ? "rotate-180" : ""
                     }`}
                     fill="none"
                     stroke="currentColor"
@@ -169,17 +175,16 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-green-600 font-semibold">{userData.name.charAt(0)}</span>
+                          <span className="text-green-600 font-semibold">{userInitial}</span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 text-sm">{userData.name}</p>
-                          <p className="text-gray-500 text-xs">{userData.email}</p>
+                          <p className="font-medium text-gray-900 text-sm">{userName}</p>
+                          <p className="text-gray-500 text-xs">{userEmail}</p>
                         </div>
                       </div>
                     </div>
@@ -276,13 +281,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
               <div className="flex items-center space-x-3">
                 <button
                   type="button"
-                  onClick={() => navigate('/register')}
+                  onClick={handleRegister}
                   className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-medium text-sm transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   {currentTexts.register}
                 </button>
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={handleLogin}
                   className="text-gray-600 hover:text-green-600 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 hover:bg-green-50"
                 >
                   {currentTexts.login}
@@ -316,74 +321,103 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
             <div className="px-2 pt-4 pb-3 space-y-1 bg-white">
               <Link
                 to="/"
-                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === '/' ? 'active' : ''}`}
+                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/" ? "active" : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)} // Close menu on link click
               >
                 {currentTexts.home}
               </Link>
               <Link
                 to="/products"
-                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === '/products' ? 'active' : ''}`}
+                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/products" ? "active" : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {currentTexts.products}
               </Link>
               <Link
                 to="/about"
-                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === '/about' ? 'active' : ''}`}
+                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/about" ? "active" : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {currentTexts.about}
               </Link>
               <Link
                 to="/learning-center"
-                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === '/learning-center' ? 'active' : ''}`}
+                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/learning-center" ? "active" : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {currentTexts.learningCenter}
               </Link>
               <Link
                 to="/contact"
-                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === '/contact' ? 'active' : ''}`}
+                className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/contact" ? "active" : ""}`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {currentTexts.contact}
               </Link>
 
               <div className="px-3 py-4 border-t border-gray-100 mt-4 space-y-3">
-                {isLoggedIn && userData && (
+                {isLoggedIn ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
                       <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <span className="text-green-600 font-semibold">{userData.name.charAt(0)}</span>
+                        <span className="text-green-600 font-semibold">{userInitial}</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">{userData.name}</p>
-                        <p className="text-gray-500 text-xs">{userData.email}</p>
+                        <p className="font-medium text-gray-900 text-sm">{userName}</p>
+                        <p className="text-gray-500 text-xs">{userEmail}</p>
                       </div>
                     </div>
                     <Link
                       to="/dashboard"
                       className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium text-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {currentTexts.dashboard}
                     </Link>
                     <Link
                       to="/profile"
                       className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium text-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {currentTexts.profile}
                     </Link>
                     <Link
                       to="/orders"
                       className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium text-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {currentTexts.orders}
                     </Link>
                     <Link
                       to="/settings"
                       className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium text-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {currentTexts.settings}
                     </Link>
                   </div>
+                ) : (
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => {
+                        handleRegister()
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
+                    >
+                      {currentTexts.register}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleLogin()
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-medium transition-all duration-200"
+                    >
+                      {currentTexts.login}
+                    </button>
+                  </div>
                 )}
-
                 <button
                   onClick={toggleLanguage}
                   className="flex items-center justify-center space-x-2 w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium text-gray-600 hover:text-green-600"
@@ -396,9 +430,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                       d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
                     />
                   </svg>
-                  <span>{currentLanguage === 'kh' ? 'Switch to English' : 'ប្តូរទៅភាសាខ្មែរ'}</span>
+                  <span>{currentLanguage === "kh" ? "Switch to English" : "ប្តូរទៅភាសាខ្មែរ"}</span>
                 </button>
-
                 <div className="flex items-center space-x-2 text-gray-500 text-sm">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -410,26 +443,12 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
                   </svg>
                   <span>{currentTexts.phone}</span>
                 </div>
-
-                {!isLoggedIn && (
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => navigate('/register')}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
-                    >
-                      {currentTexts.register}
-                    </button>
-                    <button
-                      onClick={() => navigate('/login')}
-                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-medium transition-all duration-200"
-                    >
-                      {currentTexts.login}
-                    </button>
-                  </div>
-                )}
                 {isLoggedIn && (
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout()
+                      setIsMobileMenuOpen(false)
+                    }}
                     className="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
                   >
                     {currentTexts.logout}
@@ -441,5 +460,5 @@ export default function Navbar({ currentLanguage, setCurrentLanguage }) {
         )}
       </div>
     </nav>
-  );
+  )
 }
