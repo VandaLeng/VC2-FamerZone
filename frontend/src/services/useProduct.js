@@ -13,10 +13,12 @@ const useProducts = () => {
       .then((response) => {
         const productsWithImages = (response.data.data || []).map(product => ({
           ...product,
-          image: product.image ? `http://127.0.0.1:8000/${product.image}` : null,
+          // Prepend base URL to image path
+          image: product.image ? `http://127.0.0.1:8000/${product.image}` : 'https://picsum.photos/150',
           farmer: {
             ...product.farmer,
-            avatar: product.farmer?.avatar ? `http://127.0.0.1:8000/${product.farmer.avatar}` : null
+            // Prepend base URL to avatar path
+            avatar: product.farmer?.avatar ? `http://127.0.0.1:8000/${product.farmer.avatar}` : 'https://picsum.photos/150'
           }
         }));
         setAllProducts(productsWithImages);

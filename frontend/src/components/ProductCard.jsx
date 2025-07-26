@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from 'lucide-react';
 
 function ProductCard({
@@ -12,6 +13,23 @@ function ProductCard({
   viewMode = 'grid',
   provinces,
 }) {
+  // State to track image loading errors
+  const [imageError, setImageError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+
+  // Debugging log for image source
+  console.log('Image source:', product?.image);
+  console.log('Avatar source:', product?.farmer?.avatar);
+
+  // Construct full image URL with fallback to picsum.photos
+  const fullImageUrl = product?.image && !imageError
+    ? `http://127.0.0.1:8000/${product.image}`
+    : 'https://picsum.photos/150';
+
+  const farmerAvatarUrl = product?.farmer?.avatar && !avatarError
+    ? `http://127.0.0.1:8000/${product.farmer.avatar}`
+    : 'https://picsum.photos/150';
+
   // Fallback values if product or its properties are undefined
   const productName = product?.name
     ? currentLanguage === 'kh' ? product.nameKh || product.name : product.name
@@ -21,7 +39,7 @@ function ProductCard({
     : 'No description available';
   const farmerName = product?.farmer?.name
     ? currentLanguage === 'kh' ? product.farmer.nameKh || product.farmer.name : product.farmer.name
-    : 'Unknown';
+    : 'Unknown Farmer';
 
   const provinceName = provinces?.find((p) => p.id === product?.province)?.name || product?.province || 'Unknown Province';
 
@@ -31,9 +49,10 @@ function ProductCard({
         <div className="flex flex-col md:flex-row">
           <div className="relative md:w-64 h-48 md:h-auto overflow-hidden">
             <img
-              src={product?.image || '/placeholder.svg'}
+              src={fullImageUrl}
               alt={productName}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              onError={() => setImageError(true)}
             />
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product?.isPopular && (
@@ -95,9 +114,10 @@ function ProductCard({
             <div className="flex items-center justify-between pt-4 border-t border-stone-200">
               <div className="flex items-center gap-3">
                 <img
-                  src={product?.farmer?.avatar || '/placeholder.svg'}
+                  src={farmerAvatarUrl}
                   alt={farmerName}
                   className="w-10 h-10 rounded-full object-cover border-2 border-stone-200"
+                  onError={() => setAvatarError(true)}
                 />
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{farmerName}</p>
@@ -138,9 +158,10 @@ function ProductCard({
     <div className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-stone-200 product-card">
       <div className="relative h-48 overflow-hidden">
         <img
-          src={product?.image || '/placeholder.svg'}
+          src={fullImageUrl}
           alt={productName}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 product-image"
+          onError={() => setImageError(true)}
         />
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product?.isPopular && (
@@ -189,9 +210,10 @@ function ProductCard({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 farmer-avatar">
             <img
-              src={product?.farmer?.avatar || '/placeholder.svg'}
+              src={farmerAvatarUrl}
               alt={farmerName}
               className="w-8 h-8 rounded-full object-cover border border-stone-200"
+              onError={() => setAvatarError(true)}
             />
             <span className="text-sm font-medium text-gray-700 truncate">{farmerName}</span>
           </div>
