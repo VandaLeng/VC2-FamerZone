@@ -26,7 +26,7 @@ class RoleController extends Controller
 
         $role = Role::create([
             'name' => $request->name,
-            'guard_name' => 'web', 
+            'guard_name' => 'web',
         ]);
 
         return response()->json([
@@ -35,7 +35,6 @@ class RoleController extends Controller
         ], 201);
     }
 
-    // Update role
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -59,13 +58,11 @@ class RoleController extends Controller
         }
     }
 
-    // Delete role
     public function destroy($id)
     {
         try {
             $role = Role::findOrFail($id);
 
-            // Optional: Check if role is assigned to any user before deleting
             if ($role->users()->count() > 0) {
                 return response()->json([
                     'message' => 'Role is assigned to users and cannot be deleted',
@@ -84,5 +81,4 @@ class RoleController extends Controller
             ], 404);
         }
     }
-
 }
