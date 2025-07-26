@@ -96,21 +96,32 @@ export default function LoginForm({ currentLanguage = 'en', onClose }) {
       });
 
       alert(currentTexts.loginSuccess);
+
       if (data && data.access_token) {
+        // Save to localStorage
         localStorage.setItem('auth_token', data.access_token);
         localStorage.setItem(
           'user_data',
           JSON.stringify({
             name: data.user.name,
             email: data.user.email,
-          }),
+            role: data.user.role, // ✅ Save role
+          })
         );
+
+        // ✅ Redirect based on role
+        const role = data.user.role;
+        if (role === 'farmer') {
+          navigate('/farmer/dashboard');
+        } else {
+          navigate('/');
+        }
       }
+
       if (onClose) {
         onClose();
-      } else {
-        navigate('/');
       }
+
     } catch (error) {
       const errorMsg = error.message || currentTexts.loginFailed;
       setErrors({ general: typeof errorMsg === 'string' ? errorMsg : currentTexts.loginFailed });
@@ -118,6 +129,7 @@ export default function LoginForm({ currentLanguage = 'en', onClose }) {
       setIsLoading(false);
     }
   };
+
 
   const handleRegister = () => {
     navigate('/register');
