@@ -193,7 +193,7 @@ const AboutPage = ({ currentLanguage }) => {
       <section className="relative h-[85vh] bg-cream overflow-hidden animate-fade-in">
         <div className="grid lg:grid-cols-2 h-[85vh]">
           {/* Left Content */}
-          <div className="flex items-center justify-center p-8 lg:p-16 bg-gradient-to-br from-green-900 to-green-800 relative animate-slide-up">
+          <div className="flex items-center justify-center p-8 lg:p-16 bg-gradient-to-br from-green-900 to-green-800 relative">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div
@@ -259,7 +259,7 @@ const AboutPage = ({ currentLanguage }) => {
           </div>
 
           {/* Right Image */}
-          <div className="relative overflow-hidden animate-slide-up">
+          <div className="relative overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
               alt="Modern Cambodian Agriculture"
@@ -409,7 +409,7 @@ const AboutPage = ({ currentLanguage }) => {
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '100ms' }}>
               <div className="relative mb-6">
                 {/* Decorative Ring */}
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 {/* Profile Image */}
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
@@ -441,7 +441,7 @@ const AboutPage = ({ currentLanguage }) => {
 
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               <div className="relative mb-6">
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#228B22]/20 group-hover:border-[#228B22]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#228B22]/20 group-hover:border-[#228B22]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
                   <img
@@ -471,7 +471,7 @@ const AboutPage = ({ currentLanguage }) => {
 
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '300ms' }}>
               <div className="relative mb-6">
-                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#8B4513]/20 group-hover:border-[#8B4513]/40 transition-colors duration-500 group-hover:rotate-12 transform transition-transform duration-700"></div>
+                <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#8B4513]/20 group-hover:border-[#8B4513]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
 
                 <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
                   <img

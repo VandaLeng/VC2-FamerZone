@@ -6,11 +6,10 @@ use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FarmerController;
-use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\BuyerController;
+use App\Http\Controllers\Api\ItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Api\ItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,29 +26,28 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/users/change-password', [UserController::class, 'changePassword']);
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-
     Route::get('/admin/users', [AdminController::class, 'getUsers']);
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
-
+    Route::get('/admin/trashed-users', [AdminController::class, 'getTrashedUsers']);
+    Route::post('/admin/users/{id}/restore', [AdminController::class, 'restoreUser']);
 
     // User management
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
-    Route::get('/admin/trashed-users', [AdminController::class, 'getTrashedUsers']);
-    Route::post('/admin/users/{id}/restore', [AdminController::class, 'restoreUser']);
 
     // Roles
     Route::get('/roles', [RoleController::class, 'index']); 
@@ -64,14 +62,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
     Route::post('/permissions/assign-role', [PermissionController::class, 'assignToRole']);
 
-    // Assign roles
+    // Assign roles and permissions
     Route::post('/users/{id}/assign-role', [UserController::class, 'assignRole']);
     Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
-
     Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
-
     Route::post('/users/{id}/upload-image', [UserController::class, 'uploadImage']);
-
 });
 
 Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
@@ -80,15 +75,12 @@ Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
     Route::get('/farmer/products/{id}', [FarmerController::class, 'show']);
     Route::put('/farmer/products/{id}', [FarmerController::class, 'update']);
     Route::delete('/farmer/products/{id}', [FarmerController::class, 'destroy']);
-
 });
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::put('/profile', [UserController::class, 'updateProfile']);
-
-    // Change password route
-    Route::post('/users/change-password', [UserController::class, 'changePassword']);
+Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
+    Route::get('/buyer/products', [BuyerController::class, 'index']);
+    Route::get('/buyer/products/{id}', [BuyerController::class, 'show']);
+    Route::post('/buyer/products/{id}/buy', [BuyerController::class, 'buy']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
