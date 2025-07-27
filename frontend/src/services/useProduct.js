@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const useProducts = () => {
+const useProduct = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,24 +9,22 @@ const useProducts = () => {
 
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/items')
+      .get("http://127.0.0.1:8000/api/items")
       .then((response) => {
-        const productsWithImages = (response.data.data || []).map(product => ({
+        const productsWithImages = (response.data.data || []).map((product) => ({
           ...product,
-          // Prepend base URL to image path
-          image: product.image ? `http://127.0.0.1:8000/${product.image}` : 'https://picsum.photos/150',
+          image: product.image ? `http://127.0.0.1:8000/${product.image}` : "/placeholder.svg",
           farmer: {
             ...product.farmer,
-            // Prepend base URL to avatar path
-            avatar: product.farmer?.avatar ? `http://127.0.0.1:8000/${product.farmer.avatar}` : 'https://picsum.photos/150'
-          }
+            avatar: product.farmer?.avatar ? `http://127.0.0.1:8000/${product.farmer.avatar}` : "/placeholder.svg",
+          },
         }));
         setAllProducts(productsWithImages);
         setProvinces(response.data.provinces || []);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
         setError(error);
         setLoading(false);
       });
@@ -35,4 +33,4 @@ const useProducts = () => {
   return { allProducts, provinces, loading, error };
 };
 
-export default useProducts;
+export default useProduct;
