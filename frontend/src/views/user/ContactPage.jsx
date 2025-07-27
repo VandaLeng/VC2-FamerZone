@@ -666,6 +666,34 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           </div>
         </div>
       </div>
+
+      {/* Footer CTA */}
+      <div className="py-16 bg-gradient-to-r from-blue-600 to-teal-500 text-white relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+          <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/15 rounded-full animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float-slow"></div>
+        </div>
+        <div className="container mx-auto px-6 text-center relative">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-text-shimmer">
+            {currentLanguage === 'kh' ? 'រួចរាល់ហើយក្នុងការចាប់ផ្តើម?' : 'Ready to Get Started?'}
+          </h2>
+          <p className="text-xl mb-8 text-white opacity-90 animate-slide-in-up animate-delay-100">
+            {currentLanguage === 'kh'
+              ? 'ចូលរួមជាមួយសហគមន៍កសិកម្មកម្ពុជា ហើយចាប់ផ្តើមធ្វើការជាមួយ FramerZone ថ្ងៃនេះ'
+              : 'Join Cambodia\'s agricultural community and start working with FramerZone today'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animate-delay-200">
+            <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+              {currentLanguage === 'kh' ? 'ចាប់ផ្តើមការលក់' : 'Start Selling'}
+            </button>
+            <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
+              {currentLanguage === 'kh' ? 'រកមើលផលិតផល' : 'Browse Products'}
+            </button>
+          </div>
+        </div>
+      </div>
+      
     </div>
   );
 };
