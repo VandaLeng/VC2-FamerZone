@@ -13,10 +13,15 @@ const useProduct = () => {
       .then((response) => {
         const productsWithImages = (response.data.data || []).map((product) => ({
           ...product,
-          image: product.image ? `http://127.0.0.1:8000/${product.image}` : "/placeholder.svg",
+          image: product.image ? `http://127.0.0.1:8000/storage/${product.image}` : "/placeholder.svg", // Adjusted path
           farmer: {
-            ...product.farmer,
-            avatar: product.farmer?.avatar ? `http://127.0.0.1:8000/${product.farmer.avatar}` : "/placeholder.svg",
+            ...product.user, // Map user to farmer
+            name: product.user?.name || "Unknown", // Ensure name is available
+            nameKh: product.user?.name_kh || null, // Add if you have Khmer name
+            phone: product.user?.phone || "N/A",
+            email: product.user?.email || "N/A",
+            rating: product.user?.rating || 0,
+            avatar: product.user?.avatar ? `http://127.0.0.1:8000/storage/${product.user.avatar}` : "/placeholder.svg", // Adjusted path
           },
         }));
         setAllProducts(productsWithImages);
