@@ -23,10 +23,26 @@ class User extends Authenticatable
 >>>>>>> 1f3c2f04c229ff4bbea80f7c98d648c2e47ffef6
         'phone',
         'address',
+        'role_id',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
