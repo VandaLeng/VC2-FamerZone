@@ -116,4 +116,23 @@ class ItemController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Item deleted successfully.']);
     }
+
+    public function filterByProvince(Request $request)
+{
+    $province = $request->query('province');
+
+    $query = \App\Models\Item::query();
+
+    if ($province) {
+        $query->where('province', 'like', '%' . $province . '%');
+    }
+
+    $items = $query->with('category', 'user')->get(); // Optional: include relationships
+
+    return response()->json([
+        'success' => true,
+        'data' => $items
+    ]);
+}
+
 }

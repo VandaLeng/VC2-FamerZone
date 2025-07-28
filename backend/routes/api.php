@@ -96,8 +96,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
 });
 
+Route::apiResource('items', ItemController::class);
+
 Route::get('/categories/filter', [CategoryController::class, 'filter']);
 Route::get('/categories/with-items', [CategoryController::class, 'withItems']);
 Route::get('/categories/without-items', [CategoryController::class, 'withoutItems']);
+Route::get('/items/filter-province', [ItemController::class, 'filterByProvince']);
 
 Route::apiResource('categories', CategoryController::class);
