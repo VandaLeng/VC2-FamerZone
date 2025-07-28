@@ -16,6 +16,8 @@ const productData = [{
             rating: 4.8,
             phone: "+855 12 345 678",
             location: { lat: 11.5564, lng: 104.9282 },
+            address: "Village 1, Commune 2, Kandal Province",
+            addressKh: "ភូមិ១ ឃុំ២ ខេត្តកណ្តាល"
         },
         rating: 4.9,
         reviews: 45,
@@ -45,6 +47,8 @@ const productData = [{
             rating: 4.9,
             phone: "+855 17 234 567",
             location: { lat: 13.0957, lng: 103.2028 },
+            address: "Village 5, Commune 8, Battambang Province",
+            addressKh: "ភូមិ៥ ឃុំ៨ ខេត្តបាត់ដំបង"
         },
         rating: 4.8,
         reviews: 67,
@@ -74,6 +78,8 @@ const productData = [{
             rating: 4.7,
             phone: "+855 96 345 789",
             location: { lat: 12.0, lng: 105.4667 },
+            address: "Village 3, Commune 4, Kampong Cham Province",
+            addressKh: "ភូមិ៣ ឃុំ៤ ខេត្តកំពង់ចាម"
         },
         rating: 4.6,
         reviews: 32,
@@ -103,6 +109,8 @@ const productData = [{
             rating: 4.8,
             phone: "+855 78 456 123",
             location: { lat: 13.3671, lng: 103.8448 },
+            address: "Village 7, Commune 9, Siem Reap Province",
+            addressKh: "ភូមិ៧ ឃុំ៩ ខេត្តសៀមរាប"
         },
         rating: 4.7,
         reviews: 28,
@@ -132,6 +140,8 @@ const productData = [{
             rating: 4.6,
             phone: "+855 11 567 890",
             location: { lat: 11.5449, lng: 104.8922 },
+            address: "Village 2, Commune 1, Phnom Penh",
+            addressKh: "ភូមិ២ ឃុំ១ រាជធានីភ្នំពេញ"
         },
         rating: 4.5,
         reviews: 19,
@@ -160,7 +170,9 @@ const productData = [{
             avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
             rating: 4.9,
             phone: "+855 89 123 456",
-            location: { lat: 12.0, lng: 105.4667 },
+            location: { lat: 12.1, lng: 105.5 },
+            address: "Village 6, Commune 7, Kampong Cham Province",
+            addressKh: "ភូមិ៦ ឃុំ៧ ខេត្តកំពង់ចាម"
         },
         rating: 4.8,
         reviews: 52,
@@ -190,6 +202,8 @@ const productData = [{
             rating: 4.7,
             phone: "+855 92 345 678",
             location: { lat: 11.4536, lng: 104.3268 },
+            address: "Village 4, Commune 5, Kampong Speu Province",
+            addressKh: "ភូមិ៤ ឃុំ៥ ខេត្តកំពង់ស្ពឺ"
         },
         rating: 4.6,
         reviews: 25,
@@ -219,6 +233,8 @@ const productData = [{
             rating: 4.8,
             phone: "+855 15 678 901",
             location: { lat: 10.9857, lng: 104.7850 },
+            address: "Village 8, Commune 10, Takeo Province",
+            addressKh: "ភូមិ៨ ឃុំ១០ ខេត្តតាកែវ"
         },
         rating: 4.7,
         reviews: 30,
@@ -248,6 +264,8 @@ const productData = [{
             rating: 4.6,
             phone: "+855 88 123 456",
             location: { lat: 10.6096, lng: 104.1821 },
+            address: "Village 9, Commune 11, Kampot Province",
+            addressKh: "ភូមិ៩ ឃុំ១១ ខេត្តកំពត"
         },
         rating: 4.5,
         reviews: 22,
@@ -259,6 +277,38 @@ const productData = [{
         deliveryAvailable: true,
         discount: 5,
     },
+    // Additional products for better location testing
+    {
+        id: 10,
+        name: "Fresh Coconuts",
+        nameKh: "ដូងស្រស់",
+        description: "Fresh coconuts from Koh Kong province",
+        descriptionKh: "ដូងស្រស់ពីខេត្តកោះកុង",
+        price: 1.2,
+        currency: "$",
+        image: "https://images.unsplash.com/photo-1589606663923-283bbd309229?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        category: "fruits",
+        province: "koh-kong",
+        farmer: {
+            name: "Vann Sopheak",
+            nameKh: "វ៉ាន់ សុភាព",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+            rating: 4.5,
+            phone: "+855 70 987 654",
+            location: { lat: 11.6153, lng: 102.9834 },
+            address: "Village 10, Commune 12, Koh Kong Province",
+            addressKh: "ភូមិ១០ ឃុំ១២ ខេត្តកោះកុង"
+        },
+        rating: 4.4,
+        reviews: 18,
+        inStock: true,
+        isPopular: false,
+        unit: "piece",
+        createdAt: "2024-02-12",
+        organicCertified: true,
+        deliveryAvailable: false,
+        discount: 0,
+    }
 ];
 
 export default productData;
