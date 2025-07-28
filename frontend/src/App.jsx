@@ -1,16 +1,23 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Home from "./views/user/HomePage";
 import Products from "./views/user/ProductPage";
 import About from "./views/user/AboutPage";
 import LearningCenter from "./views/user/LearningCenterPage";
 import Contact from "./views/user/ContactPage";
-import Footer from "./components/Footer";
 import RegisterForm from "./views/auth/RegisterForm";
 import LoginForm from "./views/auth/LoginForm";
+import FarmerLayout from "./layouts/FarmerLayout";
+import PublicLayout from "./layouts/PublicLayout";
+// Import your farmer pages (create these if you haven't)
+import FarmerDashboard from "./views/farmer/DashboardFarmer";
+import FarmerOrders from "./views/farmer/OrderManagementFarmer";
+import FarmerCustomers from "./views/farmer/CustomerManagementFarmer";
+import FarmerProducts from "./views/farmer/ProductManagementFarmer";
+import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
+// import FarmerNotifications from "./views/farmer/FarmerNotifications";
+// import FarmerSettings from "./views/farmer/FarmerSettings";
 import { logoutUser } from "./stores/api";
 
 function App() {
@@ -18,6 +25,13 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if current route is a farmer route
+  const isFarmerRoute = location.pathname.startsWith('/farmer');
+  
+  // Check if user is a farmer (handles both userData.role and userData.role.name)
+  const isFarmer = userData?.role === 'farmer' || userData?.role?.name === 'farmer';
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -27,6 +41,12 @@ function App() {
         const parsedUserData = JSON.parse(storedUserData);
         setUserData(parsedUserData);
         setIsLoggedIn(true);
+        
+        // Auto-redirect farmer to dashboard after login
+        const userRole = parsedUserData.role?.name || parsedUserData.role;
+        if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
+          navigate('/farmer/dashboard');
+        }
       } catch (e) {
         console.error("Failed to parse user data from localStorage", e);
         localStorage.removeItem("auth_token");
@@ -35,13 +55,22 @@ function App() {
         setUserData(null);
       }
     }
-  }, []);
+  }, [navigate, location.pathname]);
+
+  // Redirect non-farmers away from farmer routes
+  useEffect(() => {
+    if (isFarmerRoute && isLoggedIn && !isFarmer) {
+      navigate('/');
+    }
+  }, [isFarmerRoute, isLoggedIn, isFarmer, navigate]);
 
   const handleLogout = async () => {
     try {
       await logoutUser();
       setIsLoggedIn(false);
       setUserData(null);
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user_data");
       navigate("/");
       alert("Logged out successfully!");
     } catch (error) {
@@ -50,15 +79,33 @@ function App() {
     }
   };
 
-  return (
-    <>
-      <Navbar
+  // Determine which layout to render based on conditions
+  if (isFarmerRoute && isFarmer) {
+    return (
+      <FarmerLayout
         currentLanguage={currentLanguage}
         setCurrentLanguage={setCurrentLanguage}
-        isLoggedIn={isLoggedIn}
         userData={userData}
         handleLogout={handleLogout}
-      />
+      >
+        <Routes>
+          <Route path="/farmer/dashboard" element={<FarmerDashboard currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/orders" element={<FarmerOrders currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/customers" element={<FarmerCustomers currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/products" element={<FarmerProducts currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
+          {/* <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} /> */}
+        </Routes>
+      </FarmerLayout>
+    );
+  }
+
+  return (
+    <PublicLayout
+      currentLanguage={currentLanguage}
+      setCurrentLanguage={setCurrentLanguage}
+    >
       <Routes>
         <Route
           path="/"
@@ -88,9 +135,22 @@ function App() {
             />
           }
         />
+        {/* Access denied for farmer routes accessed by non-farmers */}
+        {isFarmerRoute && !isFarmer && (
+          <Route
+            path="/farmer/*"
+            element={
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                  <p className="text-gray-600">You don't have permission to access this page.</p>
+                </div>
+              </div>
+            }
+          />
+        )}
       </Routes>
-      <Footer currentLanguage={currentLanguage} />
-    </>
+    </PublicLayout>
   );
 }
 
