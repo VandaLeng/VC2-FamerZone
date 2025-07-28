@@ -15,15 +15,6 @@ return [
     |
     */
 
-<<<<<<< HEAD
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
-    'allowed_methods' => ['*'],
-    'allowed_origins' => ['http://localhost:3000'],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true,
-=======
   'paths' => ['api/*'],
   'allowed_methods' => ['*'],
   'allowed_origins' => ['http://localhost:3000'],
@@ -31,6 +22,5 @@ return [
   'exposed_headers' => [],
   'max_age' => 0,
   'supports_credentials' => false,
->>>>>>> 1f3c2f04c229ff4bbea80f7c98d648c2e47ffef6
 
 ];

@@ -16,8 +16,8 @@ import FarmerOrders from "./views/farmer/OrderManagementFarmer";
 import FarmerCustomers from "./views/farmer/CustomerManagementFarmer";
 import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
-// import FarmerNotifications from "./views/farmer/FarmerNotifications";
-// import FarmerSettings from "./views/farmer/FarmerSettings";
+import FarmerNotifications from "./views/farmer/FarmerNotification";
+import FarmerSettings from "./views/farmer/FarmerSetting";
 import { logoutUser } from "./stores/api";
 
 function App() {
@@ -94,8 +94,8 @@ function App() {
           <Route path="/farmer/customers" element={<FarmerCustomers currentLanguage={currentLanguage} />} />
           <Route path="/farmer/products" element={<FarmerProducts currentLanguage={currentLanguage} />} />
           <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
-          {/* <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} /> */}
+          <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
         </Routes>
       </FarmerLayout>
     );
