@@ -225,7 +225,7 @@ const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="p-2 space-y-6">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-[#333333] mb-2">

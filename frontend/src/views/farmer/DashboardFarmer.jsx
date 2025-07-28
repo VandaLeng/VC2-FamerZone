@@ -136,28 +136,28 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
   };
 
   const StatCard = ({ icon: Icon, title, value, subtitle, trend, color = 'text-forest-green' }) => (
-    <div className="bg-cream rounded-xl shadow-lg p-6 border border-warm-brown/10 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-full bg-white shadow-md ${color}`}>
-          <Icon className="w-6 h-6" />
+    <div className="bg-cream rounded-xl shadow-lg p-4 border border-warm-brown/10 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div className="flex items-center justify-between mb-2">
+        <div className={`p-2 rounded-full bg-white shadow-md ${color}`}>
+          <Icon className="w-5 h-5" />
         </div>
         {trend && (
-          <div className="flex items-center text-sm text-green-600">
-            <TrendingUp className="w-4 h-4 mr-1" />
+          <div className="flex items-center text-xs text-green-600">
+            <TrendingUp className="w-3 h-3 mr-1" />
             +{trend}%
           </div>
         )}
       </div>
       <div>
-        <p className="text-sm text-charcoal/70 mb-1">{title}</p>
-        <p className="text-2xl font-bold text-charcoal mb-1">{value}</p>
-        {subtitle && <p className="text-xs text-charcoal/60">{subtitle}</p>}
+        <p className="text-xs text-charcoal/70 mb-0.5">{title}</p>
+        <p className="text-xl font-bold text-charcoal mb-0.5">{value}</p>
+        {subtitle && <p className="text-[10px] text-charcoal/60">{subtitle}</p>}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-cream to-white pt-2 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -233,21 +233,19 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               <div className="flex bg-cream rounded-lg p-1">
                 <button
                   onClick={() => setTimeRange('weekly')}
-                  className={`px-4 py-2 text-sm rounded-md transition-all ${
-                    timeRange === 'weekly'
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${timeRange === 'weekly'
                       ? 'bg-forest-green text-white shadow-md'
                       : 'text-charcoal hover:bg-white'
-                  }`}
+                    }`}
                 >
                   {currentTexts.weekly}
                 </button>
                 <button
                   onClick={() => setTimeRange('monthly')}
-                  className={`px-4 py-2 text-sm rounded-md transition-all ${
-                    timeRange === 'monthly'
+                  className={`px-4 py-2 text-sm rounded-md transition-all ${timeRange === 'monthly'
                       ? 'bg-forest-green text-white shadow-md'
                       : 'text-charcoal hover:bg-white'
-                  }`}
+                    }`}
                 >
                   {currentTexts.monthly}
                 </button>
@@ -258,7 +256,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: '#FAF0E6',
                     border: '1px solid #8B4513',
@@ -277,7 +275,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               {topProducts.map((product, index) => (
                 <div key={index} className="flex items-center justify-between p-4 bg-cream rounded-lg hover:shadow-md transition-shadow">
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: product.color }}
                     ></div>

@@ -1,273 +1,204 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  ShoppingCart, 
-  Users, 
-  Package, 
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Users,
+  Package,
   Grid3X3,
-  Menu,
-  X,
-  ChevronRight,
   Bell,
   Settings,
   LogOut,
-  User
-} from 'lucide-react';
+  User,
+  X,
+} from "lucide-react";
 
-const FarmerSidebar = ({ currentLanguage, setCurrentLanguage }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState('dashboard');
+const FarmerSidebar = ({
+  currentLanguage,
+  setCurrentLanguage,
+  userData,
+  handleLogout,
+  isCollapsed,
+  setIsCollapsed,
+}) => {
   const location = useLocation();
+
+  // Use external collapse state if provided, otherwise use internal state
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  const collapsed = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
+  const setCollapsed = setIsCollapsed !== undefined ? setIsCollapsed : setInternalCollapsed;
 
   const texts = {
     kh: {
-      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
-      orders: 'ការបញ្ជាទិញ',
-      customers: 'ការគ្រប់គ្រងអតិថិជន',
-      products: 'ការគ្រប់គ្រងផលិតផល',
-      categories: 'ការគ្រប់គ្រងប្រភេទ',
-      notifications: 'ការជូនដំណឹង',
-      settings: 'ការកំណត់',
-      logout: 'ចាកចេញ',
-      framerZone: 'FramerZone',
-      farmerPanel: 'ផ្ទាំងកសិករ',
-      premiumFarmer: 'កសិករពិសេស'
+      dashboard: "ផ្ទាំងគ្រប់គ្រង",
+      orders: "ការបញ្ជាទិញ",
+      customers: "ការគ្រប់គ្រងអតិថិជន",
+      products: "ការគ្រប់គ្រងផលិតផល",
+      categories: "ការគ្រប់គ្រងប្រភេទ",
+      notifications: "ការជូនដំណឹង",
+      settings: "ការកំណត់",
+      logout: "ចាកចេញ",
+      framerZone: "FramerZone",
+      farmerPanel: "ផ្ទាំងកសិករ",
+      premiumFarmer: "កសិករពិសេស",
     },
     en: {
-      dashboard: 'Dashboard',
-      orders: 'Order Management',
-      customers: 'Customer Management',
-      products: 'Product Management',
-      categories: 'Category Management',
-      notifications: 'Notifications',
-      settings: 'Settings',
-      logout: 'Logout',
-      framerZone: 'FramerZone',
-      farmerPanel: 'Farmer Panel',
-      premiumFarmer: 'Premium Farmer'
-    }
+      dashboard: "Dashboard",
+      orders: "Order Management",
+      customers: "Customer Management",
+      products: "Product Management",
+      categories: "Category Management",
+      notifications: "Notifications",
+      settings: "Settings",
+      logout: "Logout",
+      framerZone: "FramerZone",
+      farmerPanel: "Farmer Panel",
+      premiumFarmer: "Premium Farmer",
+    },
   };
 
   const currentTexts = texts[currentLanguage];
 
-  const menuItems = [
-    {
-      id: 'dashboard',
-      label: currentTexts.dashboard,
-      icon: LayoutDashboard,
-      path: '/farmer/dashboard',
-      badge: null
-    },
-    {
-      id: 'orders',
-      label: currentTexts.orders,
-      icon: ShoppingCart,
-      path: '/farmer/orders',
-      badge: '3'
-    },
-    {
-      id: 'customers',
-      label: currentTexts.customers,
-      icon: Users,
-      path: '/farmer/customers',
-      badge: null
-    },
-    {
-      id: 'products',
-      label: currentTexts.products,
-      icon: Package,
-      path: '/farmer/products',
-      badge: null
-    },
-    {
-      id: 'categories',
-      label: currentTexts.categories,
-      icon: Grid3X3,
-      path: '/farmer/categories',
-      badge: null
-    }
-  ];
-
   const bottomMenuItems = [
-    {
-      id: 'notifications',
-      label: currentTexts.notifications,
-      icon: Bell,
-      path: '/farmer/notifications',
-      badge: '2'
-    },
-    {
-      id: 'settings',
-      label: currentTexts.settings,
-      icon: Settings,
-      path: '/farmer/settings',
-      badge: null
-    }
+    { id: "dashboard", label: currentTexts.dashboard, icon: LayoutDashboard, path: "/farmer/dashboard" },
+    { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
+    { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
+    { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
+    { id: "categories", label: currentTexts.categories, icon: Grid3X3, path: "/farmer/categories" },
+    { id: "notifications", label: currentTexts.notifications, icon: Bell, path: "/farmer/notifications", badge: "2" },
+    { id: "settings", label: currentTexts.settings, icon: Settings, path: "/farmer/settings" },
+    { id: "logout", label: currentTexts.logout, icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
   ];
-
-  const handleItemClick = (itemId) => {
-    setActiveItem(itemId);
-  };
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    setCollapsed(!collapsed);
   };
 
+  const toggleLanguage = () => {
+    setCurrentLanguage(currentLanguage === "en" ? "kh" : "en");
+  };
+
+  console.log("Rendering FarmerSidebar at left:0, top:0"); // Debug log
+
   return (
-    <div className={`sidebar bg-white shadow-xl border-r border-gray-200 transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-20' : 'w-72'
-    } min-h-screen flex flex-col`}>
-      
+    <div
+      className={`bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out ${
+        collapsed ? "w-20" : "w-72"
+      } h-screen flex flex-col fixed left-0 top-0 z-50 overflow-hidden`}
+    >
       {/* Header */}
-      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-        <div className={`flex items-center space-x-3 ${isCollapsed ? 'justify-center w-full' : ''}`}>
+      <div className="pt-6 pb-6 p-3 border-b border-gray-100 flex items-center justify-between">
+        <div className={`flex items-center space-x-2 ${collapsed ? "justify-center w-full" : ""}`}>
           <button
-            onClick={isCollapsed ? toggleSidebar : undefined}
-            className={`w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center transition-all duration-200 ${
-              isCollapsed ? 'hover:scale-110 hover:shadow-lg cursor-pointer' : 'cursor-default'
-            }`}
+            onClick={collapsed ? toggleSidebar : undefined}
+            className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white"
           >
-            <span className="text-white font-bold text-lg">F</span>
+            <span className="font-bold text-xl font-serif">F</span>
           </button>
-          
-          {!isCollapsed && (
+          {!collapsed && (
             <div>
-              <h1 className="text-xl font-bold text-gray-800">{currentTexts.framerZone}</h1>
-              <p className="text-sm text-gray-500">{currentTexts.farmerPanel}</p>
+              <h1 className="text-xl text-gray-800 font-bold">{currentTexts.framerZone}</h1>
+              <p className="text-sm text-gray-500 font-serif">{currentTexts.farmerPanel}</p>
             </div>
           )}
         </div>
-        
-        {!isCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-          >
-            <X size={20} className="text-gray-600" />
-          </button>
+        {!collapsed && (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={toggleLanguage}
+              className="px-2 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
+            >
+              {currentLanguage.toUpperCase()}
+            </button>
+            <button
+              onClick={toggleSidebar}
+              className="p-1 rounded-full hover:bg-gray-100"
+            >
+              <X size={24} className="text-gray-600" />
+            </button>
+          </div>
         )}
       </div>
 
       {/* Profile Section */}
-      {!isCollapsed && (
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <User className="text-white" size={20} />
+      {!collapsed && (
+        <div className="pt-6 pb-6 p-3 border-b border-gray-100">
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+              <User className="text-white" size={24} />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-800">John Farmer</h3>
-              <p className="text-sm text-gray-500">{currentTexts.premiumFarmer}</p>
+              <h3 className="text-lg font-medium text-gray-800">{userData?.name || "John Farmer"}</h3>
+              <p className="text-sm text-gray-500 font-serif">{currentTexts.premiumFarmer}</p>
             </div>
-            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
           </div>
         </div>
       )}
 
-      {/* Main Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => {
+      {/* Bottom Navigation (Single Menu) */}
+      <div className="flex-1 p-2 space-y-1 overflow-y-auto">
+        {bottomMenuItems.slice(0, -3).map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          
           return (
             <Link
               key={item.id}
               to={item.path}
-              className="relative"
-              onClick={() => handleItemClick(item.id)}
-            >
-              <div
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <Icon 
-                  size={20} 
-                  className={`${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}
-                />
-                
-                {!isCollapsed && (
-                  <>
-                    <span className="font-medium text-sm flex-1 text-left">{item.label}</span>
-                    
-                    {item.badge && (
-                      <span className={`px-2 py-1 text-xs rounded-full font-semibold ${
-                        isActive 
-                          ? 'bg-white bg-opacity-20 text-white' 
-                          : 'bg-red-100 text-red-600'
-                      }`}>
-                        {item.badge}
-                      </span>
-                    )}
-                    
-                    <ChevronRight 
-                      size={16} 
-                      className={`transition-transform duration-200 ${
-                        isActive ? 'rotate-90 text-white' : 'text-gray-400'
-                      }`}
-                    />
-                  </>
-                )}
-              </div>
-              
-              {isCollapsed && isActive && (
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-green-500 rounded-l-full"></div>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Bottom Navigation */}
-      <div className="p-4 border-t border-gray-100 space-y-2">
-        {bottomMenuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          
-          return (
-            <Link
-              key={item.id}
-              to={item.path}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              className={`flex items-center space-x-2 px-2 py-2 rounded-md transition-colors duration-200 ${
+                isActive ? "bg-green-100 text-green-800" : "text-gray-600 hover:bg-gray-100"
               }`}
-              onClick={() => handleItemClick(item.id)}
             >
-              <Icon 
-                size={20} 
-                className={`${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}
-              />
-              
-              {!isCollapsed && (
-                <>
-                  <span className="font-medium text-sm flex-1 text-left">{item.label}</span>
-                  {item.badge && (
-                    <span className={`px-2 py-1 text-xs rounded-full font-semibold ${
-                      isActive 
-                        ? 'bg-white bg-opacity-20 text-white' 
-                        : 'bg-red-100 text-red-600'
-                    }`}>
-                      {item.badge}
-                    </span>
-                  )}
-                </>
+              <Icon size={20} className={isActive ? "text-green-800" : "text-gray-400"} />
+              {!collapsed && <span className="text-base font-medium flex-1">{item.label}</span>}
+              {item.badge && !collapsed && (
+                <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600">{item.badge}</span>
               )}
             </Link>
           );
         })}
-        
-        <button className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-red-600 hover:bg-red-50 group ${
-          isCollapsed ? 'justify-center' : ''
-        }`}>
-          <LogOut size={20} className="text-red-500" />
-          {!isCollapsed && <span className="font-medium text-sm">{currentTexts.logout}</span>}
-        </button>
+      </div>
+
+      {/* Bottom Menu Items */}
+      <div className="p-2 space-y-1 border-t border-gray-100">
+        {bottomMenuItems.slice(-3).map((item) => {
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
+          const isLogout = item.id === "logout";
+          return item.isButton ? (
+            <button
+              key={item.id}
+              onClick={item.onClick}
+              className={`flex items-center space-x-2 px-2 py-2 rounded-md w-full text-left transition-colors duration-200 ${
+                isActive
+                  ? "bg-green-100 text-green-800"
+                  : isLogout
+                    ? "text-red-600 hover:bg-red-50"
+                    : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <Icon size={20} className={isActive ? "text-green-800" : isLogout ? "text-red-500" : "text-gray-400"} />
+              {!collapsed && <span className="text-base font-medium flex-1">{item.label}</span>}
+              {item.badge && !collapsed && (
+                <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600">{item.badge}</span>
+              )}
+            </button>
+          ) : (
+            <Link
+              key={item.id}
+              to={item.path}
+              className={`flex items-center space-x-2 px-2 py-2 rounded-md transition-colors duration-200 ${
+                isActive ? "bg-green-100 text-green-800" : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <Icon size={20} className={isActive ? "text-green-800" : "text-gray-400"} />
+              {!collapsed && <span className="text-base font-medium flex-1">{item.label}</span>}
+              {item.badge && !collapsed && (
+                <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600">{item.badge}</span>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

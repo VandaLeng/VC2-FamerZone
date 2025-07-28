@@ -1,17 +1,17 @@
-"use client"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { loginUser } from "../../stores/api" // Ensure this path is correct
+"use client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../stores/api";
 
 export default function LoginForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
-  const [errors, setErrors] = useState({})
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const texts = {
     kh: {
@@ -44,86 +44,92 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
       loginSuccess: "Login successful!",
       loginFailed: "Login failed. Please check your email and password.",
     },
-  }
-  const currentTexts = texts[currentLanguage]
+  };
+  const currentTexts = texts[currentLanguage];
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
+    }));
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
-      }))
+      }));
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors = {}
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
-      newErrors.email = currentLanguage === "kh" ? "ត្រូវការអ៊ីមែល" : "Email is required"
+      newErrors.email = currentLanguage === "kh" ? "ត្រូវការអ៊ីមែល" : "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = currentLanguage === "kh" ? "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ" : "Please enter a valid email"
+      newErrors.email = currentLanguage === "kh" ? "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ" : "Please enter a valid email";
     }
     if (!formData.password) {
-      newErrors.password = currentLanguage === "kh" ? "ត្រូវការលេខសម្ងាត់" : "Password is required"
+      newErrors.password = currentLanguage === "kh" ? "ត្រូវការលេខសម្ងាត់" : "Password is required";
     }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!validateForm()) {
-      return
+      return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const data = await loginUser({
         email: formData.email,
         password: formData.password,
-      })
+      });
       if (data && data.access_token) {
-        // The loginUser function in api.js already handles localStorage.setItem for token and user_data
-        setIsLoggedIn(true) // Update global login state
-        setUserData(data.user) // Update global user data
-        alert(currentTexts.loginSuccess)
-        console.log("Login successful. Token stored:", localStorage.getItem("auth_token"))
-        console.log("User data stored:", localStorage.getItem("user_data"))
-        console.log("Navigating to /")
-        if (onClose) {
-          onClose()
+        localStorage.setItem("auth_token", data.access_token);
+        localStorage.setItem("user_data", JSON.stringify(data.user));
+        setIsLoggedIn(true);
+        setUserData(data.user);
+        alert(currentTexts.loginSuccess);
+        console.log("Login successful. Token stored:", localStorage.getItem("auth_token"));
+        console.log("User data stored:", localStorage.getItem("user_data"));
+        // Redirect based on role
+        if (data.user.role?.name === "farmer") {
+          console.log("Navigating to /farmer/dashboard");
+          navigate("/farmer/dashboard");
         } else {
-          navigate("/") // Redirect to home page after successful login
+          console.log("Navigating to /");
+          if (onClose) {
+            onClose();
+          } else {
+            navigate("/");
+          }
         }
       } else {
-        throw new Error("Login successful but no access token received.")
+        throw new Error("Login successful but no access token received.");
       }
-
     } catch (error) {
-      const errorMsg = error.message || currentTexts.loginFailed
-      setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.loginFailed })
-      alert(errorMsg) // Show error message to user
+      const errorMsg = error.message || currentTexts.loginFailed;
+      setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.loginFailed });
+      alert(errorMsg);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRegister = () => {
-    navigate("/register")
-  }
+    navigate("/register");
+  };
 
   const handleClose = () => {
     if (onClose) {
-      onClose()
+      onClose();
     } else {
-      navigate("/")
+      navigate("/");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -284,5 +290,5 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
         </form>
       </div>
     </div>
-  )
+  );
 }
