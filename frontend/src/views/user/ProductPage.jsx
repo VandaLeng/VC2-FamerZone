@@ -2,12 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import '../../styles/ProductStyle.css';
 import provinces from "../../services/provinces";
 import ProductCard from "../../components/ProductCard";
-<<<<<<< HEAD
 import productData from "../../data/productData"; // Adjust path based on your project structure
-=======
 import ProductSection from "../../components/ProductSection";
 
->>>>>>> a61bfcbb7d4b9dd12e5243145062e27923eb4ef6
 
 import {
   MapPin, Search, Star, SlidersHorizontal, Grid,
@@ -623,7 +620,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </div>
       </section>
 
-<<<<<<< HEAD
       {/* All Products Section */}
       <section className="py-16 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -670,10 +666,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
           )}
         </div>
       </section>
-=======
-      {/* All Items Section */}
-      <ProductSection/>
->>>>>>> a61bfcbb7d4b9dd12e5243145062e27923eb4ef6
     </div>
   );
 }
