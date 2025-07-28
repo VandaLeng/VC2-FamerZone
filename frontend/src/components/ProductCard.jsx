@@ -15,7 +15,10 @@ function ProductCard({
   const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
   const productDescription =
     currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
-  const farmerName = currentLanguage === "kh" ? product.farmer.nameKh || product.farmer.name : product.farmer.name;
+  // Use "Unknown" as fallback if farmer name or nameKh is unavailable
+  const farmerName = currentLanguage === "kh" 
+    ? product.farmer?.nameKh || product.farmer?.name || "Unknown" 
+    : product.farmer?.name || product.farmer?.nameKh || "Unknown";
 
   // Get province name
   const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
@@ -109,6 +112,10 @@ function ProductCard({
                 />
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{farmerName}</p>
+                  {/* Contact Info */}
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <span>{product.farmer.phone || "N/A"}</span>
+                  </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span className="text-xs text-gray-600">{product.farmer.rating}</span>
@@ -203,7 +210,13 @@ function ProductCard({
               alt={farmerName}
               className="w-8 h-8 rounded-full object-cover border border-stone-200"
             />
-            <span className="text-sm font-medium text-gray-700 truncate">{farmerName}</span>
+            <div>
+              <span className="text-sm font-medium text-gray-700 truncate">{farmerName}</span>
+              {/* Contact Info */}
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <span>{product.farmer.phone || "N/A"}</span>
+              </div>
+            </div>
           </div>
           <button
             onClick={() => onOrder(product.id)}
