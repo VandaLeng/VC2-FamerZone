@@ -101,3 +101,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
 });
+Route::middleware('auth:sanctum')->group(function () {
+});
+
+
+Route::apiResource('categories', CategoryController::class);
