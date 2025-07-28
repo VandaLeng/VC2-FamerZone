@@ -10,9 +10,8 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'product_id',
-        'quantity',
+        'buyer_id',
+        'address',
         'total_price',
         'status',
     ];
@@ -20,6 +19,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
     public function product()

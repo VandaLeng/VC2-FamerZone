@@ -22,7 +22,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-        ];
+        'quantity' => 'required|integer|min:1',
+        'total_price' => 'required|numeric|min:0',
+        'status' => 'in:pending,confirmed,cancelled,delivered',
+    ];
     }
 }

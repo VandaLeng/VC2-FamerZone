@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FarmerController;
 use App\Http\Controllers\API\BuyerController;
 use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -91,8 +92,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     Route::get('/admin/users', [AdminController::class, 'getUsers']);
 // });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
-});
 
 Route::apiResource('items', ItemController::class);
+Route::apiResource('orders', OrderController::class);
