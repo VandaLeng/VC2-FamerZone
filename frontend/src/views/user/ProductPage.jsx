@@ -2,6 +2,8 @@ import { useState, useMemo } from "react"
 import '../../styles/ProductStyle.css';
 import provinces from "../../services/provinces";
 import ProductCard from "../../components/ProductCard";
+import ProductSection from "../../components/ProductSection";
+
 
 import {
   MapPin, Search, Star, Heart, Phone, MessageCircle, SlidersHorizontal, Grid,
@@ -709,67 +711,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </div>
       </section>
 
-      {/* All Products Section */}
-      <section className="py-16 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.allProducts}</h2>
-            <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
-          </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
-                  <div className="h-48 bg-stone-200"></div>
-                  <div className="p-6 space-y-4">
-                    <div className="h-4 bg-stone-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-stone-200 rounded w-1/2"></div>
-                    <div className="h-8 bg-stone-200 rounded w-1/3"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div
-              className={`grid gap-8 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
-                }`}
-            >
-              {filteredAndSortedProducts.map((product) => (
-                <ProductCard
-                  key={product.id} // Fixed key to use product.id instead of product.sampleProducts
-                  product={product}
-                  currentTexts={currentTexts}
-                  currentLanguage={currentLanguage}
-                  isFavorite={favorites.includes(product.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onOrder={handleOrder}
-                  orderingProducts={orderingProducts}
-                  orderedProducts={orderedProducts}
-                  viewMode={viewMode}
-                  provinces={provinces} // Pass provinces as a prop
-                />
-              ))}
-            </div>
-          )}
-
-          {filteredAndSortedProducts.length === 0 && !isLoading && (
-            <div className="text-center py-16">
-              <div className="text-stone-400 mb-4">
-                <Search className="w-16 h-16 mx-auto" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
-              <button
-                onClick={clearFilters}
-                className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                {currentTexts.clearFilters}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* All Items Section */}
+      <ProductSection/>
     </div>
   )
 }

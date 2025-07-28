@@ -9,76 +9,74 @@ use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
-    // List all permissions
     public function index()
     {
-        return response()->json(Permission::all());
+        $permissions = Permission::all();
+        return response()->json([
+            'status' => true,
+            'permissions' => $permissions,
+        ]);
     }
 
-    // Create new permission
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:permissions,name',
-        ]);
+        $request->validate(['name' => 'required|unique:permissions,name']);
 
         $permission = Permission::create([
             'name' => $request->name,
-            'guard_name' => 'web', 
+            'guard_name' => 'web',
         ]);
 
         return response()->json([
-            'message' => 'Permission created',
+            'status' => true,
+            'message' => 'Permission created successfully.',
             'permission' => $permission,
         ]);
     }
 
-    // Assign permission to a role
-    public function assignToRole(Request $request)
-    {
-        $request->validate([
-            'role' => 'required|string|exists:roles,name',
-            'permission' => 'required|string|exists:permissions,name',
-            
-        ]);
-
-        $role = Role::findByName($request->role, 'web');
-        $role->givePermissionTo($request->permission);
-
-            return response()->json([
-            'message' => 'Permission assigned to role',
-            'role' => $role->name,
-            'permissions' => $role->permissions
-        ]);
-    }
-
-
-    // Update existing permission
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|unique:permissions,name,' . $id,
-        ]);
-
         $permission = Permission::findOrFail($id);
+
+        $request->validate(['name' => 'required|unique:permissions,name,' . $id]);
+
         $permission->name = $request->name;
         $permission->save();
 
         return response()->json([
-            'message' => 'Permission updated successfully',
-            'data' => $permission,
+            'status' => true,
+            'message' => 'Permission updated successfully.',
+            'permission' => $permission,
         ]);
     }
 
-    // Delete a permission
     public function destroy($id)
     {
         $permission = Permission::findOrFail($id);
         $permission->delete();
 
         return response()->json([
-            'message' => 'Permission deleted successfully',
+            'status' => true,
+            'message' => 'Permission deleted successfully.',
         ]);
     }
 
+    public function assignToRole(Request $request)
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+            'permission_ids' => 'required|array',
+            'permission_ids.*' => 'exists:permissions,id',
+        ]);
+
+        $role = Role::findOrFail($request->role_id);
+        $role->syncPermissions($request->permission_ids);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Permissions assigned to role successfully.',
+            'role' => $role->name,
+            'permissions' => $role->permissions->pluck('name'),
+        ]);
+    }
 }

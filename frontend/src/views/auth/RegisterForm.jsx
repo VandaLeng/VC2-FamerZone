@@ -1,16 +1,15 @@
 "use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { registerUser } from "../../stores/api"
 
-export default function RegisterForm({ currentLanguage = "en", onClose }) {
+export default function RegisterForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user",
+    role: "buyer", // Default to buyer
     phone: "",
     address: "",
   })
@@ -41,7 +40,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
       alreadyHaveAccount: "មានគណនីហើយ?",
       signIn: "ចូលប្រើ",
       roles: {
-        user: "អ្នកទិញ (ក្រុមគ្រួសារ)",
+        buyer: "អ្នកទិញ (ក្រុមគ្រួសារ)",
         farmer: "កសិករ (អ្នកលក់)",
       },
       passwordRequirements: "លេខសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់៨តួរអក្សរ",
@@ -70,7 +69,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
       alreadyHaveAccount: "Already have an account?",
       signIn: "Sign In",
       roles: {
-        user: "Buyer (Family/Consumer)",
+        buyer: "Buyer (Family/Consumer)",
         farmer: "Farmer (Seller)",
       },
       passwordRequirements: "Password must be at least 8 characters long",
@@ -80,7 +79,6 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
       registerFailed: "Registration failed. Please try again.",
     },
   }
-
   const currentTexts = texts[currentLanguage]
 
   const handleInputChange = (e) => {
@@ -139,25 +137,25 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
         phone: formData.phone || null,
         address: formData.address || null,
       })
-      alert(currentTexts.registerSuccess)
       if (data && data.access_token) {
-        localStorage.setItem("auth_token", data.access_token)
-        localStorage.setItem(
-          "user_data",
-          JSON.stringify({
-            name: data.user.name,
-            email: data.user.email,
-          }),
-        )
-      }
-      if (onClose) {
-        onClose()
+        setIsLoggedIn(true)
+        setUserData(data.user)
+        alert(currentTexts.registerSuccess)
+        console.log("Registration successful. Token stored:", localStorage.getItem("auth_token"))
+        console.log("User data stored:", localStorage.getItem("user_data"))
+        console.log("Navigating to /")
+        if (onClose) {
+          onClose()
+        } else {
+          navigate("/")
+        }
       } else {
-        navigate("/")
+        throw new Error("Registration successful but no access token received.")
       }
     } catch (error) {
       const errorMsg = error.message || currentTexts.registerFailed
       setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.registerFailed })
+      alert(errorMsg)
     } finally {
       setIsLoading(false)
     }
@@ -378,15 +376,15 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
             <div className="space-y-3">
               <div className="flex items-center">
                 <input
-                  id="role-user"
+                  id="role-buyer"
                   name="role"
                   type="radio"
-                  value="user"
-                  checked={formData.role === "user"}
+                  value="buyer"
+                  checked={formData.role === "buyer"}
                   onChange={handleInputChange}
                   className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
                 />
-                <label htmlFor="role-user" className="ml-3 flex items-center cursor-pointer">
+                <label htmlFor="role-buyer" className="ml-3 flex items-center cursor-pointer">
                   <div className="flex items-center space-x-2">
                     <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -396,7 +394,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 10a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z"
                       />
                     </svg>
-                    <span className="text-sm font-medium text-gray-700">{currentTexts.roles.user}</span>
+                    <span className="text-sm font-medium text-gray-700">{currentTexts.roles.buyer}</span>
                   </div>
                 </label>
               </div>
@@ -417,7 +415,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose }) {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                     <span className="text-sm font-medium text-gray-700">{currentTexts.roles.farmer}</span>

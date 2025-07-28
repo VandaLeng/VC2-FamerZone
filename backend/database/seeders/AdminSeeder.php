@@ -2,27 +2,27 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 class AdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run()
+    public function run(): void
     {
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole = Role::where('name', 'admin')->firstOrFail();
 
-        $admin = User::firstOrCreate([
-            'email' => 'admin@gmail.com',
-        ], [
-            'name' => 'admin',
-            'password' => bcrypt('password')
-
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('password'),
+                'role_id' => $adminRole->id,
+                'phone' => '1234567890',
+                'address' => '123 Admin Street',
+            ]
+        );
 
         $admin->assignRole($adminRole);
     }

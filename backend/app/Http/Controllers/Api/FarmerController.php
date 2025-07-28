@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Auth;
 
 class FarmerController extends Controller
 {
+    public function __construct()
+    {
+        // Ensure the user is authenticated and has 'farmer' role
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role === 'farmer') {
+                return $next($request);
+            }
+            return response()->json(['message' => 'Unauthorized. Only farmers can access this.'], 403);
+        });
+    }
+
     public function index()
     {
         $products = Product::where('user_id', Auth::id())->get();
@@ -45,7 +56,6 @@ class FarmerController extends Controller
     public function destroy($id)
     {
         $product = Product::where('user_id', Auth::id())->findOrFail($id);
-
         $product->delete();
 
         return response()->json(['message' => 'Product deleted']);

@@ -11,10 +11,8 @@ class Category extends Model
 
     protected $fillable = ['name', 'image'];
 
-    protected $appends = ['image_url'];
-
-    public function getImageUrlAttribute()
+    public function items()
     {
-        return $this->image ? asset('storage/' . $this->image) : null;
+        return $this->hasMany(Item::class);
     }
 }

@@ -2,43 +2,67 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-        public function run(): void
+    public function run(): void
     {
         $permissions = [
-            // User Permissions
             'view users',
             'create users',
             'edit users',
             'delete users',
-
-            // Role & Permission Management
             'manage roles',
             'manage permissions',
-
-            // Product Management (for farmer)
             'view products',
             'create products',
             'edit products',
             'delete products',
+            'buy products',
+            'view orders',
+            'create orders',
+            'view own profile',
+            'edit own profile',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $admin->syncPermissions($permissions);
-    }
+        $roles = [
+            ['name' => 'admin', 'permissions' => $permissions],
+            ['name' => 'user', 'permissions' => [
+                'view products',
+                'buy products',
+                'view orders',
+                'create orders',
+                'view own profile',
+                'edit own profile',
+            ]],
+            ['name' => 'farmer', 'permissions' => [
+                'view products',
+                'create products',
+                'edit products',
+                'delete products',
+                'view own profile',
+                'edit own profile',
+            ]],
+            ['name' => 'buyer', 'permissions' => [
+                'view products',
+                'buy products',
+                'view orders',
+                'create orders',
+                'view own profile',
+                'edit own profile',
+            ]],
+        ];
 
+        foreach ($roles as $roleData) {
+            $role = Role::firstOrCreate(['name' => $roleData['name'], 'guard_name' => 'web']);
+            $role->syncPermissions($roleData['permissions']);
+        }
+    }
 }
