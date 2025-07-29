@@ -118,10 +118,10 @@ const ProductCard = ({
               </div>
               
               <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
+                {/* <button className="flex items-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
                   <Phone className="w-4 h-4" />
                   {currentTexts.contactFarmer}
-                </button>
+                </button> */}
                 <button
                   onClick={() => onOrder(product.id)}
                   disabled={isOrdering || isOrdered || !product.inStock}
@@ -234,10 +234,10 @@ const ProductCard = ({
         </div>
         
         <div className="space-y-2">
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
+          {/* <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
             <Phone className="w-4 h-4" />
             {currentTexts.contactFarmer}
-          </button>
+          </button> */}
           <button
             onClick={() => onOrder(product.id)}
             disabled={isOrdering || isOrdered || !product.inStock}
