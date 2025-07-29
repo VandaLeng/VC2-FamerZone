@@ -1,46 +1,46 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react";
 import '../../styles/ProductStyle.css';
 import provinces from "../../services/provinces";
 import ProductCard from "../../components/ProductCard";
-import ProductSection from "../../components/ProductSection";
-
+import productData from "../../data/productData"; // Adjust path based on your project structure
 
 import {
-  MapPin, Search, Star, Heart, Phone, MessageCircle, SlidersHorizontal, Grid,
-  List, ChevronDown, X, MapIcon, TrendingUp, Users, Package, ArrowRight, Shield, Truck, Award
-} from "lucide-react"
+  MapPin, Search, Star, SlidersHorizontal, Grid,
+  List, ChevronDown, MapIcon, Users, Package, ArrowRight
+} from "lucide-react";
 
 export default function ProductsPage({ currentLanguage = "en" }) {
-  const [selectedProvince, setSelectedProvince] = useState("all")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showMap, setShowMap] = useState(false)
-  const [favorites, setFavorites] = useState([])
-  const [sortBy, setSortBy] = useState("popular")
-  const [viewMode, setViewMode] = useState("grid")
-  const [showFilters, setShowFilters] = useState(false)
-  const [priceRange, setPriceRange] = useState([0, 10])
-  const [isLoading, setIsLoading] = useState(false)
-  const [orderingProducts, setOrderingProducts] = useState([])
-  const [orderedProducts, setOrderedProducts] = useState([])
+  const [selectedProvince, setSelectedProvince] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showMap, setShowMap] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [sortBy, setSortBy] = useState("popular");
+  const [viewMode, setViewMode] = useState("grid");
+  const [showFilters, setShowFilters] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 10]);
+  const [orderingProducts, setOrderingProducts] = useState([]);
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
 
+  // Handle order
   const handleOrder = (productId) => {
-    setOrderingProducts((prev) => [...prev, productId])
+    setOrderingProducts((prev) => [...prev, productId]);
 
     // Simulate order processing
     setTimeout(() => {
-      setOrderingProducts((prev) => prev.filter((id) => id !== productId))
-      setOrderedProducts((prev) => [...prev, productId])
+      setOrderingProducts((prev) => prev.filter((id) => id !== productId));
+      setOrderedProducts((prev) => [...prev, productId]);
 
-      // Show success message (you can replace this with a proper toast/notification)
-      alert(currentTexts.orderSuccess)
+      // Show success message
+      alert(currentTexts.orderSuccess);
 
-      // Remove from ordered after 3 seconds to reset button state
+      // Remove from ordered after 3 seconds
       setTimeout(() => {
-        setOrderedProducts((prev) => prev.filter((id) => id !== productId))
-      }, 3000)
-    }, 1500)
-  }
+        setOrderedProducts((prev) => prev.filter((id) => id !== productId));
+      }, 3000);
+    }, 1500);
+  };
 
   // Language texts
   const texts = {
@@ -62,14 +62,16 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       showingResults: "បង្ហាញលទ្ធផល",
       of: "នៃ",
       products: "ផលិតផល",
-      mapTitle: "រកកសិករក្នុងតំបន់",
-      mapDescription: "មើលទីតាំងកសិករនៅជិតអ្នក",
+      mapTitle: "រកផលិតផលកសិករក្នុងតំបន់",
+      mapDescription: "មើលផលិតផលពីកសិករនៅជិតអ្នក",
       viewMap: "មើលផែនទី",
       hideMap: "បិទផែនទី",
       vegetables: "បន្លែ",
       fruits: "ផ្លែឈើ",
       grains: "គ្រាប់ធញ្ញជាតិ",
       livestock: "សត្វចិញ្ចឹម",
+      beverages: "ភេសជ្ជៈ",
+      seafood: "ផលិតផលសមុទ្រ",
       allCategories: "ប្រភេទទាំងអស់",
       allProvinces: "ខេត្តទាំងអស់",
       popularProducts: "ផលិតផលពេញនិយម",
@@ -94,8 +96,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     en: {
       heroTitle: "Fresh Agricultural Products",
       heroSubtitle: "Direct from Local Farmers",
-      heroDescription:
-        "Discover and buy high-quality agricultural products from farmers in your area. Connect directly with trusted local farmers for the freshest produce.",
+      heroDescription: "Discover and buy high-quality agricultural products from farmers in your area. Connect directly with trusted local farmers for the freshest produce.",
       searchPlaceholder: "Search for products...",
       exploreProducts: "Explore Products",
       sortBy: "Sort by",
@@ -110,14 +111,16 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       showingResults: "Showing",
       of: "of",
       products: "products",
-      mapTitle: "Find Farmers Near You",
-      mapDescription: "View farmer locations in your area",
+      mapTitle: "Find Products Near You",
+      mapDescription: "View products from farmers near your location",
       viewMap: "View Map",
       hideMap: "Hide Map",
       vegetables: "Vegetables",
       fruits: "Fruits",
       grains: "Grains & Rice",
       livestock: "Livestock",
+      beverages: "Beverages",
+      seafood: "Seafood",
       allCategories: "All Categories",
       allProvinces: "All Provinces",
       popularProducts: "Popular Products",
@@ -139,18 +142,20 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       orderPlaced: "Order Placed",
       orderSuccess: "Order placed successfully! The farmer will contact you soon",
     },
-  }
+  };
 
-  const currentTexts = texts[currentLanguage]
+  const currentTexts = texts[currentLanguage];
 
-  // Categories
+  // Categories with new additions
   const categories = [
     { id: "all", name: currentTexts.allCategories, color: "bg-stone-100" },
     { id: "vegetables", name: currentTexts.vegetables, color: "bg-green-100" },
     { id: "fruits", name: currentTexts.fruits, color: "bg-orange-100" },
     { id: "grains", name: currentTexts.grains, color: "bg-yellow-100" },
     { id: "livestock", name: currentTexts.livestock, color: "bg-blue-100" },
-  ]
+    { id: "beverages", name: currentTexts.beverages, color: "bg-purple-100" },
+    { id: "seafood", name: currentTexts.seafood, color: "bg-teal-100" },
+  ];
 
   // Sort options
   const sortOptions = [
@@ -159,223 +164,102 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     { id: "price-high", name: currentTexts.sortPriceHigh },
     { id: "rating", name: currentTexts.sortRating },
     { id: "newest", name: currentTexts.sortNewest },
-  ]
+  ];
 
-  // Sample products
-  const sampleProducts = [
-    {
-      id: 1,
-      name: "Fresh Organic Tomatoes",
-      nameKh: "ប៉េងប៉ោះធម្មជាតិ",
-      description: "Fresh organic tomatoes grown without pesticides",
-      descriptionKh: "ប៉េងប៉ោះធម្មជាតិដាំដុះដោយគ្មានថ្នាំសំលាប់សត្វល្អិត",
-      price: 2.5,
-      currency: "$",
-      image: "https://media.istockphoto.com/id/870915532/photo/man-holding-crate-ob-fresh-vegetables.jpg?s=612x612&w=0&k=20&c=k2dXOI-wxUy7lX77Pm90vU6TJXmAAv5VtK60ZZHIyCA=",
-      category: "vegetables",
-      province: "kandal",
-      farmer: {
-        name: "Sok Dara",
-        nameKh: "សុខ ដារា",
-        avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
-        rating: 4.8,
-        phone: "+855 12 345 678",
-        location: { lat: 11.5564, lng: 104.9282 },
-      },
-      rating: 4.9,
-      reviews: 45,
-      inStock: true,
-      isPopular: true,
-      unit: "kg",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: 2,
-      name: "Premium Jasmine Rice",
-      nameKh: "អង្ករម្លិះពិសេស",
-      description: "High-quality jasmine rice from Battambang province",
-      descriptionKh: "អង្ករម្លិះគុណភាពខ្ពស់ពីខេត្តបាត់ដំបង",
-      price: 1.8,
-      currency: "$",
-      image:
-        "https://images.unsplash.com/photo-1586201375761-83865001e31c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      category: "grains",
-      province: "battambang",
-      farmer: {
-        name: "Chea Sophea",
-        nameKh: "ជា សុភា",
-        avatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
-        rating: 4.9,
-        phone: "+855 17 234 567",
-        location: { lat: 13.0957, lng: 103.2028 },
-      },
-      rating: 4.8,
-      reviews: 67,
-      inStock: true,
-      isPopular: true,
-      unit: "kg",
-      createdAt: "2024-01-10",
-    },
-    {
-      id: 3,
-      name: "Sweet Dragon Fruit",
-      nameKh: "ស្រលាញ់ផ្លែនាគ",
-      description: "Sweet and juicy dragon fruit from local farms",
-      descriptionKh: "ផ្លែនាគផ្អែម និងមានទឹកច្រើនពីកសិដ្ឋានក្នុងស្រុក",
-      price: 3.2,
-      currency: "$",
-      image:
-        "https://images.unsplash.com/photo-1526318472351-c75fcf070305?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      category: "fruits",
-      province: "kampong-cham",
-      farmer: {
-        name: "Pich Ratana",
-        nameKh: "ពេជ្រ រតនា",
-        avatar:
-          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
-        rating: 4.7,
-        phone: "+855 96 345 789",
-        location: { lat: 12.0, lng: 105.4667 },
-      },
-      rating: 4.6,
-      reviews: 32,
-      inStock: true,
-      isPopular: false,
-      unit: "piece",
-      createdAt: "2024-01-20",
-    },
-    {
-      id: 4,
-      name: "Fresh Chicken",
-      nameKh: "មាន់ស្រស់",
-      description: "Free-range chicken raised naturally",
-      descriptionKh: "មាន់ចិញ្ចឹមធម្មជាតិដោយគ្មានថ្នាំ",
-      price: 4.5,
-      currency: "$",
-      image: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      category: "livestock",
-      province: "siem-reap",
-      farmer: {
-        name: "Mao Pisach",
-        nameKh: "ម៉ៅ ពិសាច",
-        avatar:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
-        rating: 4.8,
-        phone: "+855 78 456 123",
-        location: { lat: 13.3671, lng: 103.8448 },
-      },
-      rating: 4.7,
-      reviews: 28,
-      inStock: true,
-      isPopular: true,
-      unit: "kg",
-      createdAt: "2024-01-05",
-    },
-    {
-      id: 5,
-      name: "Green Lettuce",
-      nameKh: "សាលាត់បៃតង",
-      description: "Crispy fresh lettuce perfect for salads",
-      descriptionKh: "សាលាត់ស្រស់ល្អសម្រាប់ធ្វើសាលាដ",
-      price: 1.5,
-      currency: "$",
-      image:
-        "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      category: "vegetables",
-      province: "phnom-penh",
-      farmer: {
-        name: "Lim Sokha",
-        nameKh: "លឹម សុខា",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108755-2616b332c1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-        rating: 4.6,
-        phone: "+855 11 567 890",
-        location: { lat: 11.5449, lng: 104.8922 },
-      },
-      rating: 4.5,
-      reviews: 19,
-      inStock: true,
-      isPopular: false,
-      unit: "bunch",
-      createdAt: "2024-01-25",
-    },
-    {
-      id: 6,
-      name: "Ripe Mangoes",
-      nameKh: "ស្វាយទុំ",
-      description: "Sweet and ripe mangoes from Kampong Cham",
-      descriptionKh: "ស្វាយផ្អែម និងទុំពីកំពង់ចាម",
-      price: 2.8,
-      currency: "$",
-      image: "https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      category: "fruits",
-      province: "kampong-cham",
-      farmer: {
-        name: "Noun Veasna",
-        nameKh: "នូន វាសនា",
-        avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
-        rating: 4.9,
-        phone: "+855 89 123 456",
-        location: { lat: 12.0, lng: 105.4667 },
-      },
-      rating: 4.8,
-      reviews: 52,
-      inStock: true,
-      isPopular: true,
-      unit: "kg",
-      createdAt: "2024-01-18",
-    },
-  ]
+  // Get user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          // Default to Phnom Penh if location access is denied
+          setUserLocation({ lat: 11.5564, lng: 104.9282 });
+        }
+      );
+    } else {
+      setUserLocation({ lat: 11.5564, lng: 104.9282 }); // Default to Phnom Penh
+    }
+  }, []);
 
-  // Filtering and sorting logic
+  // Calculate distance between two coordinates (Haversine formula)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  };
+
+  // Filtering and sorting logic with distance
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filteredAndSortedProducts = useMemo(() => {
-    const filtered = sampleProducts.filter((product) => {
+    const filtered = productData.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.nameKh && product.nameKh.includes(searchQuery))
-      const matchesProvince = selectedProvince === "all" || product.province === selectedProvince
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-      return matchesSearch && matchesProvince && matchesCategory && matchesPrice
-    })
+        (product.nameKh && product.nameKh.includes(searchQuery));
+      const matchesProvince = selectedProvince === "all" || product.province === selectedProvince;
+      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+      return matchesSearch && matchesProvince && matchesCategory && matchesPrice;
+    });
+
+    if (userLocation) {
+      filtered.forEach((product) => {
+        product.distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          product.farmer.location.lat,
+          product.farmer.location.lng
+        );
+      });
+    }
 
     switch (sortBy) {
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price)
-        break
+        filtered.sort((a, b) => a.price - b.price);
+        break;
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price)
-        break
+        filtered.sort((a, b) => b.price - a.price);
+        break;
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating)
-        break
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
       case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        break
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
       case "popular":
       default:
-        filtered.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0))
-        break
+        filtered.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
+        break;
     }
 
-    return filtered
-  }, [sampleProducts, searchQuery, selectedProvince, selectedCategory, priceRange, sortBy])
+    return filtered;
+  }, [searchQuery, selectedProvince, selectedCategory, priceRange, sortBy, userLocation]);
 
-  const popularProducts = filteredAndSortedProducts.filter((product) => product.isPopular)
+  const popularProducts = filteredAndSortedProducts.filter((product) => product.isPopular);
 
   const toggleFavorite = (productId) => {
-    setFavorites((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]))
-  }
+    setFavorites((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]));
+  };
 
   const clearFilters = () => {
-    setSelectedProvince("all")
-    setSelectedCategory("all")
-    setSearchQuery("")
-    setPriceRange([0, 10])
-  }
+    setSelectedProvince("all");
+    setSelectedCategory("all");
+    setSearchQuery("");
+    setPriceRange([0, 10]);
+  };
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -424,7 +308,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
             <div className="relative hero-cards">
               <div className="grid grid-cols-2 gap-4">
-                {sampleProducts.slice(0, 4).map((product, index) => (
+                {productData.slice(0, 4).map((product, index) => (
                   <div
                     key={product.id}
                     className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${index === 0 ? "col-span-2" : ""
@@ -514,7 +398,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </div>
       </section>
 
-      {/* Map Section */}
+      {/* Map Section with Nearby Products */}
       <section className="py-16 bg-gradient-to-br from-stone-50 to-green-50 map-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -528,13 +412,36 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               {showMap ? currentTexts.hideMap : currentTexts.viewMap}
             </button>
           </div>
-          {showMap && (
+          {showMap && userLocation && (
+            <div className="bg-white rounded-xl shadow-xl p-8 border border-stone-200 map-container">
+              <div className="h-96 bg-stone-100 rounded-xl relative">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  {filteredAndSortedProducts
+                    .filter((product) => product.distance < 50) // Show products within 50km
+                    .map((product) => (
+                      <div key={product.id} className="bg-white p-2 rounded-lg shadow-md mb-2 w-full max-w-xs">
+                        <h4 className="font-bold text-sm">{product.name}</h4>
+                        <p className="text-xs text-gray-600">
+                          {currentTexts.from} {provinces.find((p) => p.id === product.province)?.name},{" "}
+                          {product.distance.toFixed(1)} km away
+                        </p>
+                        <p className="text-xs text-green-600">{product.currency}{product.price}/{product.unit}</p>
+                      </div>
+                    ))}
+                  {filteredAndSortedProducts.filter((product) => product.distance < 50).length === 0 && (
+                    <p className="text-stone-600 font-medium">No products within 50km</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          {!userLocation && showMap && (
             <div className="bg-white rounded-xl shadow-xl p-8 border border-stone-200 map-container">
               <div className="h-96 bg-stone-100 rounded-xl flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="w-16 h-16 text-stone-400 mx-auto mb-4" />
-                  <p className="text-stone-600 font-medium">Interactive Map Component</p>
-                  <p className="text-sm text-stone-500 mt-2">Farmer locations will be displayed here</p>
+                  <p className="text-stone-600 font-medium">Loading map...</p>
+                  <p className="text-sm text-stone-500 mt-2">Please allow location access</p>
                 </div>
               </div>
             </div>
@@ -563,7 +470,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                   orderingProducts={orderingProducts}
                   orderedProducts={orderedProducts}
                   viewMode="grid"
-                  provinces={provinces} // Pass provinces as a prop
+                  provinces={provinces}
                 />
               ))}
             </div>
@@ -626,7 +533,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600 hidden sm:block">
                 {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.of}{" "}
-                {sampleProducts.length} {currentTexts.products}
+                {productData.length} {currentTexts.products}
               </span>
 
               {/* Sort dropdown */}
@@ -711,8 +618,52 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </div>
       </section>
 
-      {/* All Items Section */}
-      <ProductSection/>
+      {/* All Products Section */}
+      <section className="py-16 bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.allProducts}</h2>
+            <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
+          </div>
+
+          <div
+            className={`grid gap-8 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+              }`}
+          >
+            {filteredAndSortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                currentTexts={currentTexts}
+                currentLanguage={currentLanguage}
+                isFavorite={favorites.includes(product.id)}
+                onToggleFavorite={toggleFavorite}
+                onOrder={handleOrder}
+                orderingProducts={orderingProducts}
+                orderedProducts={orderedProducts}
+                viewMode={viewMode}
+                provinces={provinces}
+              />
+            ))}
+          </div>
+
+          {filteredAndSortedProducts.length === 0 && (
+            <div className="text-center py-16">
+              <div className="text-stone-400 mb-4">
+                <Search className="w-16 h-16 mx-auto" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
+              <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+              <button
+                onClick={clearFilters}
+                className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                {currentTexts.clearFilters}
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
-  )
+  );
 }
