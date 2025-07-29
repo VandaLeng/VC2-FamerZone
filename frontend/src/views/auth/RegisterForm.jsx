@@ -9,7 +9,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
     email: "",
     password: "",
     confirmPassword: "",
-    role: "buyer", // Default to buyer
+    role: "buyer", 
     phone: "",
     address: "",
   })
@@ -137,13 +137,34 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
         phone: formData.phone || null,
         address: formData.address || null,
       })
+      
       if (data && data.access_token) {
+        // Store token and user data in localStorage
+        localStorage.setItem("auth_token", data.access_token)
+        localStorage.setItem("user_data", JSON.stringify(data.user))
+        
+        // Ensure userData has all required fields for navbar display
+        const userData = {
+          id: data.user.id,
+          name: data.user.name || formData.name,
+          email: data.user.email || formData.email,
+          role: data.user.role || formData.role,
+          phone: data.user.phone || formData.phone,
+          address: data.user.address || formData.address,
+          ...data.user // Spread any additional fields from API response
+        }
+        
+        // Update parent component state
         setIsLoggedIn(true)
-        setUserData(data.user)
+        setUserData(userData)
+        
+        console.log("Registration successful!")
+        console.log("User data:", userData)
+        console.log("Token stored:", localStorage.getItem("auth_token"))
+        
         alert(currentTexts.registerSuccess)
-        console.log("Registration successful. Token stored:", localStorage.getItem("auth_token"))
-        console.log("User data stored:", localStorage.getItem("user_data"))
-        console.log("Navigating to /")
+        
+        // Close modal or navigate
         if (onClose) {
           onClose()
         } else {
@@ -153,6 +174,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
         throw new Error("Registration successful but no access token received.")
       }
     } catch (error) {
+      console.error("Registration error:", error)
       const errorMsg = error.message || currentTexts.registerFailed
       setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.registerFailed })
       alert(errorMsg)
