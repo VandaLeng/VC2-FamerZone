@@ -10,7 +10,8 @@ import RegisterForm from "./views/auth/RegisterForm";
 import LoginForm from "./views/auth/LoginForm";
 import FarmerLayout from "./layouts/FarmerLayout";
 import PublicLayout from "./layouts/PublicLayout";
-// Import your farmer pages (create these if you haven't)
+
+// Farmer System
 import FarmerDashboard from "./views/farmer/DashboardFarmer";
 import FarmerOrders from "./views/farmer/OrderManagementFarmer";
 import FarmerCustomers from "./views/farmer/CustomerManagementFarmer";
@@ -18,6 +19,7 @@ import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
+
 import { logoutUser } from "./stores/api";
 
 function App() {
