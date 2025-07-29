@@ -552,19 +552,28 @@ export default function HomePage({ currentLanguage }) {
                     className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative transform transition-all duration-700 ${isVisible.cta ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
                     <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 animate-text-shimmer">
-                        {currentTexts.ctaTitle}
+                        {currentTexts.ctaTitle || (currentLanguage === "kh" ? "ចូលរួមជាមួយសហគមន៍កសិកម្មរបស់យើង" : "Join Our Agricultural Community")}
                     </h2>
-                    <p className="text-xl text-white mb-8 opacity-90">{currentTexts.ctaDesc}</p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animate-delay-300">
-                        <button className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
-                            {currentTexts.joinAsBuyer}
-                        </button>
-                        <button className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
-                            {currentTexts.joinAsFarmer}
-                        </button>
+                    <p className="text-xl text-white mb-8 font-medium leading-relaxed opacity-95">
+                        {currentTexts.ctaDesc || (currentLanguage === "kh" ? "ចុះឈ្មោះជាអ្នកទិញដើម្បីទទួលបានផលិតផលកសិកម្មគុណភាពខ្ពស់ ឬជាកសិករដើម្បីបង្ហាញផលិតផលរបស់អ្នក និងភ្ជាប់ទំនាក់ទំនងជាមួយអតិថិជន។" : "Sign up as a Buyer to access premium farm products or as a Farmer to showcase your produce and connect with customers.")}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animation-delay-300">
+                        <a
+                            href="/register"
+                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle"
+                        >
+                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Join as a Buyer")}
+                        </a>
+                        <a
+                            href="/register"
+                            className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle"
+                        >
+                            {currentTexts.joinAsFarmer || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}
+                        </a>
                     </div>
                 </div>
             </section>
+
         </div>
     );
 }

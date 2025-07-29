@@ -46,8 +46,8 @@ const homeData = {
         watchVideos: "ស្វែងរកវគ្គសិក្សាដែលបានណែនាំ",
 
         // CTA
-        ctaTitle: "ចាប់ផ្តើមជាមួយ FramerZone ថ្ងៃនេះ",
-        ctaDesc: "ភ្ជាប់ជាមួយកសិករក្នុងស្រុក និងទទួលបានផលិតផលកសិកម្មស្រស់ៗ",
+        ctaTitle: "ចូលរួមជាមួយសហគមន៍កសិកម្មរបស់យើង",
+        ctaDesc: "ចុះឈ្មោះជាអ្នកទិញដើម្បីទទួលបានផលិតផលកសិកម្មគុណភាពខ្ពស់ ឬជាកសិករដើម្បីបង្ហាញផលិតផលរបស់អ្នក និងភ្ជាប់ទំនាក់ទំនងជាមួយអតិថិជន។",
         joinAsBuyer: "ចូលរួមជាអ្នកទិញ",
         joinAsFarmer: "ចូលរួមជាកសិករ",
     },
@@ -98,8 +98,8 @@ const homeData = {
         watchVideos: "Explore Recommended Courses",
 
         // CTA
-        ctaTitle: "Start with FramerZone Today",
-        ctaDesc: "Connect with local farmers and get fresh agricultural products",
+        ctaTitle: "Join Our Agricultural Community",
+        ctaDesc: "Sign up as a Buyer to access premium farm products or as a Farmer to showcase your produce and connect with customers.",
         joinAsBuyer: "Join as Buyer",
         joinAsFarmer: "Join as Farmer",
     },
