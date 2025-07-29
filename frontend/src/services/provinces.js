@@ -1,10 +1,29 @@
 const provinces = [
-    { id: "all", name: "All Provinces" },
-    { id: "phnom-penh", name: "Phnom Penh" },
-    { id: "kandal", name: "Kandal" },
-    { id: "battambang", name: "Battambang" },
-    { id: "kampong-cham", name: "Kampong Cham" },
-    { id: "siem-reap", name: "Siem Reap" },
-];
+    { id: "all", name: "All Provinces", nameKh: "ខេត្តទាំងអស់" },
+    { id: "phnom-penh", name: "Phnom Penh", nameKh: "រាជធានីភ្នំពេញ" },
+    { id: "kandal", name: "Kandal", nameKh: "កណ្តាល" },
+    { id: "battambang", name: "Battambang", nameKh: "បាត់ដំបង" },
+    { id: "kampong-cham", name: "Kampong Cham", nameKh: "កំពង់ចាម" },
+    { id: "siem-reap", name: "Siem Reap", nameKh: "សៀមរាប" },
+    { id: "kampong-speu", name: "Kampong Speu", nameKh: "កំពង់ស្ពឺ" },
+    { id: "takeo", name: "Takeo", nameKh: "តាកែវ" },
+    { id: "kampot", name: "Kampot", nameKh: "កំពត" },
+    { id: "koh-kong", name: "Koh Kong", nameKh: "កោះកុង" },
+    { id: "preah-vihear", name: "Preah Vihear", nameKh: "ព្រះវិហារ" },
+    { id: "stung-treng", name: "Stung Treng", nameKh: "ស្ទឹងត្រែង" },
+    { id: "ratanak-kiri", name: "Ratanak Kiri", nameKh: "រតនគិរី" },
+    { id: "mondol-kiri", name: "Mondol Kiri", nameKh: "មណ្ឌលគិរី" },
+    { id: "kratie", name: "Kratie", nameKh: "ក្រចេះ" },
+    { id: "kampong-thom", name: "Kampong Thom", nameKh: "កំពង់ធំ" },
+    { id: "kampong-chhnang", name: "Kampong Chhnang", nameKh: "កំពង់ឆ្នាំង" },
+    { id: "pursat", name: "Pursat", nameKh: "ពោធិ៍សាត់" },
+    { id: "banteay-meanchey", name: "Banteay Meanchey", nameKh: "បន្ទាយមានជ័យ" },
+    { id: "oddar-meanchey", name: "Oddar Meanchey", nameKh: "ឧត្តរមានជ័យ" },
+    { id: "pailin", name: "Pailin", nameKh: "ប៉ៃលិន" },
+    { id: "kep", name: "Kep", nameKh: "កែប" },
+    { id: "preah-sihanouk", name: "Preah Sihanouk", nameKh: "ព្រះសីហនុ" },
+    { id: "svay-rieng", name: "Svay Rieng", nameKh: "ស្វាយរៀង" },
+    { id: "prey-veng", name: "Prey Veng", nameKh: "ព្រៃវែង" },
+]
 
-export default provinces;
+export default provinces

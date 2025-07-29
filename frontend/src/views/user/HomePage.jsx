@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import '../../styles/HomeStyle.css';
-import homeData from '../../data/homedata.js'; // Adjust path based on your project structure
+import homeData from '../../data/homedata.js';
 
 export default function HomePage({ currentLanguage }) {
     const [isVisible, setIsVisible] = useState({});
@@ -56,12 +56,12 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.heroDescription}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-in-up animate-delay-500">
-                                <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+                                <a href="/products" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
                                     {currentTexts.heroButton}
-                                </button>
-                                <button className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
+                                </a>
+                                <a href="/register" className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
                                     {currentTexts.heroSecondaryButton}
-                                </button>
+                                </a>
                             </div>
                         </div>
                         <div className="relative animate-slide-in-right">
@@ -188,12 +188,11 @@ export default function HomePage({ currentLanguage }) {
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${
-                                        feature.color === 'green' ? 'bg-green-500/90 text-white' :
+                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
                                         feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
-                                        feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
-                                        'bg-purple-500/90 text-white'
-                                    }`}>
+                                            feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                                'bg-purple-500/90 text-white'
+                                        }`}>
                                         {feature.icon}
                                     </div>
                                 </div>
@@ -206,17 +205,16 @@ export default function HomePage({ currentLanguage }) {
                                         {feature.desc}
                                     </p>
                                     <div className="mt-4">
-                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
-                                            feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                        <a href="/about" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                             feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
-                                            feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                            'text-purple-600 hover:text-purple-700'
-                                        }`}>
+                                                feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                    'text-purple-600 hover:text-purple-700'
+                                            }`}>
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -227,19 +225,20 @@ export default function HomePage({ currentLanguage }) {
                     <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
                         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 max-w-4xl mx-auto">
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                                {currentLanguage === "kh" ? "ចាប់ផ្តើមជាមួយយើង" : "Ready to get started?"}
+                                {currentTexts.getStartedTitle || (currentLanguage === "kh" ? "ចាប់ផ្តើមលក់ជាកសិករនៅថ្ងៃនេះ" : "Start Selling as a Farmer Today")}
                             </h3>
-                            <p className="text-gray-600 mb-6">
-                                {currentLanguage === "kh"
-                                    ? "ចាប់ផ្តើមលក់ផលិតផលកសិកម្មរបស់អ្នកនៅថ្ងៃនេះ"
-                                    : "Start selling your agricultural products today and connect with customers directly"}
+                            <p className="text-gray-600 mb-6 leading-relaxed">
+                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FramerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
                             </p>
-                            <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <span>{currentLanguage === "kh" ? "ចាប់ផ្តើមឥឡូវ" : "Get Started Now"}</span>
+                            <a
+                                href="/register"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            >
+                                <span>{currentTexts.getStartedButton || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}</span>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -315,11 +314,10 @@ export default function HomePage({ currentLanguage }) {
                                     className={`relative transition-all duration-300 hover-lift hover-glow ${isVisible["how-it-works"] ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 150}`}
                                 >
                                     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
-                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${
-                                            step.color === 'green' ? 'bg-green-100 text-green-600' :
+                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
                                             step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                            'bg-orange-100 text-orange-600'
-                                        }`}>
+                                                'bg-orange-100 text-orange-600'
+                                            }`}>
                                             {step.icon}
                                         </div>
                                         <div className="relative mb-6 overflow-hidden rounded-lg">
@@ -332,11 +330,10 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${
-                                                    step.color === 'green' ? 'bg-green-100 text-green-700' :
+                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-orange-100 text-orange-700'
-                                                }`}>
+                                                        'bg-orange-100 text-orange-700'
+                                                    }`}>
                                                     Step {step.number}
                                                 </span>
                                             </div>
@@ -348,17 +345,15 @@ export default function HomePage({ currentLanguage }) {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${
-                                        step.color === 'green' ? 'bg-green-500' :
+                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
                                         step.color === 'blue' ? 'bg-blue-500' :
-                                        'bg-orange-500'
-                                    }`}>
+                                            'bg-orange-500'
+                                        }`}>
                                         <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                            <div className={`w-2 h-2 rounded-full ${
-                                                step.color === 'green' ? 'bg-green-500' :
+                                            <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
                                                 step.color === 'blue' ? 'bg-blue-500' :
-                                                'bg-orange-500'
-                                            }`}></div>
+                                                    'bg-orange-500'
+                                                }`}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -369,12 +364,12 @@ export default function HomePage({ currentLanguage }) {
                     <div
                         className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
-                        <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <a href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             <span>Get Started Today</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -437,12 +432,11 @@ export default function HomePage({ currentLanguage }) {
                                     />
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
                                     <div className="absolute top-3 right-3">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                                            category.color === 'green' ? 'bg-green-100 text-green-800' :
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
                                             category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                            category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                            'bg-blue-100 text-blue-800'
-                                        }`}>
+                                                category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                                    'bg-blue-100 text-blue-800'
+                                            }`}>
                                             {category.count}
                                         </span>
                                     </div>
@@ -456,79 +450,86 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
-                                                category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            <a href="/products" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                                 category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                'text-blue-600 hover:text-blue-700'
-                                            }`}>
+                                                    category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                        'text-blue-600 hover:text-blue-700'
+                                                }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                 </svg>
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`h-1 w-full transition-all duration-300 ${
-                                    category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
+                                <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
                                     category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                    category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                    'bg-blue-500 group-hover:bg-blue-600'
-                                }`}></div>
+                                        category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                            'bg-blue-500 group-hover:bg-blue-600'
+                                    }`}></div>
                             </div>
                         ))}
                     </div>
                     <div className="mt-12 text-center">
-                        <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
+                        <a href="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
                             <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
 
-            {/* Learning Center Section */}
-            <section id="learning" data-animate className="py-20 bg-white">
+            {/* Learning Center */}
+            <section id="learning" data-animate className="py-20 bg-gray-50 relative overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-12 left-12 w-28 h-28 bg-green-200/20 rounded-full animate-float"></div>
+                    <div className="absolute bottom-16 right-16 w-20 h-20 bg-green-300/20 rounded-full animate-float-delayed"></div>
+                    <div className="absolute top-1/3 left-1/3 w-16 h-16 bg-green-100/20 rounded-full animate-float-slow"></div>
+                </div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div
-                            className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}
-                        >
-                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-                                {currentTexts.learningTitle}
+                        <div className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}>
+                            <div className="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full text-sm font-semibold animate-fade-in-up mb-4">
+                                {currentTexts.heroBadge || (currentLanguage === 'en' ? 'Curated Learning Resources' : 'ធនធានសិក្សាដែលបានជ្រើសរើស')}
+                            </div>
+                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up animation-delay-100">
+                                {currentTexts.learningTitle || (currentLanguage === 'en' ? 'Discover Agricultural Learning Resources' : 'ស្វែងរកធនធានសិក្សាកសិកម្ម')}
                             </h2>
                             <h3 className="text-xl text-green-600 font-semibold mb-6 animate-text-shimmer">
-                                {currentTexts.learningSubtitle}
+                                {currentTexts.learningSubtitle || (currentLanguage === 'en' ? 'Curated Recommendations for Modern Farming Education' : 'ការណែនាំដែលបានជ្រើសរើសសម្រាប់ការអប់រំកសិកម្មទំនើប')}
                             </h3>
-                            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                                {currentTexts.learningDesc}
+                            <p className="text-lg text-gray-600 mb-8 leading-relaxed animate-fade-in-up animation-delay-200">
+                                {currentTexts.learningDesc || (currentLanguage === 'en' ? 'Explore the best online agricultural courses, tutorials, and resources from trusted educational platforms.' : 'ស្វែងយល់មេរៀនកសិកម្មអនឡាញ ការបង្រៀន និងធនធានល្អបំផុតពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន។')}
                             </p>
-                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-pulse-subtle">
-                                {currentTexts.watchVideos}
-                            </button>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <a
+                                    href="/learning-center"
+                                    className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-bounce-in animation-delay-300"
+                                >
+                                    {currentTexts.watchVideos || (currentLanguage === 'en' ? 'Explore Resources' : 'ស្វែងរកធនធាន')}
+                                </a>
+                            </div>
                         </div>
-                        <div
-                            className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}
-                        >
+                        <div className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}>
                             <div
                                 className="relative group animate-float cursor-pointer"
-                                onClick={() => setIsVideoOpen(true)}
-                                aria-label="Open Learning Video"
+                                onClick={() => window.location.href = '/learning-center'}
+                                aria-label="Explore Learning Center"
                                 role="button"
                                 tabIndex={0}
                                 onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") setIsVideoOpen(true);
+                                    if (e.key === "Enter" || e.key === " ") window.location.href = '/learning-center';
                                 }}
                             >
                                 <img
-                                    src="/placeholder.svg?height=400&width=600&text=Learning+center"
+                                    src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                                     alt="Learning center"
                                     className="w-full h-auto rounded-2xl shadow-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-40">
+                                <div className="absolute inset-0 bg-green-900 bg-opacity-30 rounded-2xl flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-40">
                                     <div className="bg-white bg-opacity-90 p-4 rounded-full transform transition-all duration-300 group-hover:scale-110 animate-pulse">
                                         <svg className="h-12 w-12 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z" />
@@ -541,40 +542,6 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
 
-            {/* Video Modal */}
-            {isVideoOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-                    onClick={() => setIsVideoOpen(false)}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="video-modal-title"
-                >
-                    <div
-                        className="relative w-full max-w-4xl mx-auto bg-black rounded-lg shadow-lg"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-yellow-500"
-                            onClick={() => setIsVideoOpen(false)}
-                            aria-label="Close video"
-                        >
-                            ×
-                        </button>
-                        <div className="aspect-w-16 aspect-h-9">
-                            <iframe
-                                className="w-full h-full rounded-lg"
-                                src="https://media.istockphoto.com/id/2163456407/photo/fresh-vegetables-and-fruits-for-sale-in-asian-farmer-market-stall.jpg?s=612x612&w=0&k=20&c=LNl7GM00YQPHNzCZlKTG9-M6v8zEG9Fg0tSWM9mIxGY="
-                                title="Learning Center Video"
-                                frameBorder="0"
-                                allow="autoplay; encrypted-media"
-                                allowFullScreen
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* CTA Section */}
             <section id="cta" data-animate className="py-20 bg-gradient-to-r from-green-600 to-yellow-500 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -586,19 +553,28 @@ export default function HomePage({ currentLanguage }) {
                     className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative transform transition-all duration-700 ${isVisible.cta ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
                     <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 animate-text-shimmer">
-                        {currentTexts.ctaTitle}
+                        {currentTexts.ctaTitle || (currentLanguage === "kh" ? "ចូលរួមជាមួយសហគមន៍កសិកម្មរបស់យើង" : "Join Our Agricultural Community")}
                     </h2>
-                    <p className="text-xl text-white mb-8 opacity-90">{currentTexts.ctaDesc}</p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animate-delay-300">
-                        <button className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
-                            {currentTexts.joinAsBuyer}
-                        </button>
-                        <button className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
-                            {currentTexts.joinAsFarmer}
-                        </button>
+                    <p className="text-xl text-white mb-8 font-medium leading-relaxed opacity-95">
+                        {currentTexts.ctaDesc || (currentLanguage === "kh" ? "ចុះឈ្មោះជាអ្នកទិញដើម្បីទទួលបានផលិតផលកសិកម្មគុណភាពខ្ពស់ ឬជាកសិករដើម្បីបង្ហាញផលិតផលរបស់អ្នក និងភ្ជាប់ទំនាក់ទំនងជាមួយអតិថិជន។" : "Sign up as a Buyer to access premium farm products or as a Farmer to showcase your produce and connect with customers.")}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animation-delay-300">
+                        <a
+                            href="/register"
+                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle"
+                        >
+                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Join as a Buyer")}
+                        </a>
+                        <a
+                            href="/register"
+                            className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle"
+                        >
+                            {currentTexts.joinAsFarmer || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}
+                        </a>
                     </div>
                 </div>
             </section>
+
         </div>
     );
 }
