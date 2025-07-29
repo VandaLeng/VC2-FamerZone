@@ -399,7 +399,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       )}
 
       {/* Enhanced Hero Section */}
-      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden hero-section">
+      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden hero-section">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
@@ -721,8 +721,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <button
                         onClick={() => setViewMode("grid")}
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
-                            ? "bg-white text-green-600 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                          ? "bg-white text-green-600 shadow-sm"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                           }`}
                         title="Grid View"
                       >
@@ -731,8 +731,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <button
                         onClick={() => setViewMode("list")}
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
-                            ? "bg-white text-green-600 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                          ? "bg-white text-green-600 shadow-sm"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                           }`}
                         title="List View"
                       >
@@ -750,13 +750,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
                         className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
-                            : `${category.color === 'green'
-                              ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
-                              : category.color === 'orange'
-                                ? 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
-                                : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                            } hover:shadow-md hover:scale-105`
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
+                          : `${category.color === 'green'
+                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                            : category.color === 'orange'
+                              ? 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          } hover:shadow-md hover:scale-105`
                           }`}
                       >
                         {category.name}
@@ -816,13 +816,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                           key={category.id}
                           onClick={() => setSelectedCategory(category.id)}
                           className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                              ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-                              : `${category.color === 'green'
-                                ? 'bg-green-50 text-green-700 border border-green-200'
-                                : category.color === 'orange'
-                                  ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                                  : 'bg-gray-50 text-gray-700 border border-gray-200'
-                              }`
+                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                            : `${category.color === 'green'
+                              ? 'bg-green-50 text-green-700 border border-green-200'
+                              : category.color === 'orange'
+                                ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                                : 'bg-gray-50 text-gray-700 border border-gray-200'
+                            }`
                             }`}
                         >
                           {category.name}
