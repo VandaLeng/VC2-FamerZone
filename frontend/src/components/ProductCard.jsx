@@ -10,22 +10,24 @@ function ProductCard({
   orderingProducts,
   orderedProducts,
   viewMode = "grid",
-  provinces, // Add provinces as a prop
+  provinces,
+  onShowDetail,
 }) {
   const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
   const productDescription =
     currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
-  // Use "Unknown" as fallback if farmer name or nameKh is unavailable
-  const farmerName = currentLanguage === "kh" 
-    ? product.farmer?.nameKh || product.farmer?.name || "Unknown" 
+  const farmerName = currentLanguage === "kh"
+    ? product.farmer?.nameKh || product.farmer?.name || "Unknown"
     : product.farmer?.name || product.farmer?.nameKh || "Unknown";
 
-  // Get province name
   const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
 
   if (viewMode === "list") {
     return (
-      <div className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-stone-200">
+      <div
+        className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-stone-200 cursor-pointer"
+        onClick={() => onShowDetail(product)}
+      >
         <div className="flex flex-col md:flex-row">
           {/* Product Image */}
           <div className="relative md:w-64 h-48 md:h-auto overflow-hidden">
@@ -52,7 +54,10 @@ function ProductCard({
             </div>
             {/* Favorite Button */}
             <button
-              onClick={() => onToggleFavorite(product.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(product.id);
+              }}
               className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
             >
               <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
@@ -131,7 +136,10 @@ function ProductCard({
                   <MessageCircle className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => onOrder(product.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOrder(product.id);
+                  }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 mr-2"
                   disabled={
                     !product.inStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)
@@ -140,8 +148,8 @@ function ProductCard({
                   {orderingProducts.includes(product.id)
                     ? "Ordering..."
                     : orderedProducts.includes(product.id)
-                      ? currentTexts.orderPlaced
-                      : currentTexts.orderNow}
+                    ? currentTexts.orderPlaced
+                    : currentTexts.orderNow}
                 </button>
               </div>
             </div>
@@ -153,7 +161,10 @@ function ProductCard({
 
   // Grid view
   return (
-    <div className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-stone-200 product-card">
+    <div
+      className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-stone-200 product-card cursor-pointer"
+      onClick={() => onShowDetail(product)}
+    >
       <div className="relative h-48 overflow-hidden">
         <img
           src={product.image || "/placeholder.svg"}
@@ -176,7 +187,10 @@ function ProductCard({
           </span>
         </div>
         <button
-          onClick={() => onToggleFavorite(product.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(product.id);
+          }}
           className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg favorite-btn"
         >
           <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500 favorite-active" : "text-gray-600"}`} />
@@ -219,15 +233,18 @@ function ProductCard({
             </div>
           </div>
           <button
-            onClick={() => onOrder(product.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOrder(product.id);
+            }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn"
             disabled={!product.inStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
           >
             {orderingProducts.includes(product.id)
               ? "..."
               : orderedProducts.includes(product.id)
-                ? "✓"
-                : currentTexts.orderNow}
+              ? "✓"
+              : currentTexts.orderNow}
           </button>
         </div>
       </div>

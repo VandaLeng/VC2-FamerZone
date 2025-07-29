@@ -23,6 +23,10 @@ const useProduct = () => {
             rating: product.user?.rating || 0,
             avatar: product.user?.avatar ? `http://127.0.0.1:8000/storage/${product.user.avatar}` : "/placeholder.svg",
           },
+          category: {
+            ...product.category,
+            name: product.category?.name || "Unknown",
+          },
         }));
         setAllProducts(productsWithImages);
         setProvinces(response.data.provinces || []); // Ensure provinces is always an array

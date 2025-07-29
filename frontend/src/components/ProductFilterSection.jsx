@@ -100,7 +100,7 @@ const ProductFilterSection = ({ onViewModeChange, onFilterChange, provinces }) =
                   className="appearance-none px-4 py-2 pr-8 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 >
                   <option value="all">All Provinces</option>
-                  {provinces && provinces.map((province) => ( // Add conditional check
+                  {provinces && provinces.map((province) => (
                     <option key={province.id} value={province.id}>
                       {province.name}
                     </option>
@@ -115,10 +115,11 @@ const ProductFilterSection = ({ onViewModeChange, onFilterChange, provinces }) =
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
-                      ? "bg-green-700 text-white shadow-lg"
-                      : `${category.color} text-gray-700 hover:shadow-md`
-                      }`}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                      selectedCategory === category.id
+                        ? "bg-green-700 text-white shadow-lg"
+                        : `${category.color} text-gray-700 hover:shadow-md`
+                    }`}
                   >
                     {category.name}
                   </button>
@@ -187,7 +188,7 @@ const ProductFilterSection = ({ onViewModeChange, onFilterChange, provinces }) =
                   className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="all">All Provinces</option>
-                  {provinces && provinces.map((province) => ( // Add conditional check
+                  {provinces && provinces.map((province) => (
                     <option key={province.id} value={province.id}>
                       {province.name}
                     </option>
@@ -201,10 +202,11 @@ const ProductFilterSection = ({ onViewModeChange, onFilterChange, provinces }) =
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`p-3 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
-                        ? "bg-green-700 text-white"
-                        : `${category.color} text-gray-700`
-                        }`}
+                      className={`p-3 rounded-lg font-medium transition-all duration-300 ${
+                        selectedCategory === category.id
+                          ? "bg-green-700 text-white"
+                          : `${category.color} text-gray-700`
+                      }`}
                     >
                       <span className="text-sm">{category.name}</span>
                     </button>
