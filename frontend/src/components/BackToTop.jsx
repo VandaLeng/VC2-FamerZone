@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 
 const BackToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +33,7 @@ const BackToTopButton = () => {
       } group`}
       aria-label="Back to top"
     >
-      <ArrowUp className="w-5 h-5 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
+      <ChevronUp className="w-5 h-5 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
     </button>
   );
 };
