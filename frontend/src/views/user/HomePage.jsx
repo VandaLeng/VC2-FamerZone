@@ -188,12 +188,11 @@ export default function HomePage({ currentLanguage }) {
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${
-                                        feature.color === 'green' ? 'bg-green-500/90 text-white' :
-                                        feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
-                                        feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
-                                        'bg-purple-500/90 text-white'
-                                    }`}>
+                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
+                                            feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
+                                                feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                                    'bg-purple-500/90 text-white'
+                                        }`}>
                                         {feature.icon}
                                     </div>
                                 </div>
@@ -206,12 +205,11 @@ export default function HomePage({ currentLanguage }) {
                                         {feature.desc}
                                     </p>
                                     <div className="mt-4">
-                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
-                                            feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                            feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
-                                            feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                            'text-purple-600 hover:text-purple-700'
-                                        }`}>
+                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                                    feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                        'text-purple-600 hover:text-purple-700'
+                                            }`}>
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -315,11 +313,10 @@ export default function HomePage({ currentLanguage }) {
                                     className={`relative transition-all duration-300 hover-lift hover-glow ${isVisible["how-it-works"] ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 150}`}
                                 >
                                     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
-                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${
-                                            step.color === 'green' ? 'bg-green-100 text-green-600' :
-                                            step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                            'bg-orange-100 text-orange-600'
-                                        }`}>
+                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
+                                                step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                                    'bg-orange-100 text-orange-600'
+                                            }`}>
                                             {step.icon}
                                         </div>
                                         <div className="relative mb-6 overflow-hidden rounded-lg">
@@ -332,11 +329,10 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${
-                                                    step.color === 'green' ? 'bg-green-100 text-green-700' :
-                                                    step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-orange-100 text-orange-700'
-                                                }`}>
+                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
+                                                        step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                                            'bg-orange-100 text-orange-700'
+                                                    }`}>
                                                     Step {step.number}
                                                 </span>
                                             </div>
@@ -348,17 +344,15 @@ export default function HomePage({ currentLanguage }) {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${
-                                        step.color === 'green' ? 'bg-green-500' :
-                                        step.color === 'blue' ? 'bg-blue-500' :
-                                        'bg-orange-500'
-                                    }`}>
-                                        <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                            <div className={`w-2 h-2 rounded-full ${
-                                                step.color === 'green' ? 'bg-green-500' :
-                                                step.color === 'blue' ? 'bg-blue-500' :
+                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
+                                            step.color === 'blue' ? 'bg-blue-500' :
                                                 'bg-orange-500'
-                                            }`}></div>
+                                        }`}>
+                                        <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
+                                            <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
+                                                    step.color === 'blue' ? 'bg-blue-500' :
+                                                        'bg-orange-500'
+                                                }`}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -437,12 +431,11 @@ export default function HomePage({ currentLanguage }) {
                                     />
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
                                     <div className="absolute top-3 right-3">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                                            category.color === 'green' ? 'bg-green-100 text-green-800' :
-                                            category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                            category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                            'bg-blue-100 text-blue-800'
-                                        }`}>
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
+                                                category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
+                                                    category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                                        'bg-blue-100 text-blue-800'
+                                            }`}>
                                             {category.count}
                                         </span>
                                     </div>
@@ -456,12 +449,11 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
-                                                category.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                                category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                'text-blue-600 hover:text-blue-700'
-                                            }`}>
+                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                    category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                        category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                            'text-blue-600 hover:text-blue-700'
+                                                }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -470,12 +462,11 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`h-1 w-full transition-all duration-300 ${
-                                    category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
-                                    category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                    category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                    'bg-blue-500 group-hover:bg-blue-600'
-                                }`}></div>
+                                <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
+                                        category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
+                                            category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                                'bg-blue-500 group-hover:bg-blue-600'
+                                    }`}></div>
                             </div>
                         ))}
                     </div>
@@ -490,45 +481,59 @@ export default function HomePage({ currentLanguage }) {
                 </div>
             </section>
 
-            {/* Learning Center Section */}
-            <section id="learning" data-animate className="py-20 bg-white">
+            <section id="learning" data-animate className="py-20 bg-gray-50 relative overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-12 left-12 w-28 h-28 bg-green-200/20 rounded-full animate-float"></div>
+                    <div className="absolute bottom-16 right-16 w-20 h-20 bg-green-300/20 rounded-full animate-float-delayed"></div>
+                    <div className="absolute top-1/3 left-1/3 w-16 h-16 bg-green-100/20 rounded-full animate-float-slow"></div>
+                </div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div
-                            className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}
-                        >
-                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-                                {currentTexts.learningTitle}
+                        <div className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}>
+                            <div className="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full text-sm font-semibold animate-fade-in-up mb-4">
+                                {currentTexts.heroBadge || (currentLanguage === 'en' ? 'Curated Learning Resources' : 'ធនធានសិក្សាដែលបានជ្រើសរើស')}
+                            </div>
+                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up animation-delay-100">
+                                {currentTexts.learningTitle || (currentLanguage === 'en' ? 'Discover Agricultural Learning Resources' : 'ស្វែងរកធនធានសិក្សាកសិកម្ម')}
                             </h2>
                             <h3 className="text-xl text-green-600 font-semibold mb-6 animate-text-shimmer">
-                                {currentTexts.learningSubtitle}
+                                {currentTexts.learningSubtitle || (currentLanguage === 'en' ? 'Curated Recommendations for Modern Farming Education' : 'ការណែនាំដែលបានជ្រើសរើសសម្រាប់ការអប់រំកសិកម្មទំនើប')}
                             </h3>
-                            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                                {currentTexts.learningDesc}
+                            <p className="text-lg text-gray-600 mb-8 leading-relaxed animate-fade-in-up animation-delay-200">
+                                {currentTexts.learningDesc || (currentLanguage === 'en' ? 'Explore the best online agricultural courses, tutorials, and resources from trusted educational platforms.' : 'ស្វែងយល់មេរៀនកសិកម្មអនឡាញ ការបង្រៀន និងធនធានល្អបំផុតពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន។')}
                             </p>
-                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-pulse-subtle">
-                                {currentTexts.watchVideos}
-                            </button>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <a
+                                    href="/learning-center"
+                                    className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-bounce-in animation-delay-300"
+                                >
+                                    {currentTexts.watchVideos || (currentLanguage === 'en' ? 'Explore Resources' : 'ស្វែងរកធនធាន')}
+                                </a>
+                                <a
+                                    href="/learning-center#cta"
+                                    className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 animate-bounce-in animation-delay-400"
+                                >
+                                    {currentLanguage === 'en' ? 'Contact Experts' : 'ទាក់ទងអ្នកជំនាញ'}
+                                </a>
+                            </div>
                         </div>
-                        <div
-                            className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}
-                        >
+                        <div className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}>
                             <div
                                 className="relative group animate-float cursor-pointer"
-                                onClick={() => setIsVideoOpen(true)}
-                                aria-label="Open Learning Video"
+                                onClick={() => window.location.href = '/learning-center'}
+                                aria-label="Explore Learning Center"
                                 role="button"
                                 tabIndex={0}
                                 onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") setIsVideoOpen(true);
+                                    if (e.key === "Enter" || e.key === " ") window.location.href = '/learning-center';
                                 }}
                             >
                                 <img
-                                    src="/placeholder.svg?height=400&width=600&text=Learning+center"
+                                    src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                                     alt="Learning center"
                                     className="w-full h-auto rounded-2xl shadow-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-40">
+                                <div className="absolute inset-0 bg-green-900 bg-opacity-30 rounded-2xl flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-40">
                                     <div className="bg-white bg-opacity-90 p-4 rounded-full transform transition-all duration-300 group-hover:scale-110 animate-pulse">
                                         <svg className="h-12 w-12 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z" />
@@ -540,40 +545,6 @@ export default function HomePage({ currentLanguage }) {
                     </div>
                 </div>
             </section>
-
-            {/* Video Modal */}
-            {isVideoOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-                    onClick={() => setIsVideoOpen(false)}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="video-modal-title"
-                >
-                    <div
-                        className="relative w-full max-w-4xl mx-auto bg-black rounded-lg shadow-lg"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-yellow-500"
-                            onClick={() => setIsVideoOpen(false)}
-                            aria-label="Close video"
-                        >
-                            ×
-                        </button>
-                        <div className="aspect-w-16 aspect-h-9">
-                            <iframe
-                                className="w-full h-full rounded-lg"
-                                src="https://media.istockphoto.com/id/2163456407/photo/fresh-vegetables-and-fruits-for-sale-in-asian-farmer-market-stall.jpg?s=612x612&w=0&k=20&c=LNl7GM00YQPHNzCZlKTG9-M6v8zEG9Fg0tSWM9mIxGY="
-                                title="Learning Center Video"
-                                frameBorder="0"
-                                allow="autoplay; encrypted-media"
-                                allowFullScreen
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* CTA Section */}
             <section id="cta" data-animate className="py-20 bg-gradient-to-r from-green-600 to-yellow-500 relative overflow-hidden">
