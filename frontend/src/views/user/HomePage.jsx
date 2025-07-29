@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import '../../styles/HomeStyle.css';
-import homeData from '../../data/homedata.js'; // Adjust path based on your project structure
+import homeData from '../../data/homedata.js';
 
 export default function HomePage({ currentLanguage }) {
     const [isVisible, setIsVisible] = useState({});
@@ -189,9 +189,9 @@ export default function HomePage({ currentLanguage }) {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                     <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
-                                            feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
-                                                feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
-                                                    'bg-purple-500/90 text-white'
+                                        feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
+                                            feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                                'bg-purple-500/90 text-white'
                                         }`}>
                                         {feature.icon}
                                     </div>
@@ -206,9 +206,9 @@ export default function HomePage({ currentLanguage }) {
                                     </p>
                                     <div className="mt-4">
                                         <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
-                                                    feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                        'text-purple-600 hover:text-purple-700'
+                                            feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                                feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                    'text-purple-600 hover:text-purple-700'
                                             }`}>
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -314,8 +314,8 @@ export default function HomePage({ currentLanguage }) {
                                 >
                                     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
                                         <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
-                                                step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                    'bg-orange-100 text-orange-600'
+                                            step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                                'bg-orange-100 text-orange-600'
                                             }`}>
                                             {step.icon}
                                         </div>
@@ -330,8 +330,8 @@ export default function HomePage({ currentLanguage }) {
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
                                                 <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
-                                                        step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                                            'bg-orange-100 text-orange-700'
+                                                    step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-orange-100 text-orange-700'
                                                     }`}>
                                                     Step {step.number}
                                                 </span>
@@ -345,13 +345,13 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                     </div>
                                     <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
-                                            step.color === 'blue' ? 'bg-blue-500' :
-                                                'bg-orange-500'
+                                        step.color === 'blue' ? 'bg-blue-500' :
+                                            'bg-orange-500'
                                         }`}>
                                         <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
                                             <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
-                                                    step.color === 'blue' ? 'bg-blue-500' :
-                                                        'bg-orange-500'
+                                                step.color === 'blue' ? 'bg-blue-500' :
+                                                    'bg-orange-500'
                                                 }`}></div>
                                         </div>
                                     </div>
@@ -363,12 +363,12 @@ export default function HomePage({ currentLanguage }) {
                     <div
                         className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
-                        <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <a href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             <span>Get Started Today</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -432,9 +432,9 @@ export default function HomePage({ currentLanguage }) {
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
                                     <div className="absolute top-3 right-3">
                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
-                                                category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                                    category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                                        'bg-blue-100 text-blue-800'
+                                            category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
+                                                category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                                    'bg-blue-100 text-blue-800'
                                             }`}>
                                             {category.count}
                                         </span>
@@ -450,9 +450,9 @@ export default function HomePage({ currentLanguage }) {
                                                 {category.description}
                                             </p>
                                             <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                                    category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                        category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                            'text-blue-600 hover:text-blue-700'
+                                                category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                    category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                        'text-blue-600 hover:text-blue-700'
                                                 }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -463,9 +463,9 @@ export default function HomePage({ currentLanguage }) {
                                     </div>
                                 </div>
                                 <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
-                                        category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                            category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                                'bg-blue-500 group-hover:bg-blue-600'
+                                    category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
+                                        category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                            'bg-blue-500 group-hover:bg-blue-600'
                                     }`}></div>
                             </div>
                         ))}
