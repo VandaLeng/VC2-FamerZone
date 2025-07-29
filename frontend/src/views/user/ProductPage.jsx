@@ -3,6 +3,7 @@ import '../../styles/ProductStyle.css';
 import provinces from "../../services/provinces";
 import ProductCard from "../../components/ProductCard";
 import ProductSection from "../../components/ProductSection";
+import ProductFilterSection from "../../components/ProductFilterSection";
 
 
 import {
@@ -572,144 +573,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       )}
 
       {/* Filters and Controls */}
-      <section className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            {/* Left side - Filters */}
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Mobile Filter Toggle */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                {currentTexts.filters}
-              </button>
-
-              {/* Desktop Filters */}
-              <div className="hidden lg:flex items-center gap-4">
-                {/* Province Filter */}
-                <div className="relative">
-                  <select
-                    value={selectedProvince}
-                    onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="appearance-none px-4 py-2 pr-8 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
-                  >
-                    {provinces.map((province) => (
-                      <option key={province.id} value={province.id}>
-                        {province.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
-
-                {/* Category Buttons */}
-                <div className="flex gap-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
-                        ? "bg-green-700 text-white shadow-lg"
-                        : `${category.color} text-gray-700 hover:shadow-md`
-                        }`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right side - Sort and View */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 hidden sm:block">
-                {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.of}{" "}
-                {sampleProducts.length} {currentTexts.products}
-              </span>
-
-              {/* Sort dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-4 py-2 pr-8 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-sm"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* View mode toggle */}
-              <div className="flex border border-stone-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 ${viewMode === "grid" ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-stone-50"}`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 ${viewMode === "list" ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-stone-50"}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Clear filters */}
-              {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
-                <button onClick={clearFilters} className="text-sm text-red-600 hover:text-red-700 font-medium">
-                  {currentTexts.clearFilters}
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Filters Panel */}
-          {showFilters && (
-            <div className="lg:hidden mt-6 p-4 bg-stone-50 rounded-lg border border-stone-200">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
-                  <select
-                    value={selectedProvince}
-                    onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    {provinces.map((province) => (
-                      <option key={province.id} value={province.id}>
-                        {province.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {categories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`p-3 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
-                          ? "bg-green-700 text-white"
-                          : `${category.color} text-gray-700`
-                          }`}
-                      >
-                        <span className="text-sm">{category.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+      <ProductFilterSection/>
 
       {/* All Items Section */}
       <ProductSection/>
