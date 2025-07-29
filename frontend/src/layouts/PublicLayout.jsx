@@ -1,8 +1,12 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BackToTopButton from '../components/BackToTop';
+import UserProfile from '../views/buyer/BuyerProfile';
+import UserOrders from '../views/buyer/BuyerOrder';
+import UserSettings from '../views/buyer/BuyerSetting';
+// import UserDashboard from '../views/buyer/BuyerDashboard';
 
 const PublicLayout = ({ 
   children, 
@@ -13,6 +17,14 @@ const PublicLayout = ({
   handleLogout,
   isFarmer
 }) => {
+  const location = useLocation();
+  
+  // List of routes where Footer should not be displayed
+  const noFooterRoutes = ['/profile', '/orders', '/settings', '/dashboard'];
+  
+  // Check if current route is in noFooterRoutes
+  const showFooter = !noFooterRoutes.includes(location.pathname);
+
   return (
     <>
       <Navbar 
@@ -29,68 +41,27 @@ const PublicLayout = ({
             <>
               <Route 
                 path="/profile" 
-                element={
-                  <div className="min-h-screen bg-gray-50 py-8">
-                    <div className="max-w-4xl mx-auto px-4">
-                      <h1 className="text-2xl font-bold mb-6">User Profile</h1>
-                      <div className="bg-white rounded-lg shadow p-6">
-                        <p><strong>Name:</strong> {userData.name}</p>
-                        <p><strong>Email:</strong> {userData.email}</p>
-                        <p><strong>Role:</strong> {userData.role?.name || userData.role}</p>
-                        <p><strong>Phone:</strong> {userData.phone || 'Not provided'}</p>
-                        <p><strong>Address:</strong> {userData.address || 'Not provided'}</p>
-                      </div>
-                    </div>
-                  </div>
-                } 
+                element={<UserProfile userData={userData} currentLanguage={currentLanguage} />}
               />
               <Route 
                 path="/orders" 
-                element={
-                  <div className="min-h-screen bg-gray-50 py-8">
-                    <div className="max-w-4xl mx-auto px-4">
-                      <h1 className="text-2xl font-bold mb-6">My Orders</h1>
-                      <div className="bg-white rounded-lg shadow p-6">
-                        <p>Your order history will appear here.</p>
-                      </div>
-                    </div>
-                  </div>
-                } 
+                element={<UserOrders userData={userData} currentLanguage={currentLanguage} />}
               />
               <Route 
                 path="/settings" 
-                element={
-                  <div className="min-h-screen bg-gray-50 py-8">
-                    <div className="max-w-4xl mx-auto px-4">
-                      <h1 className="text-2xl font-bold mb-6">Settings</h1>
-                      <div className="bg-white rounded-lg shadow p-6">
-                        <p>User settings will appear here.</p>
-                      </div>
-                    </div>
-                  </div>
-                } 
+                element={<UserSettings userData={userData} currentLanguage={currentLanguage} />}
               />
-              <Route 
+              {/* <Route 
                 path="/dashboard" 
-                element={
-                  <div className="min-h-screen bg-gray-50 py-8">
-                    <div className="max-w-4xl mx-auto px-4">
-                      <h1 className="text-2xl font-bold mb-6">User Dashboard</h1>
-                      <div className="bg-white rounded-lg shadow p-6">
-                        <p>Welcome back, {userData.name}!</p>
-                        <p>This is your buyer dashboard.</p>
-                      </div>
-                    </div>
-                  </div>
-                } 
-              />
+                element={<UserDashboard userData={userData} currentLanguage={currentLanguage} />}
+              /> */}
             </>
           )}
           {/* Render children routes passed from App.jsx */}
           <Route path="*" element={children} />
         </Routes>
       </main>
-      <Footer currentLanguage={currentLanguage} />
+      {showFooter && <Footer currentLanguage={currentLanguage} />}
       <BackToTopButton />
     </>
   );
