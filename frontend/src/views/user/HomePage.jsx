@@ -225,19 +225,20 @@ export default function HomePage({ currentLanguage }) {
                     <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
                         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 max-w-4xl mx-auto">
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                                {currentLanguage === "kh" ? "ចាប់ផ្តើមជាមួយយើង" : "Ready to get started?"}
+                                {currentTexts.getStartedTitle || (currentLanguage === "kh" ? "ចាប់ផ្តើមលក់ជាកសិករនៅថ្ងៃនេះ" : "Start Selling as a Farmer Today")}
                             </h3>
-                            <p className="text-gray-600 mb-6">
-                                {currentLanguage === "kh"
-                                    ? "ចាប់ផ្តើមលក់ផលិតផលកសិកម្មរបស់អ្នកនៅថ្ងៃនេះ"
-                                    : "Start selling your agricultural products today and connect with customers directly"}
+                            <p className="text-gray-600 mb-6 leading-relaxed">
+                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FramerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
                             </p>
-                            <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <span>{currentLanguage === "kh" ? "ចាប់ផ្តើមឥឡូវ" : "Get Started Now"}</span>
+                            <a
+                                href="/register"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            >
+                                <span>{currentTexts.getStartedButton || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}</span>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
