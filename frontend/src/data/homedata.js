@@ -43,7 +43,7 @@ const homeData = {
         learningTitle: "មជ្ឈមណ្ឌលសិក្សា",
         learningSubtitle: "រៀនបច្ចេកទេសកសិកម្មទំនើប",
         learningDesc: "ស្វែងយល់អំពីបច្ចេកទេសដាំដុះ ការថែទាំដំណាំ និងការគ្រប់គ្រងកសិដ្ឋាន",
-        watchVideos: "មើលវីដេអូ",
+        watchVideos: "ស្វែងរកវគ្គសិក្សាដែលបានណែនាំ",
 
         // CTA
         ctaTitle: "ចាប់ផ្តើមជាមួយ FramerZone ថ្ងៃនេះ",
@@ -95,7 +95,7 @@ const homeData = {
         learningTitle: "Learning Center",
         learningSubtitle: "Learn Modern Farming Techniques",
         learningDesc: "Discover farming techniques, crop care, and farm management practices",
-        watchVideos: "Watch Videos",
+        watchVideos: "Explore Recommended Courses",
 
         // CTA
         ctaTitle: "Start with FramerZone Today",

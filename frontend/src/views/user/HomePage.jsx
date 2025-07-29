@@ -449,7 +449,7 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-                                            <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            <a href="/products" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                                 category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
                                                     category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
                                                         'text-blue-600 hover:text-blue-700'
@@ -458,7 +458,7 @@ export default function HomePage({ currentLanguage }) {
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                 </svg>
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -471,16 +471,17 @@ export default function HomePage({ currentLanguage }) {
                         ))}
                     </div>
                     <div className="mt-12 text-center">
-                        <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
+                        <a href="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
                             <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
 
+            {/* Learning Center */}
             <section id="learning" data-animate className="py-20 bg-gray-50 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-12 left-12 w-28 h-28 bg-green-200/20 rounded-full animate-float"></div>
@@ -508,12 +509,6 @@ export default function HomePage({ currentLanguage }) {
                                     className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-bounce-in animation-delay-300"
                                 >
                                     {currentTexts.watchVideos || (currentLanguage === 'en' ? 'Explore Resources' : 'ស្វែងរកធនធាន')}
-                                </a>
-                                <a
-                                    href="/learning-center#cta"
-                                    className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 animate-bounce-in animation-delay-400"
-                                >
-                                    {currentLanguage === 'en' ? 'Contact Experts' : 'ទាក់ទងអ្នកជំនាញ'}
                                 </a>
                             </div>
                         </div>
