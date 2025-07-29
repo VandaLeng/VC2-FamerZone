@@ -205,7 +205,7 @@ export default function HomePage({ currentLanguage }) {
                                         {feature.desc}
                                     </p>
                                     <div className="mt-4">
-                                        <button className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                        <a href="/about" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                             feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
                                                 feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
                                                     'text-purple-600 hover:text-purple-700'
@@ -214,7 +214,7 @@ export default function HomePage({ currentLanguage }) {
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
