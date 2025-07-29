@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, MapPin, Star, Eye } from 'lucide-react';
+import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, MapPin, Star, Eye, ArrowUpRight } from 'lucide-react';
 
 const FarmerDashboard = ({ currentLanguage = 'en' }) => {
   const [timeRange, setTimeRange] = useState('weekly');
@@ -39,10 +39,10 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
   };
 
   const topProducts = [
-    { name: 'Organic Tomatoes', sales: 45, revenue: 450, color: '#228B22' },
-    { name: 'Fresh Lettuce', sales: 38, revenue: 380, color: '#8B4513' },
-    { name: 'Bell Peppers', sales: 32, revenue: 640, color: '#FFD700' },
-    { name: 'Carrots', sales: 28, revenue: 280, color: '#2D5016' }
+    { name: 'Organic Tomatoes', sales: 45, revenue: 450, color: '#22c55e' },
+    { name: 'Fresh Lettuce', sales: 38, revenue: 380, color: '#16a34a' },
+    { name: 'Bell Peppers', sales: 32, revenue: 640, color: '#15803d' },
+    { name: 'Carrots', sales: 28, revenue: 280, color: '#166534' }
   ];
 
   const recentOrders = [
@@ -128,58 +128,65 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'confirmed': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'delivered': return 'bg-green-50 text-green-700 border-green-200';
+      default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, trend, color = 'text-forest-green' }) => (
-    <div className="bg-cream rounded-xl shadow-lg p-4 border border-warm-brown/10 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-      <div className="flex items-center justify-between mb-2">
-        <div className={`p-2 rounded-full bg-white shadow-md ${color}`}>
-          <Icon className="w-5 h-5" />
-        </div>
-        {trend && (
-          <div className="flex items-center text-xs text-green-600">
-            <TrendingUp className="w-3 h-3 mr-1" />
-            +{trend}%
+  const StatCard = ({ icon: Icon, title, value, subtitle, trend, color = 'text-green-600', bgGradient = 'from-green-500 to-emerald-500' }) => (
+    <div className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+      {/* Background gradient accent */}
+      <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${bgGradient} opacity-5 rounded-full -translate-y-4 translate-x-4 group-hover:opacity-10 transition-opacity`}></div>
+
+      <div className="relative">
+        <div className="flex items-center justify-between mb-3">
+          <div className={`p-2 rounded-lg bg-gradient-to-br ${bgGradient} shadow-md`}>
+            <Icon className="w-4 h-4 text-white" />
           </div>
-        )}
-      </div>
-      <div>
-        <p className="text-xs text-charcoal/70 mb-0.5">{title}</p>
-        <p className="text-xl font-bold text-charcoal mb-0.5">{value}</p>
-        {subtitle && <p className="text-[10px] text-charcoal/60">{subtitle}</p>}
+          {trend && (
+            <div className="flex items-center text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+              <ArrowUpRight className="w-2.5 h-2.5 mr-0.5" />
+              +{trend}%
+            </div>
+          )}
+        </div>
+        <div>
+          <p className="text-sm text-gray-600 mb-0.5 font-medium">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 mb-0.5">{value}</p>
+          {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream to-white pt-2 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-charcoal mb-2">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
                 {currentTexts.dashboard}
               </h1>
-              <p className="text-charcoal/70">
+              <p className="text-gray-600 text-lg">
                 {currentLanguage === 'kh' ? 'ស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នក' : 'Welcome to your farmer dashboard'}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-md">
-                <Calendar className="w-4 h-4 text-forest-green" />
-                <span className="text-sm text-charcoal">
+              <div className="flex items-center space-x-3 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-100">
+                <Calendar className="w-5 h-5 text-green-600" />
+                <span className="text-sm text-gray-700 font-medium">
                   {new Date().toLocaleDateString(currentLanguage === 'kh' ? 'km-KH' : 'en-US')}
                 </span>
               </div>
               <div className="relative">
-                <Bell className="w-6 h-6 text-forest-green cursor-pointer hover:text-warm-brown transition-colors" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-golden-yellow rounded-full"></span>
+                <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                  <Bell className="w-5 h-5 text-gray-600" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -187,7 +194,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
 
         {/* Quick Stats */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-charcoal mb-4">{currentTexts.quickStats}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{currentTexts.quickStats}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
               icon={DollarSign}
@@ -195,7 +202,8 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               value={`$${dashboardData.totalEarnings.toLocaleString()}`}
               subtitle={currentTexts.monthlyEarnings + `: $${dashboardData.monthlyEarnings}`}
               trend={12.5}
-              color="text-forest-green"
+              color="text-green-600"
+              bgGradient="from-green-500 to-emerald-500"
             />
             <StatCard
               icon={ShoppingCart}
@@ -203,7 +211,8 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               value={dashboardData.totalOrders}
               subtitle={currentTexts.pendingOrders + `: ${dashboardData.pendingOrders}`}
               trend={8.2}
-              color="text-warm-brown"
+              color="text-blue-600"
+              bgGradient="from-blue-500 to-cyan-500"
             />
             <StatCard
               icon={Package}
@@ -211,7 +220,8 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               value={dashboardData.totalProducts}
               subtitle={currentTexts.activeProducts + `: ${dashboardData.activeProducts}`}
               trend={5.1}
-              color="text-golden-yellow"
+              color="text-purple-600"
+              bgGradient="from-purple-500 to-indigo-500"
             />
             <StatCard
               icon={Users}
@@ -219,7 +229,8 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               value={dashboardData.totalCustomers}
               subtitle={currentTexts.newCustomers + `: ${dashboardData.newCustomers}`}
               trend={15.3}
-              color="text-forest-green"
+              color="text-orange-600"
+              bgGradient="from-orange-500 to-red-500"
             />
           </div>
         </div>
@@ -227,67 +238,89 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Sales Overview Chart */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-warm-brown/10">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-charcoal">{currentTexts.salesOverview}</h3>
-              <div className="flex bg-cream rounded-lg p-1">
+              <h3 className="text-xl font-semibold text-gray-900">{currentTexts.salesOverview}</h3>
+              <div className="flex bg-gray-50 rounded-xl p-1 border border-gray-200">
                 <button
                   onClick={() => setTimeRange('weekly')}
-                  className={`px-4 py-2 text-sm rounded-md transition-all ${timeRange === 'weekly'
-                      ? 'bg-forest-green text-white shadow-md'
-                      : 'text-charcoal hover:bg-white'
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'weekly'
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                     }`}
                 >
                   {currentTexts.weekly}
                 </button>
                 <button
                   onClick={() => setTimeRange('monthly')}
-                  className={`px-4 py-2 text-sm rounded-md transition-all ${timeRange === 'monthly'
-                      ? 'bg-forest-green text-white shadow-md'
-                      : 'text-charcoal hover:bg-white'
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'monthly'
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                     }`}
                 >
                   {currentTexts.monthly}
                 </button>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={salesData[timeRange]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={salesData[timeRange]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#FAF0E6',
-                    border: '1px solid #8B4513',
-                    borderRadius: '8px'
+                    backgroundColor: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    fontSize: '14px'
                   }}
                 />
-                <Bar dataKey="sales" fill="#228B22" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="sales"
+                  fill="url(#colorGradient)"
+                  radius={[6, 6, 0, 0]}
+                />
+                <defs>
+                  <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#22c55e" />
+                    <stop offset="100%" stopColor="#16a34a" />
+                  </linearGradient>
+                </defs>
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* Top Products */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-warm-brown/10">
-            <h3 className="text-lg font-semibold text-charcoal mb-6">{currentTexts.topProducts}</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">{currentTexts.topProducts}</h3>
             <div className="space-y-4">
               {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-cream rounded-lg hover:shadow-md transition-shadow">
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: product.color }}
-                    ></div>
+                <div key={index} className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-modern-green transition-all duration-200 hover:shadow-sm">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <div
+                        className="w-4 h-4 rounded-full shadow-sm"
+                        style={{ backgroundColor: product.color }}
+                      ></div>
+                      <div className="absolute inset-0 rounded-full bg-white opacity-20"></div>
+                    </div>
                     <div>
-                      <p className="font-medium text-charcoal">{product.name}</p>
-                      <p className="text-sm text-charcoal/60">{product.sales} {currentTexts.sales.toLowerCase()}</p>
+                      <p className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors">{product.name}</p>
+                      <p className="text-sm text-gray-500">{product.sales} {currentTexts.sales.toLowerCase()}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-forest-green">${product.revenue}</p>
-                    <div className="flex items-center text-sm text-charcoal/60">
-                      <Star className="w-3 h-3 mr-1 fill-current text-golden-yellow" />
+                    <p className="font-bold text-green-600 text-lg">${product.revenue}</p>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Star className="w-3 h-3 mr-1 fill-current text-amber-400" />
                       4.8
                     </div>
                   </div>
@@ -298,52 +331,52 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
         </div>
 
         {/* Recent Orders Table */}
-        <div className="bg-white rounded-xl shadow-lg border border-warm-brown/10">
-          <div className="flex items-center justify-between p-6 border-b border-cream">
-            <h3 className="text-lg font-semibold text-charcoal">{currentTexts.recentOrders}</h3>
-            <button className="text-forest-green hover:text-warm-brown font-medium text-sm transition-colors flex items-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <h3 className="text-xl font-semibold text-gray-900">{currentTexts.recentOrders}</h3>
+            <button className="text-green-600 hover:text-green-700 font-semibold text-sm transition-colors flex items-center bg-green-50 px-4 py-2 rounded-lg hover:bg-green-100">
               {currentTexts.viewAll}
-              <Eye className="w-4 h-4 ml-1" />
+              <Eye className="w-4 h-4 ml-2" />
             </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-cream/50">
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.orderId}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.customer}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.product}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.quantity}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.total}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.status}</th>
-                  <th className="text-left p-4 text-sm font-semibold text-charcoal">{currentTexts.date}</th>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.orderId}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.customer}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.product}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.quantity}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.total}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.status}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.date}</th>
                 </tr>
               </thead>
               <tbody>
                 {recentOrders.map((order, index) => (
-                  <tr key={index} className="border-b border-cream/50 hover:bg-cream/30 transition-colors">
+                  <tr key={index} className="border-b border-gray-50 hover:bg-modern-green transition-colors">
                     <td className="p-4">
-                      <span className="font-mono text-sm text-forest-green font-medium">{order.id}</span>
+                      <span className="font-mono text-sm text-green-600 font-semibold">{order.id}</span>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-forest-green/10 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-semibold text-forest-green">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
+                          <span className="text-xs font-bold text-white">
                             {order.customer.split(' ').map(n => n[0]).join('')}
                           </span>
                         </div>
-                        <span className="text-sm text-charcoal">{order.customer}</span>
+                        <span className="text-sm text-gray-900 font-medium">{order.customer}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-charcoal">{order.product}</td>
-                    <td className="p-4 text-sm text-charcoal">{order.quantity}</td>
-                    <td className="p-4 text-sm font-semibold text-forest-green">${order.total.toFixed(2)}</td>
+                    <td className="p-4 text-sm text-gray-700">{order.product}</td>
+                    <td className="p-4 text-sm text-gray-700 font-medium">{order.quantity}</td>
+                    <td className="p-4 text-sm font-bold text-green-600">${order.total.toFixed(2)}</td>
                     <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
                         {currentTexts[order.status]}
                       </span>
                     </td>
-                    <td className="p-4 text-sm text-charcoal/70">
+                    <td className="p-4 text-sm text-gray-500">
                       {new Date(order.date).toLocaleDateString(currentLanguage === 'kh' ? 'km-KH' : 'en-US')}
                     </td>
                   </tr>
@@ -354,22 +387,14 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
         </div>
       </div>
 
-      {/* Custom CSS for colors */}
+      {/* Custom CSS for modern colors */}
       <style jsx>{`
-        .text-forest-green { color: #228B22; }
-        .text-warm-brown { color: #8B4513; }
-        .text-golden-yellow { color: #FFD700; }
-        .text-charcoal { color: #333333; }
-        .bg-cream { background-color: #FAF0E6; }
-        .bg-forest-green { background-color: #228B22; }
-        .bg-warm-brown { background-color: #8B4513; }
-        .bg-golden-yellow { background-color: #FFD700; }
-        .border-warm-brown { border-color: #8B4513; }
-        .border-cream { border-color: #FAF0E6; }
-        .hover\\:text-warm-brown:hover { color: #8B4513; }
-        .hover\\:bg-cream\\/30:hover { background-color: rgba(250, 240, 230, 0.3); }
-        .bg-cream\\/50 { background-color: rgba(250, 240, 230, 0.5); }
-        .border-cream\\/50 { border-color: rgba(250, 240, 230, 0.5); }
+        .bg-modern-green { 
+          background-color: #DCFCE7; 
+        }
+        .hover\\:bg-modern-green:hover { 
+          background-color: #DCFCE7; 
+        }
       `}</style>
     </div>
   );
