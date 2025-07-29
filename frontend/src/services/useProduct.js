@@ -29,7 +29,7 @@ const useProduct = () => {
           },
         }));
         setAllProducts(productsWithImages);
-        setProvinces(response.data.provinces || []); // Ensure provinces is always an array
+        setProvinces(response.data.provinces || []); 
         setLoading(false);
       })
       .catch((error) => {

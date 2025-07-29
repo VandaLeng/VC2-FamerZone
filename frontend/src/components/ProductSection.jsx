@@ -5,7 +5,7 @@ import useProduct from "../services/useProduct";
 import { MapPin, Star } from "lucide-react"; // Import missing icons
 
 function ProductSection() {
-  const { allProducts, provinces, categories, loading, error } = useProduct();
+  const { allProducts, provinces, loading, error } = useProduct(); // Removed unused categories
   const [viewMode, setViewMode] = useState("grid");
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
   const [selectedProduct, setSelectedProduct] = useState(null); // State for selected product
@@ -35,11 +35,9 @@ function ProductSection() {
   if (loading) return <div className="text-center py-16">Loading products...</div>;
   if (error) return <div className="text-center py-16 text-red-500">Failed to load products. Please try again later.</div>;
 
-  // Derive category name from categories with safety check
-  const getCategoryName = (categoryId) => {
-    if (!categories || !Array.isArray(categories)) return "Unknown Category";
-    const category = categories.find((c) => c.id === categoryId.toString());
-    return category ? category.name : "Unknown Category";
+  // Derive category name directly from selectedProduct.category
+  const getCategoryName = (product) => {
+    return product?.category?.name || "Unknown Category";
   };
 
   return (
@@ -104,7 +102,7 @@ function ProductSection() {
                 <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
                 {/* Category Name */}
                 <div className="mb-4">
-                  <span className="text-sm font-medium text-gray-700">Category: {getCategoryName(selectedProduct.category_id)}</span>
+                  <span className="text-sm font-medium text-gray-700">Category: {getCategoryName(selectedProduct)}</span>
                 </div>
                 <div className="mb-4">
                   <span className="text-lg font-bold text-green-700">
