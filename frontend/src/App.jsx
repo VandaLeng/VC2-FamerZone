@@ -1,23 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+// User Website
 import Home from "./views/user/HomePage";
 import Products from "./views/user/ProductPage";
 import About from "./views/user/AboutPage";
 import LearningCenter from "./views/user/LearningCenterPage";
 import Contact from "./views/user/ContactPage";
+// Auth
 import RegisterForm from "./views/auth/RegisterForm";
 import LoginForm from "./views/auth/LoginForm";
+// Layout
 import FarmerLayout from "./layouts/FarmerLayout";
 import PublicLayout from "./layouts/PublicLayout";
-// Import your farmer pages (create these if you haven't)
+// Farmer System
 import FarmerDashboard from "./views/farmer/DashboardFarmer";
 import FarmerOrders from "./views/farmer/OrderManagementFarmer";
 import FarmerCustomers from "./views/farmer/CustomerManagementFarmer";
 import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
-// import FarmerNotifications from "./views/farmer/FarmerNotifications";
-// import FarmerSettings from "./views/farmer/FarmerSettings";
+import FarmerNotifications from "./views/farmer/FarmerNotification";
+import FarmerSettings from "./views/farmer/FarmerSetting";
+// Api
 import { logoutUser } from "./stores/api";
 
 function App() {
@@ -41,6 +45,9 @@ function App() {
         const parsedUserData = JSON.parse(storedUserData);
         setUserData(parsedUserData);
         setIsLoggedIn(true);
+        
+        console.log("User authenticated on app load:", parsedUserData);
+        console.log("User role:", parsedUserData.role);
         
         // Auto-redirect farmer to dashboard after login
         const userRole = parsedUserData.role?.name || parsedUserData.role;
@@ -94,8 +101,8 @@ function App() {
           <Route path="/farmer/customers" element={<FarmerCustomers currentLanguage={currentLanguage} />} />
           <Route path="/farmer/products" element={<FarmerProducts currentLanguage={currentLanguage} />} />
           <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
-          {/* <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} /> */}
+          <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
+          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
         </Routes>
       </FarmerLayout>
     );
@@ -105,6 +112,10 @@ function App() {
     <PublicLayout
       currentLanguage={currentLanguage}
       setCurrentLanguage={setCurrentLanguage}
+      isLoggedIn={isLoggedIn}
+      userData={userData}
+      handleLogout={handleLogout}
+      isFarmer={isFarmer}
     >
       <Routes>
         <Route

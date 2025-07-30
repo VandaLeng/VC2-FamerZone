@@ -21,7 +21,8 @@ function ProductCard({
     : farmer.name || farmer.nameKh || "Unknown";
 
   // ✅ FIX: Province handling
-  const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
+  const provinceId = typeof product.province === 'object' ? product.province?.id : product.province;
+  const provinceName = provinces.find((p) => p.id === Number(provinceId))?.name || "Unknown";
 
   const isOutOfStock = !product.inStock || product.quantity === 0;
   const isOrdering = orderingProducts.includes(product.id);
@@ -87,11 +88,9 @@ function ProductCard({
 
 
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-gray-600">{currentTexts.from}</span>
-              <span className="text-sm font-medium text-green-700">{provinceName}</span>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-gray-600">{currentTexts.from}</span>
+            <span className="text-sm font-medium text-green-700">{provinceName}</span>
           </div>
           <div className="text-right">
             <span className="text-lg font-bold text-green-700">
@@ -125,8 +124,8 @@ function ProductCard({
             {isOrdering
               ? "Ordering..."
               : isOrdered
-                ? currentTexts.orderPlaced || "✓"
-                : currentTexts.orderNow}
+              ? currentTexts.orderPlaced || "✓"
+              : currentTexts.orderNow}
           </button>
         </div>
       </div>
