@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProductCard from './ProductCard';
 import useProducts from '../services/useProduct';
 import { placeOrder } from '../services/orderService';
+import OrderForm from './OrderForm'; // ✅ Import new component
 
 function ProductSection() {
   const { allProducts, provinces, loading, error } = useProducts();
@@ -39,11 +40,11 @@ function ProductSection() {
     try {
       setIsSubmitting(true);
       await placeOrder(orderData);
-      alert("✅ Order placed successfully!");
+      alert('✅ Order placed successfully!');
       closeOrderForm();
     } catch (err) {
-      console.error("❌ Order failed:", err);
-      alert("❌ Failed to place order.");
+      console.error('❌ Order failed:', err);
+      alert('❌ Failed to place order.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,10 +66,15 @@ function ProductSection() {
             <ProductCard
               key={product.id}
               product={product}
-              currentTexts={{ inStock: 'In Stock', outOfStock: 'Out of Stock', orderNow: 'Order Now', from: 'From' }}
+              currentTexts={{
+                inStock: 'In Stock',
+                outOfStock: 'Out of Stock',
+                orderNow: 'Order Now',
+                from: 'From',
+              }}
               currentLanguage="en"
               isFavorite={false}
-              onToggleFavorite={() => { }}
+              onToggleFavorite={() => {}}
               onOrder={() => openOrderForm(product)}
               orderingProducts={[]}
               orderedProducts={[]}
@@ -86,62 +92,20 @@ function ProductSection() {
         )}
       </div>
 
-      {/* Order Form Modal */}
-      {selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">
-            <button
-              onClick={closeOrderForm}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-            >
-              ✕
-            </button>
-            <h3 className="text-xl font-bold mb-4">Order: {selectedProduct.name}</h3>
-            <form onSubmit={handleOrderSubmit} className="space-y-4">
-              <div>
-                <label className="block mb-1 font-medium">Quantity</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg"
-                  required
-                />
-              </div>
-
-              {/* ✅ Total Price */}
-              <div>
-                <label className="block mb-1 font-medium">Total Price</label>
-                <p className="text-lg font-semibold text-green-700">
-                  ${(selectedProduct.price * quantity).toFixed(2)}
-                </p>
-              </div>
-
-              <div>
-                <label className="block mb-1 font-medium">Delivery Address</label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
-              >
-                {isSubmitting ? "Placing Order..." : "Place Order"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* ✅ Order Form Component */}
+      <OrderForm
+        selectedProduct={selectedProduct}
+        quantity={quantity}
+        address={address}
+        isSubmitting={isSubmitting}
+        setQuantity={setQuantity}
+        setAddress={setAddress}
+        handleOrderSubmit={handleOrderSubmit}
+        onClose={closeOrderForm}
+      />
     </section>
   );
 }
 
 export default ProductSection;
+  

@@ -623,6 +623,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       {/* All Products Section */}
       {/* All Items Section */}
       <ProductSection/>
+      
     </div>
   );
 }
