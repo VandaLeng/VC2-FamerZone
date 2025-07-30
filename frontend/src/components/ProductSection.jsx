@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
-import ProductFilterSection from "./ProductFilterSection"; // Adjust the path
 import useProduct from "../services/useProduct";
 import { MapPin, Star } from "lucide-react"; // Import missing icons
 
@@ -42,11 +41,6 @@ function ProductSection() {
 
   return (
     <div>
-      <ProductFilterSection
-        onViewModeChange={setViewMode}
-        onFilterChange={setFilteredProducts}
-        provinces={provinces}
-      />
       <section className="py-16 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">

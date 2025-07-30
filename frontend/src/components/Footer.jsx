@@ -13,10 +13,13 @@ export default function Footer({ currentLanguage }) {
       learningCenter: "មជ្ឈមណ្ឌលសិក្សា",
       contact: "ទំនាក់ទំនង",
       farmers: "ជួបកសិករ",
-      news: "ព័ត៌មាន",
-      newsTitle: "ព័ត៌មានថ្មីៗ",
-      news1: "នាំយកការផលិតអាហារត្រលប់មកទីក្រុង",
-      news2: "អនាគតនៃកសិកម្ម ដំណោះស្រាយស្រោចស្រពឆ្លាតវៃ",
+      newsTitle: "ព័ត៌មានថ្មីរបស់ FramerZone",
+      news1: "វគ្គសិក្សាថ្មីដែលបានណែនាំសម្រាប់កសិករ",
+      news1Desc: "ស្វែងរកវគ្គសិក្សាកសិកម្មថ្មីដែលបានជ្រើសរើសដើម្បីបង្កើនទិន្នផលដំណាំ និងស្ទាត់ជំនាញបច្ចេកទេសកសិកម្មទំនើប!",
+      news1Link: "/learning-center",
+      news2: "ផែនទីអន្តរកម្មឥឡូវនេះបើកដំណើរការសម្រាប់អ្នកទិញ",
+      news2Desc: "ស្វែងរកកសិដ្ឋាននៅជិតអ្នក និងកម្ម៉ង់ផលិតផលស្រស់ៗដោយផ្ទាល់ជាមួយនឹងមុខងារផែនទីអន្តរកម្មថ្មី។",
+      news2Link: "/products",
       contactTitle: "ទំនាក់ទំនង",
       phone: "០១២ ៣៤៥ ៦៧៨",
       email: "needhelp@framerzone.com",
@@ -35,13 +38,16 @@ export default function Footer({ currentLanguage }) {
       home: "Home",
       about: "About",
       products: "Products",
-      learningCenter: "មជ្ឈមណ្ឌលសិក្សា",
+      learningCenter: "Learning Center",
       contact: "Contact",
       farmers: "Meet the Farmers",
-      news: "Latest News",
-      newsTitle: "News",
-      news1: "Bringing Food Production Back To Cities",
-      news2: "The Future of Farming, Smart Irrigation Solutions",
+      newsTitle: "FramerZone Updates",
+      news1: "New Courses Recommended for Farmers",
+      news1Desc: "Discover our latest curated agricultural courses to boost crop yields and master modern farming techniques!",
+      news1Link: "/learning-center",
+      news2: "Interactive Map Now Live for Buyers",
+      news2Desc: "Find nearby farms and order fresh products directly with our new interactive map feature.",
+      news2Link: "/products",
       contactTitle: "Contact",
       phone: "+855 (0) 12 345 678",
       email: "needhelp@framerzone.com",
@@ -101,12 +107,13 @@ export default function Footer({ currentLanguage }) {
             <h3 className="text-xl font-semibold">{currentTexts.explore}</h3>
             <ul className="space-y-3">
               {[
-                { text: currentTexts.home, href: "/about" },
-                { text: currentTexts.about, href: "/services" },
+                { text: currentTexts.home, href: "/" },
                 { text: currentTexts.products, href: "/products" },
+                { text: currentTexts.about, href: "/about" },
+                { text: currentTexts.learningCenter, href: "/learning-center" },
                 { text: currentTexts.contact, href: "/contact" },
-                { text: currentTexts.farmers, href: "/farmers" },
-                { text: currentTexts.news, href: "/news" },
+                // { text: currentTexts.farmers, href: "/farmers" },
+                // { text: currentTexts.news, href: "/news" },
               ].map((item) => (
                 <li key={item.text}>
                   <a
@@ -126,19 +133,27 @@ export default function Footer({ currentLanguage }) {
 
           {/* News */}
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold">{currentTexts.newsTitle}</h3>
-            <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-white">
+              {currentTexts.newsTitle || (currentLanguage === "kh" ? "ព័ត៌មានថ្មីរបស់ FramerZone" : "FramerZone Updates")}
+            </h3>
+            <div className="space-y-6">
               <div className="border-l-2 border-green-600 pl-4">
-                <h4 className="text-white font-medium mb-1 hover:text-green-400 cursor-pointer transition-colors duration-300">
-                  {currentTexts.news1}
-                </h4>
-                <p className="text-sm text-gray-400">July 5, 2024</p>
+                <a href={currentTexts.news1Link || "/learning-center"} className="text-white font-medium mb-1 hover:text-green-400 cursor-pointer transition-colors duration-300">
+                  {currentTexts.news1 || (currentLanguage === "kh" ? "វគ្គសិក្សាថ្មីដែលបានណែនាំសម្រាប់កសិករ" : "New Courses Recommended for Farmers")}
+                </a>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {currentTexts.news1Desc || (currentLanguage === "kh" ? "ស្វែងរកវគ្គសិក្សាកសិកម្មថ្មីដែលបានជ្រើសរើសដើម្បីបង្កើនទិន្នផលដំណាំ និងស្ទាត់ជំនាញបច្ចេកទេសកសិកម្មទំនើប!" : "Discover our latest curated agricultural courses to boost crop yields and master modern farming techniques!")}
+                </p>
+                <p className="text-sm text-gray-400">October 15, 2025</p>
               </div>
               <div className="border-l-2 border-green-600 pl-4">
-                <h4 className="text-white font-medium mb-1 hover:text-green-400 cursor-pointer transition-colors duration-300">
-                  {currentTexts.news2}
-                </h4>
-                <p className="text-sm text-gray-400">July 5, 2024</p>
+                <a href={currentTexts.news2Link || "/products"} className="text-white font-medium mb-1 hover:text-green-400 cursor-pointer transition-colors duration-300">
+                  {currentTexts.news2 || (currentLanguage === "kh" ? "ផែនទីអន្តរកម្មឥឡូវនេះបើកដំណើរការសម្រាប់អ្នកទិញ" : "Interactive Map Now Live for Buyers")}
+                </a>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {currentTexts.news2Desc || (currentLanguage === "kh" ? "ស្វែងរកកសិដ្ឋាននៅជិតអ្នក និងកម្ម៉ង់ផលិតផលស្រស់ៗដោយផ្ទាល់ជាមួយនឹងមុខងារផែនទីអន្តរកម្មថ្មី។" : "Find nearby farms and order fresh products directly with our new interactive map feature.")}
+                </p>
+                <p className="text-sm text-gray-400">October 10, 2025</p>
               </div>
             </div>
           </div>
@@ -183,7 +198,7 @@ export default function Footer({ currentLanguage }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-sm">
-              © {currentTexts.allRights} 2024 {currentTexts.by} <span className="text-green-400">FramerZone</span>
+              © {currentTexts.allRights} 2025 {currentTexts.by} <span className="text-green-400">FramerZone</span>
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">

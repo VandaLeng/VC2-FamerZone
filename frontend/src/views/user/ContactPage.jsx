@@ -676,24 +676,24 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         </div>
         <div className="container mx-auto px-6 text-center relative">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-text-shimmer">
-            {currentLanguage === 'kh' ? 'រួចរាល់ហើយក្នុងការចាប់ផ្តើម?' : 'Ready to Get Started?'}
+            {currentLanguage === 'kh' ? 'ត្រៀមខ្លួនក្លាយជាកសិករលក់ផលិតផលហើយឬនៅ?' : 'Ready to Become a Farmer and Sell?'}
           </h2>
           <p className="text-xl mb-8 text-white opacity-90 animate-slide-in-up animate-delay-100">
             {currentLanguage === 'kh'
-              ? 'ចូលរួមជាមួយសហគមន៍កសិកម្មកម្ពុជា ហើយចាប់ផ្តើមធ្វើការជាមួយ FramerZone ថ្ងៃនេះ'
-              : 'Join Cambodia\'s agricultural community and start working with FramerZone today'}
+              ? 'ចុះឈ្មោះជាកសិករឥឡូវនេះ លក់ផលិតផលរបស់អ្នកដោយផ្ទាល់ និងរកចំណូលបន្ថែមជាមួយ FramerZone!'
+              : 'Register as a farmer now, sell your products directly, and boost your income with FramerZone!'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animate-delay-200">
-            <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
-              {currentLanguage === 'kh' ? 'ចាប់ផ្តើមការលក់' : 'Start Selling'}
-            </button>
-            <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
+            <a href="/register" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+              {currentLanguage === 'kh' ? 'ចុះឈ្មោះជាកសិករ' : 'Register as Farmer'}
+            </a>
+            <a href="/products" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
               {currentLanguage === 'kh' ? 'រកមើលផលិតផល' : 'Browse Products'}
-            </button>
+            </a>
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 };
