@@ -393,28 +393,28 @@ export default function HomePage({ currentLanguage }) {
                         {[
                             {
                                 name: currentTexts.vegetables,
-                                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                image: "https://media.istockphoto.com/id/1062235796/photo/growing-lettuce-in-rows-in-a-field-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=cQ0V4_1oc17C-wiJd5EO6WDNA7JZbHMmtAEEhDKFPQs=",
                                 color: "green",
                                 count: "150+ varieties",
                                 description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables",
                             },
                             {
                                 name: currentTexts.fruits,
-                                image: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                image: "https://media.istockphoto.com/id/629827086/photo/orange-tree.jpg?s=612x612&w=0&k=20&c=lpD8WogyeRQNJY0905vh2FDfTCdpC0kDHa_j-ely3XY=",
                                 color: "orange",
                                 count: "80+ varieties",
                                 description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits",
                             },
                             {
                                 name: currentTexts.grains,
-                                image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                image: "https://media.istockphoto.com/id/671580278/photo/varieties-of-grains-seeds-and-raw-quino.jpg?s=612x612&w=0&k=20&c=ATTVKd0ls6JoL4AvGZ-K6bs_q8rlkJDEyzOLu0d2vrA=",
                                 color: "amber",
                                 count: "25+ varieties",
                                 description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains",
                             },
                             {
                                 name: currentTexts.livestock,
-                                image: "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                                image: "https://media.istockphoto.com/id/1326405707/photo/set-of-natural-food-high-in-protein-on-grey-background-top-view.jpg?s=612x612&w=0&k=20&c=YUi9fftqZxrgCzYcMT1rMTi3_Vt254nK6f7e4NgU6Ig=",
                                 color: "blue",
                                 count: "Fresh daily",
                                 description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products",

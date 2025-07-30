@@ -41,7 +41,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.8,
           students: 1250,
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1132684948/photo/rice-paddies.jpg?s=612x612&w=0&k=20&c=UECzCG66U281TiWWdewOMS_ZA_NxeBlKAXXqIR-ExQA=",
           instructor: "Prof. Sambo Khen",
           highlights: ['SRI Method', 'Pest Management', 'Soil Health', 'Water Management'],
           platforms: [
@@ -61,7 +61,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Beginner",
           rating: 4.9,
           students: 890,
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/2159967225/photo/growing-lettuce-watering-the-garden-bed-with-a-watering-can.jpg?s=612x612&w=0&k=20&c=WeZSKGyPUNe4ix1-S-dXdQZRoGLJEUKVNIhXqB8GCBI=",
           instructor: "Ms. Sreypov Lim",
           highlights: ['Organic Certification', 'Composting', 'Natural Pesticides', 'Market Premium'],
           platforms: [
@@ -81,7 +81,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.7,
           students: 650,
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1436256943/photo/egg-production-on-selection-process-from-laying-hens.jpg?s=612x612&w=0&k=20&c=OodQhLye2DdmUIBUwX0S0fRCfmMqkCFkE-F6oWq2MOM=",
           instructor: "Dr. Pisach Teng",
           highlights: ['Disease Prevention', 'Feed Optimization', 'Housing Design', 'Profit Analysis'],
           platforms: [
@@ -101,7 +101,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Beginner",
           rating: 4.6,
           students: 420,
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1215793469/photo/farmer-using-technology-at-a-hydroponic-lettuce-crop.jpg?s=612x612&w=0&k=20&c=NI1190rn8KqxUpiFjGEHqRwR3RwyB0KvpzMMLf3h51A=",
           instructor: "Mr. Virak Chan",
           highlights: ['Social Media Marketing', 'E-commerce Setup', 'Customer Relations', 'Price Strategy'],
           platforms: [
@@ -121,7 +121,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Advanced",
           rating: 4.8,
           students: 320,
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/898449496/photo/agriculture-drone-fly-to-sprayed-fertilizer-on-the-green-tea-fie.jpg?s=612x612&w=0&k=20&c=XB9L5U65qaNqs8k7KPKOiL6N_mj1d1JpKPJFcmMsrz0=",
           instructor: "Eng. Sopheak Ros",
           highlights: ['Sensor Technology', 'Mobile Apps', 'Water Conservation', 'Cost Analysis'],
           platforms: [
@@ -141,7 +141,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.5,
           students: 280,
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1400960132/photo/light-bulb-is-located-on-soil-plants-grow-on-stacked-coins-renewable-energy-generation-is.jpg?s=612x612&w=0&k=20&c=BdJbzNurQMAsxkINA9dF1quvLNPK-zqA9FwOodTdbn8=",
           instructor: "Ms. Chanthy Sok",
           highlights: ['Loan Applications', 'Investment Planning', 'Risk Management', 'Profit Optimization'],
           platforms: [
