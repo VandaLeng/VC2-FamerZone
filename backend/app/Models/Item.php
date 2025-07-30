@@ -9,9 +9,19 @@ class Item extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
-    'user_id', 'name', 'description', 'image', 'price', 'province', 'category_id',
+// In app/Models/Item.php
+protected $fillable = [
+    'name',
+    'name_kh',
+    'category_id',
+    'price',
+    'stock',
+    'unit',
+    'unit_kh',
+    'user_id',
+    'image',
 ];
+
 
     public function user()
     {

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -26,8 +27,9 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'  => 'required|string|max:255|unique:categories,name',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'name'        => 'required|string|max:255|unique:categories,name',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -60,8 +62,9 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'name'        => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -97,7 +100,6 @@ class CategoryController extends Controller
         ]);
     }
 
-    // 🔍 Filter categories by name
     public function filter(Request $request)
     {
         $query = Category::query();
@@ -114,7 +116,6 @@ class CategoryController extends Controller
         ]);
     }
 
-    // ✅ Categories that have items
     public function withItems()
     {
         $categories = Category::has('items')->with('items')->get();
@@ -125,7 +126,6 @@ class CategoryController extends Controller
         ]);
     }
 
-    // ❌ Categories that don't have items
     public function withoutItems()
     {
         $categories = Category::doesntHave('items')->get();

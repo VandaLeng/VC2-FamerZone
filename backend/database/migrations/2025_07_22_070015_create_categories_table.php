@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('image')->nullable();  // <-- new image column
+            $table->string('image')->nullable();
+            $table->text('description')->nullable(); // <-- added description column
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.

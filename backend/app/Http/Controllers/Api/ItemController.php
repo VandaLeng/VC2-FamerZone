@@ -1,138 +1,139 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class ItemController extends Controller
 {
-    // Display a listing of the items
     public function index()
     {
-        $items = Item::with(['user' => function ($query) {
-            $query->withoutGlobalScopes();
-        }, 'category'])->get();
+        $items = Item::with(['category', 'orderItems'])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'nameKh' => $item->name_kh ?? $item->name,
+                    'category' => $item->category ? $item->category->name : null,
+                    'categoryKh' => $item->category ? $item->category->name_kh : null,
+                    'price' => $item->price,
+                    'stock' => $item->stock ?? 0,
+                    'unit' => $item->unit ?? 'piece',
+                    'unitKh' => $item->unit_kh ?? 'កុំព្យូទ័រ',
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                    'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
+                    'orders' => $item->orderItems->count(),
+                    'createdAt' => $item->created_at->toDateString(),
+                    'userId' => $item->user_id,
+                ];
+            });
 
-        return response()->json(['success' => true, 'data' => $items], 200);
+        return response()->json([
+            'success' => true,
+            'data' => $items,
+        ]);
     }
 
-    // Store a newly created item
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'name_kh' => 'required|string|max:255',
+            'category' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'province' => 'required|string|max:100',
-            'category_id' => 'required|exists:categories,id',
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'unit_kh' => 'nullable|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
+        $category = Category::where('name', $validated['category'])->firstOrFail();
 
-        $data = $validator->validated();
+        $itemData = [
+            'name' => $validated['name'],
+            'name_kh' => $validated['name_kh'],
+            'category_id' => $category->id,
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+            'unit' => $validated['unit'],
+            'unit_kh' => $validated['unit_kh'] ?? $validated['unit'],
+            'user_id' => auth()->id(),  // current logged in user
+        ];
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('items', 'public');
-            if (!$path) {
-                return response()->json(['success' => false, 'message' => 'Image upload failed'], 500);
-            }
-            $data['image'] = $path;
+            $itemData['image'] = $request->file('image')->store('items', 'public');
         }
 
-        $item = Item::create($data);
+        $item = Item::create($itemData);
 
-        return response()->json(['success' => true, 'data' => $item], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product added successfully',
+            'data' => $item,
+        ], 201);
     }
 
-    // Show a single item
-    public function show(string $id)
-    {
-        $item = Item::with(['user', 'category'])->findOrFail($id);
-        return response()->json(['success' => true, 'data' => $item], 200);
-    }
-
-    // Update an item
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $item = Item::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'price' => 'sometimes|required|numeric|min:0',
-            'province' => 'sometimes|required|string|max:100',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'user_id' => 'sometimes|exists:users,id', // Added to allow optional update
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'name_kh' => 'required|string|max:255',
+            'category' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'unit_kh' => 'nullable|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
+        $category = Category::where('name', $validated['category'])->firstOrFail();
 
-        $data = $validator->validated();
+        $itemData = [
+            'name' => $validated['name'],
+            'name_kh' => $validated['name_kh'],
+            'category_id' => $category->id,
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+            'unit' => $validated['unit'],
+            'unit_kh' => $validated['unit_kh'] ?? $validated['unit'],
+            // optionally update user_id if needed:
+            // 'user_id' => auth()->id(),
+        ];
 
-        // Handle image update only if a new file is uploaded
         if ($request->hasFile('image')) {
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
-            $path = $request->file('image')->store('items', 'public');
-            if (!$path) {
-                return response()->json(['success' => false, 'message' => 'Image upload failed'], 500);
-            }
-            $data['image'] = $path;
-        } elseif (!isset($data['image']) && $item->image) {
-            // Preserve existing image if no new one is provided
-            $data['image'] = $item->image;
+            $itemData['image'] = $request->file('image')->store('items', 'public');
         }
 
-        $item->update($data);
+        $item->update($itemData);
 
-        // Refresh the model to get latest data
-        $item->refresh();
-
-        return response()->json(['success' => true, 'message' => 'Item updated successfully', 'data' => $item], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product updated successfully',
+            'data' => $item,
+        ]);
     }
 
-    // Delete an item
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $item = Item::findOrFail($id);
-
         if ($item->image) {
             Storage::disk('public')->delete($item->image);
         }
-
         $item->delete();
 
-        return response()->json(['success' => true, 'message' => 'Item deleted successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product deleted successfully',
+        ]);
     }
-
-    public function filterByProvince(Request $request)
-{
-    $province = $request->query('province');
-
-    $query = \App\Models\Item::query();
-
-    if ($province) {
-        $query->where('province', 'like', '%' . $province . '%');
-    }
-
-    $items = $query->with('category', 'user')->get(); // Optional: include relationships
-
-    return response()->json([
-        'success' => true,
-        'data' => $items
-    ]);
-}
-
 }
