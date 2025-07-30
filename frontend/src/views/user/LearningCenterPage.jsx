@@ -191,7 +191,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.8,
           students: 1250,
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1132684948/photo/rice-paddies.jpg?s=612x612&w=0&k=20&c=UECzCG66U281TiWWdewOMS_ZA_NxeBlKAXXqIR-ExQA=",
           instructor: "លោកបណ្ឌិត សំបូខេន",
           highlights: ['វិធី SRI', 'ការគ្រប់គ្រងសត្វល្អ', 'សុខភាពដី', 'ការគ្រប់គ្រងទឹក'],
           platforms: [
@@ -211,7 +211,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតចាប់ផ្តើម",
           rating: 4.9,
           students: 890,
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            image: "https://media.istockphoto.com/id/2159967225/photo/growing-lettuce-watering-the-garden-bed-with-a-watering-can.jpg?s=612x612&w=0&k=20&c=WeZSKGyPUNe4ix1-S-dXdQZRoGLJEUKVNIhXqB8GCBI=",
           instructor: "នាង ស្រីពៅ លីម",
           highlights: ['សញ្ញាបត្រសរីរាង្គ', 'ការផលិតលាមក', 'ថ្នាំកសិកម្មធម្មជាតិ', 'តម្លៃផ្សារខ្ពស់'],
           platforms: [
@@ -231,7 +231,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.7,
           students: 650,
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+           image: "https://media.istockphoto.com/id/1436256943/photo/egg-production-on-selection-process-from-laying-hens.jpg?s=612x612&w=0&k=20&c=OodQhLye2DdmUIBUwX0S0fRCfmMqkCFkE-F6oWq2MOM=",
           instructor: "លោកវេជ្ជបណ្ឌិត ពិសាច ទេង",
           highlights: ['ការបង្ការជំងឺ', 'ការប្រសើរអាហារ', 'ការរចនាផ្ទះ', 'ការវិភាគប្រាក់ចំណេញ'],
           platforms: [
@@ -251,7 +251,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតចាប់ផ្តើម",
           rating: 4.6,
           students: 420,
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+           image: "https://media.istockphoto.com/id/1215793469/photo/farmer-using-technology-at-a-hydroponic-lettuce-crop.jpg?s=612x612&w=0&k=20&c=NI1190rn8KqxUpiFjGEHqRwR3RwyB0KvpzMMLf3h51A=",
           instructor: "លោក វីរៈ ចាន់",
           highlights: ['ទីផ្សារបណ្តាញសង្គម', 'ការដំឡើងអេ-វណ្ណៈ', 'ទំនាក់ទំនងអតិថិជន', 'យុទ្ធសាស្ត្រតម្លៃ'],
           platforms: [
@@ -271,7 +271,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតខ្ពស់",
           rating: 4.8,
           students: 320,
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        image: "https://media.istockphoto.com/id/898449496/photo/agriculture-drone-fly-to-sprayed-fertilizer-on-the-green-tea-fie.jpg?s=612x612&w=0&k=20&c=XB9L5U65qaNqs8k7KPKOiL6N_mj1d1JpKPJFcmMsrz0=",
           instructor: "លោកវិស្វករ សុផាក រ៉ុស",
           highlights: ['បច្ចេកវិទ្យាឧបករណ៍', 'កម្មវិធីទូរស័ព្ទ', 'ការអភិរក្សទឹក', 'ការវិភាគថ្លៃដើម'],
           platforms: [
@@ -291,7 +291,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.5,
           students: 280,
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            image: "https://media.istockphoto.com/id/1400960132/photo/light-bulb-is-located-on-soil-plants-grow-on-stacked-coins-renewable-energy-generation-is.jpg?s=612x612&w=0&k=20&c=BdJbzNurQMAsxkINA9dF1quvLNPK-zqA9FwOodTdbn8=",
           instructor: "នាង ចន្ទី សុខ",
           highlights: ['ការដាក់ពាក្យឥណទាន', 'ផែនការវិនិយោគ', 'ការគ្រប់គ្រងហានិភ័យ', 'ការប្រសើរប្រាក់ចំណេញ'],
           platforms: [
