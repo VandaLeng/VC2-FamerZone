@@ -5,7 +5,7 @@ import {
   ShoppingCart,
   Users,
   Package,
-  Grid3X3,
+  LayoutGrid, // Replaced Grid3X3 with LayoutGrid
   Bell,
   Settings,
   LogOut,
@@ -64,7 +64,7 @@ const FarmerSidebar = ({
     { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
     { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
     { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
-    { id: "categories", label: currentTexts.categories, icon: Grid3X3, path: "/farmer/categories" },
+    { id: "categories", label: currentTexts.categories, icon: LayoutGrid, path: "/farmer/categories" }, // Replaced Grid3X3 with LayoutGrid
     { id: "notifications", label: currentTexts.notifications, icon: Bell, path: "/farmer/notifications", badge: "2" },
     { id: "settings", label: currentTexts.settings, icon: Settings, path: "/farmer/settings" },
     { id: "logout", label: currentTexts.logout, icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
