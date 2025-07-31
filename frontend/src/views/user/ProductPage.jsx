@@ -200,7 +200,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               accuracy: position.coords.accuracy,
               source: 'gps'
             };
-            
+
             // Get additional location details from reverse geocoding
             try {
               const response = await axios.get(
@@ -251,7 +251,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         province: response.data.region,
         source: 'ip'
       };
-      
+
       setUserLocation(location);
       setCurrLocation(location);
       setLocationLoading(false);
@@ -301,7 +301,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       const matchesDistance = !userLocation || !product.distance || product.distance <= nearbyRadius;
-      
+
       return matchesSearch && matchesProvince && matchesCategory && matchesPrice && matchesDistance;
     });
 
@@ -399,7 +399,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       )}
 
       {/* Enhanced Hero Section */}
-      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden hero-section">
+      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden hero-section">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
@@ -432,7 +432,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                   />
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowMap(true)}
                 className="bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto lg:mx-0 hero-cta"
               >
@@ -445,9 +445,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 {nearbyProducts.slice(0, 4).map((product, index) => (
                   <div
                     key={product.id}
-                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${
-                      index === 0 ? "col-span-2" : ""
-                    } hero-card`}
+                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${index === 0 ? "col-span-2" : ""
+                      } hero-card`}
                   >
                     <div className="relative overflow-hidden rounded-lg mb-3">
                       <img
@@ -579,7 +578,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               )}
             </div>
           </div>
-          
+
           {showMap && (
             <LocationMap
               userLocation={userLocation}
@@ -656,103 +655,213 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       {/* Enhanced Filters and Controls */}
       <section className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            {/* Left side - Filters */}
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Mobile Filter Toggle */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                {currentTexts.filters}
-              </button>
-              
-              {/* Desktop Filters */}
-              <div className="hidden lg:flex items-center gap-4">
-                {/* Province Filter */}
-                <div className="relative">
-                  <select
-                    value={selectedProvince}
-                    onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="appearance-none px-4 py-2 pr-8 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
-                  >
-                    {provinces.map((province) => (
-                      <option key={province.id} value={province.id}>
-                        {province.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
-                
-                {/* Category Buttons */}
-                <div className="flex gap-2">
-                  {categories.map((category) => (
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            {/* Main Filter Bar */}
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex flex-col space-y-4">
+                {/* Top Row - Primary Controls */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  {/* Left Section - Search & Primary Filters */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                    {/* Mobile Filter Toggle */}
                     <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                        selectedCategory === category.id
-                          ? "bg-green-700 text-white shadow-lg"
-                          : `${category.color} text-gray-700 hover:shadow-md`
-                      }`}
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="lg:hidden inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-50 to-green-100 text-green-700 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium text-sm shadow-sm"
+                      aria-label={currentTexts.filters}
                     >
-                      {category.name}
+                      <SlidersHorizontal className="w-4 h-4" />
+                      <span>{currentTexts.filters}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
                     </button>
-                  ))}
+
+                    {/* Province Filter - Desktop */}
+                    <div className="relative hidden lg:block">
+                      <select
+                        value={selectedProvince}
+                        onChange={(e) => setSelectedProvince(e.target.value)}
+                        className="min-w-[200px] px-4 py-2.5 pr-10 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none transition-all duration-300 shadow-sm hover:shadow-md hover:border-gray-300"
+                      >
+                        {provinces.map((province) => (
+                          <option key={province.id} value={province.id}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Right Section - View Controls */}
+                  <div className="flex items-center gap-3">
+                    {/* Results Count */}
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg">
+                      <span className="text-xs font-medium text-gray-600">
+                        {filteredAndSortedProducts.length} {currentTexts.of} {productData.length}
+                      </span>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="min-w-[140px] px-3 py-2 pr-8 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none transition-all duration-300 shadow-sm hover:shadow-md hover:border-gray-300"
+                      >
+                        {sortOptions.map((option) => (
+                          <option key={option.id} value={option.id}>
+                            {option.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+
+                    {/* View Mode Toggle */}
+                    <div className="flex bg-gray-100 rounded-xl p-1">
+                      <button
+                        onClick={() => setViewMode("grid")}
+                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
+                          ? "bg-white text-green-600 shadow-sm"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                          }`}
+                        title="Grid View"
+                      >
+                        <Grid className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setViewMode("list")}
+                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
+                          ? "bg-white text-green-600 shadow-sm"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                          }`}
+                        title="List View"
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Categories - Desktop */}
+                <div className="hidden lg:flex items-center justify-between">
+                  <div className="flex gap-2 flex-wrap">
+                    {categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
+                          : `${category.color === 'green'
+                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                            : category.color === 'orange'
+                              ? 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          } hover:shadow-md hover:scale-105`
+                          }`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Clear Filters */}
+                  {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
+                    <button
+                      onClick={clearFilters}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    >
+                      <span>{currentTexts.clearFilters}</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-            
-            {/* Right side - Sort and View */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 hidden sm:block">
-                {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.of}{" "}
-                {productData.length} {currentTexts.products}
-              </span>
-              
-              {/* Sort dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-4 py-2 pr-8 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-sm"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
+            {/* Mobile Filters Dropdown */}
+            <div className={`lg:hidden transition-all duration-300 ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+              <div className="p-6 border-b border-gray-100 bg-gray-50">
+                <div className="space-y-4">
+                  {/* Mobile Province Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Province
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedProvince}
+                        onChange={(e) => setSelectedProvince(e.target.value)}
+                        className="w-full px-4 py-2.5 pr-10 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none"
+                      >
+                        {provinces.map((province) => (
+                          <option key={province.id} value={province.id}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Mobile Categories */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Categories
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {categories.map((category) => (
+                        <button
+                          key={category.id}
+                          onClick={() => setSelectedCategory(category.id)}
+                          className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
+                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                            : `${category.color === 'green'
+                              ? 'bg-green-50 text-green-700 border border-green-200'
+                              : category.color === 'orange'
+                                ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                                : 'bg-gray-50 text-gray-700 border border-gray-200'
+                            }`
+                            }`}
+                        >
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mobile Clear Filters */}
+                  {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
+                    <button
+                      onClick={clearFilters}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-300 border border-red-200"
+                    >
+                      <span>{currentTexts.clearFilters}</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
-              
-              {/* View mode toggle */}
-              <div className="flex border border-stone-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 ${viewMode === "grid" ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-stone-50"}`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 ${viewMode === "list" ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-stone-50"}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-              
-              {/* Clear filters */}
-              {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
-                <button onClick={clearFilters} className="text-sm text-red-600 hover:text-red-700 font-medium">
-                  {currentTexts.clearFilters}
-                </button>
-              )}
             </div>
+
+            {/* Active Filters Summary (Mobile) */}
+            {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
+              <div className="lg:hidden px-6 py-3 bg-blue-50 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-blue-700">
+                    {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.products}
+                  </span>
+                  <span className="text-xs text-blue-600">
+                    Filters active
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
-          
+
           {/* Mobile Filters Panel */}
           {showFilters && (
             <div className="lg:hidden mt-6 p-4 bg-stone-50 rounded-lg border border-stone-200">
@@ -778,11 +887,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`p-3 rounded-lg font-medium transition-all duration-300 ${
-                          selectedCategory === category.id
-                            ? "bg-green-700 text-white"
-                            : `${category.color} text-gray-700`
-                        }`}
+                        className={`p-3 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
+                          ? "bg-green-700 text-white"
+                          : `${category.color} text-gray-700`
+                          }`}
                       >
                         <span className="text-sm">{category.name}</span>
                       </button>
@@ -821,9 +929,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
             <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
           </div>
           <div
-            className={`grid gap-8 ${
-              viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
-            }`}
+            className={`grid gap-8 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+              }`}
           >
             {filteredAndSortedProducts.map((product) => (
               <ProductCard

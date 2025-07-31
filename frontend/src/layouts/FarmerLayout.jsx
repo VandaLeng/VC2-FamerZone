@@ -1,5 +1,7 @@
 import React from "react";
-import FarmerSidebar from "../components/FarmerSidebar"; // Adjust the import path as needed
+import FarmerSidebar from "../components/FarmerSidebar"; 
+// Back to top
+// import BackToTopButton from "../components/BackToTop";
 
 const FarmerLayout = ({ currentLanguage, setCurrentLanguage, userData, handleLogout, children }) => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
@@ -20,6 +22,7 @@ const FarmerLayout = ({ currentLanguage, setCurrentLanguage, userData, handleLog
       >
         {children}
       </main>
+      {/* <BackToTopButton /> */}
     </div>
   );
 };

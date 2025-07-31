@@ -24,10 +24,12 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
 
   const handleLogin = () => {
     navigate("/login")
+    setIsMobileMenuOpen(false) // Close mobile menu on navigation
   }
 
   const handleRegister = () => {
     navigate("/register")
+    setIsMobileMenuOpen(false) // Close mobile menu on navigation
   }
 
   // Close profile dropdown when clicking outside
@@ -79,7 +81,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   }
   const currentTexts = texts[currentLanguage]
 
-  // Ensure userData is available before accessing its properties
+  // Safely access userData properties with fallback values
   const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
@@ -123,7 +125,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
             </Link>
             <Link
               to="/learning-center"
-              className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/learning-center" ? "active" : ""}`}
+              className={`nav-link text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium text-sm tracking-wide ${location.pathname === "/learning-center" ? "active" : ""}`}
             >
               {currentTexts.learningCenter}
             </Link>
@@ -154,7 +156,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
             </button>
 
             {/* User Profile or Login/Register Buttons */}
-            {isLoggedIn ? (
+            {isLoggedIn && userData ? (
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={toggleProfile}
@@ -189,7 +191,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       </div>
                     </div>
                     <div className="py-2">
-                      <Link
+                      {/* <Link
                         to="/dashboard"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
                       >
@@ -208,7 +210,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                           />
                         </svg>
                         {currentTexts.dashboard}
-                      </Link>
+                      </Link> */}
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
@@ -260,7 +262,10 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                     </div>
                     <div className="border-t border-gray-100 pt-2">
                       <button
-                        onClick={handleLogout}
+                        onClick={() => {
+                          handleLogout()
+                          setIsProfileOpen(false)
+                        }}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
                       >
                         <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,7 +327,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               <Link
                 to="/"
                 className={`nav-link block px-3 py-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 font-medium ${location.pathname === "/" ? "active" : ""}`}
-                onClick={() => setIsMobileMenuOpen(false)} // Close menu on link click
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {currentTexts.home}
               </Link>
@@ -356,7 +361,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               </Link>
 
               <div className="px-3 py-4 border-t border-gray-100 mt-4 space-y-3">
-                {isLoggedIn ? (
+                {isLoggedIn && userData ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
                       <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -399,19 +404,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                 ) : (
                   <div className="space-y-3">
                     <button
-                      onClick={() => {
-                        handleRegister()
-                        setIsMobileMenuOpen(false)
-                      }}
+                      onClick={handleRegister}
                       className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-200"
                     >
                       {currentTexts.register}
                     </button>
                     <button
-                      onClick={() => {
-                        handleLogin()
-                        setIsMobileMenuOpen(false)
-                      }}
+                      onClick={handleLogin}
                       className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-medium transition-all duration-200"
                     >
                       {currentTexts.login}

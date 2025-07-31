@@ -122,7 +122,7 @@ const AboutPage = ({ currentLanguage }) => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#228B22]/30 via-transparent to-transparent"></div>
                 <div className="absolute top-4 left-4 bg-[#FAF0E6]/95 backdrop-blur-sm rounded-xl p-3 shadow-md transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-200">
-                  <div className="text-xl font-black text-[#228B22] mb-1">2019</div>
+                  <div className="text-xl font-black text-[#228B22] mb-1">2025</div>
                   <div className="text-xs font-semibold text-[#8B4513] uppercase tracking-wide">Founded</div>
                 </div>
               </div>

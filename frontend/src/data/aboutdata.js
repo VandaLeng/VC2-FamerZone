@@ -11,34 +11,34 @@ const contentData = {
         values: [{
                 title: "Direct Connection",
                 description: "Eliminating middlemen to create direct relationships between farmers and consumers, ensuring fair prices and fresh products.",
-                image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1344596034/photo/hands-of-two-farmers-shaking-hands-against-car-trunk-with-harvest.jpg?s=612x612&w=0&k=20&c=Sx7p7yoM2rXojBNAzkw3laAIhF4Hw-3xD0bFooxC4A8="
             },
             {
                 title: "Technology for Good",
                 description: "Using modern technology to solve real problems in agriculture while preserving the essence of farming communities.",
-                image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/2190632150/photo/smart-farming-uses-technology-to-control-planting-caring-for-harvesting-products-in-the-farms.jpg?s=612x612&w=0&k=20&c=_P5MrcvdSV-P6ZD1jJ33n4DItHcmnmDfGKl6EpjRP1E="
             },
             {
                 title: "Sustainable Growth",
                 description: "Building long-term solutions that benefit farmers, consumers, and the environment through responsible agricultural practices.",
-                image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/2156174738/photo/corn-grains-in-the-hands-of-a-successful-farmer-in-a-background-green-corn-field.jpg?s=612x612&w=0&k=20&c=oLO2laZtKZmDqnaHmv180xq7rPnH6svwmRyRcWK0odk="
             },
             {
                 title: "Community First",
                 description: "Prioritizing the needs of local communities and ensuring that technology serves to strengthen rather than displace traditional networks.",
-                image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1089764140/photo/close-up-of-two-men-in-plaid-shirts-shaking-hands-on-the-farmland-combine-harvester-working.jpg?s=612x612&w=0&k=20&c=RzhxpLqKve7uVUCCDUXmA1YU7pNAIZIT5wO6eAva-gA="
             }
         ],
         communityTitle: "Our Community",
         farmers: {
             title: "Farmers",
             description: "Local Cambodian farmers growing fruits, vegetables, rice, and raising livestock. Access new markets, manage sales digitally, and connect directly with customers without intermediaries.",
-            image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            image: "https://media.istockphoto.com/id/2173315233/photo/portrait-of-smiling-young-woman-wearing-hat-on-field.jpg?s=612x612&w=0&k=20&c=dYFDU6KyMYzzauplD65PdRO-ify5R47j9GALpNLNo_0="
         },
         buyers: {
             title: "Consumers",
             description: "Families and individuals seeking fresh, quality agricultural products. Purchase directly from farmers to get the best prices and freshest produce while supporting local agriculture.",
-            image: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            image: "https://media.istockphoto.com/id/1328853722/photo/over-the-shoulder-view-of-young-asian-woman-doing-home-delivery-grocery-shopping-online-with.jpg?s=612x612&w=0&k=20&c=OXmKDgC3g3nb8mcG1bxP4WLqyjHvdZ9yWfY1gO9jAYA="
         },
         admins: {
             title: "Platform Team",
@@ -64,7 +64,7 @@ const contentData = {
             {
                 title: "Learning Resources",
                 description: "Educational content and tutorials helping farmers adopt modern techniques while preserving traditional knowledge.",
-                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1311107708/photo/focused-cute-stylish-african-american-female-student-with-afro-dreadlocks-studying-remotely.jpg?s=612x612&w=0&k=20&c=OwxBza5YzLWkE_2abTKqLLW4hwhmM2PW9BotzOMMS5w="
             },
             {
                 title: "Quality Assurance",
@@ -93,34 +93,34 @@ const contentData = {
         values: [{
                 title: "ការតភ្ជាប់ដោយផ្ទាល់",
                 description: "លុបបំបាត់អ្នកកណ្តាលដើម្បីបង្កើតទំនាក់ទំនងផ្ទាល់រវាងកសិករ និងអ្នកប្រើប្រាស់ ធានាតម្លៃយុត្តិធម៌ និងផលិតផលស្រស់។",
-                image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1344596034/photo/hands-of-two-farmers-shaking-hands-against-car-trunk-with-harvest.jpg?s=612x612&w=0&k=20&c=Sx7p7yoM2rXojBNAzkw3laAIhF4Hw-3xD0bFooxC4A8="
             },
             {
                 title: "បច្ចេកវិទ្យាសម្រាប់ការល្អ",
                 description: "ប្រើប្រាស់បច្ចេកវិទ្យាទំនើបដើម្បីដោះស្រាយបញ្ហាពិតប្រាកដនៅក្នុងកសិកម្មខណៈពេលដែលរក្សាសារៈសំខាន់នៃសហគមន៍កសិកម្ម។",
-                image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/2190632150/photo/smart-farming-uses-technology-to-control-planting-caring-for-harvesting-products-in-the-farms.jpg?s=612x612&w=0&k=20&c=_P5MrcvdSV-P6ZD1jJ33n4DItHcmnmDfGKl6EpjRP1E="
             },
             {
                 title: "ការរីកចម្រើនប្រកបដោយចីរភាព",
                 description: "សាងសង់ដំណោះស្រាយរយៈពេលវែងដែលផ្តល់ប្រយោជន៍ដល់កសិករ អ្នកប្រើប្រាស់ និងបរិស្ថានតាមរយៈការអនុវត្តកសិកម្មប្រកបដោយទំនួលខុសត្រូវ។",
-                image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/2156174738/photo/corn-grains-in-the-hands-of-a-successful-farmer-in-a-background-green-corn-field.jpg?s=612x612&w=0&k=20&c=oLO2laZtKZmDqnaHmv180xq7rPnH6svwmRyRcWK0odk="
             },
             {
                 title: "សហគមន៍ជាទីមួយ",
                 description: "ផ្តល់អាទិភាពលើតម្រូវការរបស់សហគមន៍ក្នុងស្រុក និងធានាថាបច្ចេកវិទ្យាបម្រើដើម្បីពng្រឹngជាជាងជំនួសបណ្តាញប្រពៃណី។",
-                image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1089764140/photo/close-up-of-two-men-in-plaid-shirts-shaking-hands-on-the-farmland-combine-harvester-working.jpg?s=612x612&w=0&k=20&c=RzhxpLqKve7uVUCCDUXmA1YU7pNAIZIT5wO6eAva-gA="
             }
         ],
         communityTitle: "សហគមន៍របស់យើង",
         farmers: {
             title: "កសិករ",
             description: "កសិករកម្ពុជាក្នុងស្រុកដែលដាំដុះផ្លែឈើ បន្លែ អង្ករ និងចិញ្ចឹមសត្វ។ ចូលដំណើរការទីផ្សារថ្មី គ្រប់គ្រងការលក់តាមបែបឌីជីថល និងតភ្ជាប់ដោយផ្ទាល់ជាមួយអតិថិជនដោយគ្មានអន្តរការី។",
-            image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            image: "https://media.istockphoto.com/id/2173315233/photo/portrait-of-smiling-young-woman-wearing-hat-on-field.jpg?s=612x612&w=0&k=20&c=dYFDU6KyMYzzauplD65PdRO-ify5R47j9GALpNLNo_0="
         },
         buyers: {
             title: "អ្នកប្រើប្រាស់",
             description: "គ្រួសារ និងបុគ្គលដែលស្វែងរកផលិតផលកសិកម្មស្រស់ និងមានគុណភាព។ ទិញដោយផ្ទាល់ពីកសិករដើម្បីទទួលបានតម្លៃល្អបំផុត និងផលិតផលស្រស់បំផុតខណៈពេលដែលគាំទ្រកសិកម្មក្នុងស្រុក។",
-            image: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            image: "https://media.istockphoto.com/id/1328853722/photo/over-the-shoulder-view-of-young-asian-woman-doing-home-delivery-grocery-shopping-online-with.jpg?s=612x612&w=0&k=20&c=OXmKDgC3g3nb8mcG1bxP4WLqyjHvdZ9yWfY1gO9jAYA="
         },
         admins: {
             title: "ក្រុមការងារវេទិកា",
@@ -146,7 +146,7 @@ const contentData = {
             {
                 title: "ធនធានសម្រាប់ការសិក្សា",
                 description: "មាតិកាអប់រំ និងការបង្រៀនជួយកសិករទទួលយកបច្ចេកទេសទំនើបខណៈពេលរក្សាចំណេះដឹងប្រពៃណី។",
-                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                image: "https://media.istockphoto.com/id/1311107708/photo/focused-cute-stylish-african-american-female-student-with-afro-dreadlocks-studying-remotely.jpg?s=612x612&w=0&k=20&c=OwxBza5YzLWkE_2abTKqLLW4hwhmM2PW9BotzOMMS5w="
             },
             {
                 title: "ការធានាគុណភាព",
@@ -160,7 +160,7 @@ const contentData = {
             }
         ],
         ctaTitle: "ចូលរួមបដិវត្តកសិកម្ម",
-        ctaText: "ជាផ្នែកនៃការផ្លាស់ប្តូរដែលពng្រឹngកសិករ ភ្ជាប់សហគមន៍ និងសាងសង់អនាគតប្រកបដោយចីរភាពសម្រាប់កសិកម្មកម្ពុជា។",
+        ctaText: "ជាផ្នែកនៃការផ្លាស់ប្តូរដែលពង្រឹងកសិករ ភ្ជាប់សហគមន៍ និងសាងសង់អនាគតប្រកបដោយចីរភាពសម្រាប់កសិកម្មកម្ពុជា។",
         ctaButton: "ចាប់ផ្តើមថ្ងៃនេះ"
     }
 };
