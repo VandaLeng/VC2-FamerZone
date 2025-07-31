@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react";
 import '../../styles/HomeStyle.css';
 import homeData from '../../data/homedata.js';
@@ -31,12 +33,21 @@ export default function HomePage({ currentLanguage }) {
 
     const currentTexts = homeData[currentLanguage];
 
+    // Navigation function to products page with auto-scroll
+    const navigateToProducts = () => {
+        window.location.href = "/products#products-section";
+    };
+
+    const navigateToProductsCategory = (category = "") => {
+        const categoryParam = category ? `?category=${category}` : "";
+        window.location.href = `/products${categoryParam}#products-section`;
+    };
+
     return (
         <div className="min-h-screen bg-cream-50 overflow-hidden">
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-green-50 to-yellow-50 overflow-hidden">
                 <div className="absolute inset-0 bg-white/20"></div>
-
                 {/* Floating Elements Background */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-20 left-10 w-20 h-20 bg-green-200 rounded-full opacity-20 animate-float"></div>
@@ -56,9 +67,12 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.heroDescription}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-in-up animate-delay-500">
-                                <a href="/products" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+                                <button 
+                                    onClick={navigateToProducts}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle cursor-pointer"
+                                >
                                     {currentTexts.heroButton}
-                                </a>
+                                </button>
                                 <a href="/register" className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
                                     {currentTexts.heroSecondaryButton}
                                 </a>
@@ -205,16 +219,19 @@ export default function HomePage({ currentLanguage }) {
                                         {feature.desc}
                                     </p>
                                     <div className="mt-4">
-                                        <a href="/about" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                            feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
-                                                feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                    'text-purple-600 hover:text-purple-700'
-                                            }`}>
+                                        <button 
+                                            onClick={navigateToProducts}
+                                            className={`inline-flex items-center text-sm font-medium transition-colors duration-200 cursor-pointer ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                                    feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
+                                                        'text-purple-600 hover:text-purple-700'
+                                                }`}
+                                        >
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -322,7 +339,7 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                         <div className="relative mb-6 overflow-hidden rounded-lg">
                                             <img
-                                                src={step.image}
+                                                src={step.image || "/placeholder.svg"}
                                                 alt={step.title}
                                                 className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
                                             />
@@ -360,16 +377,18 @@ export default function HomePage({ currentLanguage }) {
                             ))}
                         </div>
                     </div>
-
                     <div
                         className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
-                        <a href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button 
+                            onClick={navigateToProducts}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer"
+                        >
                             <span>Get Started Today</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -397,6 +416,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "green",
                                 count: "150+ varieties",
                                 description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables",
+                                category: "vegetables"
                             },
                             {
                                 name: currentTexts.fruits,
@@ -404,6 +424,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "orange",
                                 count: "80+ varieties",
                                 description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits",
+                                category: "fruits"
                             },
                             {
                                 name: currentTexts.grains,
@@ -411,6 +432,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "amber",
                                 count: "25+ varieties",
                                 description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains",
+                                category: "grains"
                             },
                             {
                                 name: currentTexts.livestock,
@@ -418,10 +440,12 @@ export default function HomePage({ currentLanguage }) {
                                 color: "blue",
                                 count: "Fresh daily",
                                 description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products",
+                                category: "livestock"
                             },
                         ].map((category, index) => (
                             <div
                                 key={index}
+                                onClick={() => navigateToProductsCategory(category.category)}
                                 className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift hover-glow ${isVisible.categories ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 100}`}
                             >
                                 <div className="relative h-48 overflow-hidden bg-gray-100">
@@ -450,7 +474,7 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-                                            <a href="/products" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            <span className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                                 category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
                                                     category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
                                                         'text-blue-600 hover:text-blue-700'
@@ -459,7 +483,7 @@ export default function HomePage({ currentLanguage }) {
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                 </svg>
-                                            </a>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -472,12 +496,15 @@ export default function HomePage({ currentLanguage }) {
                         ))}
                     </div>
                     <div className="mt-12 text-center">
-                        <a href="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
+                        <button 
+                            onClick={navigateToProducts}
+                            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
+                        >
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
                             <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -559,12 +586,12 @@ export default function HomePage({ currentLanguage }) {
                         {currentTexts.ctaDesc || (currentLanguage === "kh" ? "ចុះឈ្មោះជាអ្នកទិញដើម្បីទទួលបានផលិតផលកសិកម្មគុណភាពខ្ពស់ ឬជាកសិករដើម្បីបង្ហាញផលិតផលរបស់អ្នក និងភ្ជាប់ទំនាក់ទំនងជាមួយអតិថិជន។" : "Sign up as a Buyer to access premium farm products or as a Farmer to showcase your produce and connect with customers.")}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animation-delay-300">
-                        <a
-                            href="/register"
-                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle"
+                        <button
+                            onClick={navigateToProducts}
+                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle cursor-pointer"
                         >
-                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Join as a Buyer")}
-                        </a>
+                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Start Shopping")}
+                        </button>
                         <a
                             href="/register"
                             className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle"
@@ -574,7 +601,6 @@ export default function HomePage({ currentLanguage }) {
                     </div>
                 </div>
             </section>
-
         </div>
     );
 }
