@@ -46,6 +46,37 @@ export default function ProductsPage({ currentLanguage = "en" }) {
   const productsRef = useRef(null)
   const filtersRef = useRef(null)
 
+  // Handle URL hash navigation and query parameters
+  useEffect(() => {
+    const handleHashNavigation = () => {
+      const hash = window.location.hash
+      const urlParams = new URLSearchParams(window.location.search)
+
+      // Handle category from URL parameter
+      const categoryParam = urlParams.get("category")
+      if (categoryParam && categoryParam !== "all") {
+        setSelectedCategory(categoryParam)
+      }
+
+      // Handle hash navigation
+      if (hash === "#products-section") {
+        setTimeout(() => {
+          scrollToProducts()
+        }, 100) // Small delay to ensure component is rendered
+      }
+    }
+
+    // Run on component mount
+    handleHashNavigation()
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashNavigation)
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashNavigation)
+    }
+  }, [])
+
   // Scroll to products section
   const scrollToProducts = () => {
     if (productsRef.current) {
@@ -120,7 +151,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       activeFarmers: "កសិករសកម្ម",
       provinces: "ខេត្ត",
       from: "ពី",
-      freshFromFarm: "ស្រស់ពីកសិដ្ឋាន",
+      freshFromFarm: "ស្រស់ពីកសិ��្ឋាន",
       organicCertified: "វិញ្ញាបនបត្រធម្មជាតិ",
       fastDelivery: "ដឹកជញ្ជូនលឿន",
       qualityGuaranteed: "ធានាគុណភាព",
@@ -432,6 +463,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
           />
           <div className="absolute inset-0 bg-green-900/70 hero-overlay"></div>
         </div>
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
