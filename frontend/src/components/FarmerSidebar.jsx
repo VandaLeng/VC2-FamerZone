@@ -60,7 +60,7 @@
 //   const currentTexts = texts[currentLanguage];
 
 //   const bottomMenuItems = [
-//     { id: "dashboard", label: currentTexts.dashboard, icon: LayoutDashboard, path: "/farmer/dashboard" },
+//     { id: "dashboard", label: currentTexts.dashboard, icon: LayoutDashboard, path: "/farmer/dashboard" }, 
 //     { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
 //     { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
 //     { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
