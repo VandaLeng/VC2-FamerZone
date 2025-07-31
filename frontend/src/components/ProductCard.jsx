@@ -13,6 +13,7 @@ function ProductCard({
   provinces,
   onShowDetail,
 }) {
+  console.log("Product Data:", product); // Debug the product object
   const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
   const productDescription =
     currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
@@ -21,6 +22,9 @@ function ProductCard({
     : product.farmer?.name || product.farmer?.nameKh || "Unknown";
 
   const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
+
+  // Determine inStock based on quantity
+  const isInStock = product.quantity > 0;
 
   if (viewMode === "list") {
     return (
@@ -46,10 +50,10 @@ function ProductCard({
               )}
               <span
                 className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
-                  product.inStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
+                  isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
                 }`}
               >
-                {product.inStock ? currentTexts.inStock : currentTexts.outOfStock}
+                {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
               </span>
             </div>
             {/* Favorite Button */}
@@ -141,9 +145,7 @@ function ProductCard({
                     onOrder(product.id);
                   }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 mr-2"
-                  disabled={
-                    !product.inStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)
-                  }
+                  disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
                 >
                   {orderingProducts.includes(product.id)
                     ? "Ordering..."
@@ -180,10 +182,10 @@ function ProductCard({
           )}
           <span
             className={`px-2 py-1 rounded-full text-xs font-semibold shadow-lg ${
-              product.inStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
+              isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
             } stock-badge`}
           >
-            {product.inStock ? currentTexts.inStock : currentTexts.outOfStock}
+            {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
           </span>
         </div>
         <button
@@ -238,7 +240,7 @@ function ProductCard({
               onOrder(product.id);
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn"
-            disabled={!product.inStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
+            disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
           >
             {orderingProducts.includes(product.id)
               ? "..."
