@@ -18,6 +18,7 @@ const useProduct = () => {
             ...product.user,
             name: product.user?.name || "Unknown",
             nameKh: product.user?.name_kh || null,
+            address: product.user?.address || "N/A",
             phone: product.user?.phone || "N/A",
             email: product.user?.email || "N/A",
             rating: product.user?.rating || 0,
@@ -29,7 +30,7 @@ const useProduct = () => {
           },
         }));
         setAllProducts(productsWithImages);
-        setProvinces(response.data.provinces || []); 
+        setProvinces(response.data.provinces || []);
         setLoading(false);
       })
       .catch((error) => {
