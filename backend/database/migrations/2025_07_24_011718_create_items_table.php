@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('image');
             $table->decimal('price', 8, 2);
+            $table->unsignedInteger('quantity')->default(0);
             $table->string('province');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();
