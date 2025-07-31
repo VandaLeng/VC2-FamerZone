@@ -13,18 +13,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id')->unique(); // Add order ID like ORD-001
-            $table->foreignId('buyer_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Added missing product_id
-            $table->string('product_name'); // Store product name for history
-            $table->integer('quantity');
-            $table->decimal('unit_price', 10, 2); // Price per unit
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Matches ERD
             $table->decimal('total_price', 10, 2);
-            $table->string('unit')->default('kg'); // kg, pieces, bunches, etc.
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'delivered'])->default('pending');
-            $table->text('delivery_address')->nullable();
-            $table->string('customer_phone')->nullable();
-            $table->string('customer_email')->nullable();
+            $table->dateTime('date')->default(now());
+            $table->text('address')->nullable(); // Changed from 'Type' to string/text
+            $table->enum('status', ['pending', 'confirmed', 'delivered', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }

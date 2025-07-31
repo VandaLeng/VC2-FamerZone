@@ -6,6 +6,7 @@ import provinces from "../../services/provinces"
 import ProductCard from "../../components/ProductCard"
 import productData from "../../data/productData"
 import LocationMap from "../../components/LocationMap"
+import ProductSection from "../../components/ProductSection"; // adjust path as needed
 import {
   MapPin,
   Search,
@@ -935,51 +936,9 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       </section>
 
       {/* All Products Section */}
-      <section ref={productsRef} className="py-16 bg-stone-50" id="products-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.allProducts}</h2>
-            <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
-          </div>
-          <div
-            className={`grid gap-8 ${
-              viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
-            }`}
-          >
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                currentTexts={currentTexts}
-                currentLanguage={currentLanguage}
-                isFavorite={favorites.includes(product.id)}
-                onToggleFavorite={toggleFavorite}
-                onOrder={handleOrder}
-                orderingProducts={orderingProducts}
-                orderedProducts={orderedProducts}
-                viewMode={viewMode}
-                provinces={provinces}
-                showDistance={userLocation}
-              />
-            ))}
-          </div>
-          {filteredAndSortedProducts.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-stone-400 mb-4">
-                <Search className="w-16 h-16 mx-auto" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
-              <button
-                onClick={clearFilters}
-                className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                {currentTexts.clearFilters}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* All Items Section */}
+      <ProductSection/>
+      
     </div>
   )
 }

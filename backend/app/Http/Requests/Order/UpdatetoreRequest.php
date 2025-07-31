@@ -11,7 +11,7 @@ class UpdatetoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdatetoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'quantity' => 'sometimes|integer|min:1',
+            'total_price' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|in:pending,confirmed,cancelled,delivered',
         ];
     }
 }
