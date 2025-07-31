@@ -5,7 +5,7 @@ import {
   ShoppingCart,
   Users,
   Package,
-  Grid3X3,
+  Grid, // ✅ Use Grid instead of Grid3X3
   Bell,
   Settings,
   LogOut,
@@ -22,8 +22,6 @@ const FarmerSidebar = ({
   setIsCollapsed,
 }) => {
   const location = useLocation();
-
-  // Use external collapse state if provided, otherwise use internal state
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const collapsed = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
   const setCollapsed = setIsCollapsed !== undefined ? setIsCollapsed : setInternalCollapsed;
@@ -64,7 +62,7 @@ const FarmerSidebar = ({
     { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
     { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
     { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
-    { id: "categories", label: currentTexts.categories, icon: Grid3X3, path: "/farmer/categories" },
+    { id: "categories", label: currentTexts.categories, icon: Grid, path: "/farmer/categories" }, // ✅ fixed icon
     { id: "notifications", label: currentTexts.notifications, icon: Bell, path: "/farmer/notifications", badge: "2" },
     { id: "settings", label: currentTexts.settings, icon: Settings, path: "/farmer/settings" },
     { id: "logout", label: currentTexts.logout, icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
@@ -77,8 +75,6 @@ const FarmerSidebar = ({
   const toggleLanguage = () => {
     setCurrentLanguage(currentLanguage === "en" ? "kh" : "en");
   };
-
-  console.log("Rendering FarmerSidebar at left:0, top:0"); // Debug log
 
   return (
     <div
@@ -110,10 +106,7 @@ const FarmerSidebar = ({
             >
               {currentLanguage.toUpperCase()}
             </button>
-            <button
-              onClick={toggleSidebar}
-              className="p-1 rounded-full hover:bg-gray-100"
-            >
+            <button onClick={toggleSidebar} className="p-1 rounded-full hover:bg-gray-100">
               <X size={24} className="text-gray-600" />
             </button>
           </div>
@@ -136,7 +129,7 @@ const FarmerSidebar = ({
         </div>
       )}
 
-      {/* Bottom Navigation (Single Menu) */}
+      {/* Navigation Items */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {bottomMenuItems.slice(0, -3).map((item) => {
           const Icon = item.icon;
@@ -173,8 +166,8 @@ const FarmerSidebar = ({
                 isActive
                   ? "bg-green-100 text-green-800"
                   : isLogout
-                    ? "text-red-600 hover:bg-red-50"
-                    : "text-gray-600 hover:bg-gray-100"
+                  ? "text-red-600 hover:bg-red-50"
+                  : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <Icon size={20} className={isActive ? "text-green-800" : isLogout ? "text-red-500" : "text-gray-400"} />

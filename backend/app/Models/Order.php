@@ -21,13 +21,18 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function buyer()
-    {
-        return $this->belongsTo(User::class, 'buyer_id');
-    }
+
 
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
+
+    // App\Models\Order.php
+
+   public function items()
+{
+    return $this->hasMany(OrderItem::class);
+}
+
 }

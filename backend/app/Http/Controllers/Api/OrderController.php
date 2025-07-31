@@ -15,12 +15,15 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::with('user')->get(); // Eager load the user
+
         return response()->json([
             'message' => 'Orders retrieved successfully',
             'data' => $orders,
         ]);
     }
+
+
 
 
 
