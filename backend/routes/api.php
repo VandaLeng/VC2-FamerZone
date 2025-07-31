@@ -101,15 +101,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::apiResource('items', ItemController::class);
-<<<<<<< HEAD
-
-Route::get('/categories/filter', [CategoryController::class, 'filter']);
-Route::get('/categories/with-items', [CategoryController::class, 'withItems']);
-Route::get('/categories/without-items', [CategoryController::class, 'withoutItems']);
-Route::get('/items/filter-province', [ItemController::class, 'filterByProvince']);
-
-Route::apiResource('categories', CategoryController::class);
-=======
 Route::apiResource('orders', OrderController::class);
 
->>>>>>> feature/order_product
