@@ -694,20 +694,13 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { MoreVertical, Search, Edit, Trash2, Eye, Package, DollarSign, X, Upload, Save, AlertCircle, Plus, Star } from 'lucide-react';
 
 const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
   const [products, setProducts] = useState([]);
-  const [categories] = useState([
-    { id: 1, name: "Vegetables", nameKh: "បន្លែ" },
-    { id: 2, name: "Fruits", nameKh: "ផ្លែឈើ" },
-    { id: 3, name: "Dairy & Eggs", nameKh: "ទឹកដោះគោ និង ស៊ុត" },
-    { id: 4, name: "Grains", nameKh: "គ្រាប់ធញ្ញជាតិ" },
-    { id: 5, name: "Herbs", nameKh: "ឱសថបុរាណ" }
-  ]);
+  const [categories, setCategories] = useState([]); // Dynamic categories
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -819,12 +812,38 @@ const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
   };
 
   const currentTexts = texts[currentLanguage];
-
-  // Base URL for API requests
   const API_BASE_URL = 'http://localhost:8000';
 
-  // Fetch items from the database and store as products
+  // Fetch categories and products
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_BASE_URL}/api/categories`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : undefined
+          }
+        });
+        if (response.data.success) {
+          // Map API response to match the expected category format
+          const categoriesData = response.data.data.map(category => ({
+            id: category.id,
+            name: category.name.en || '',
+            nameKh: category.name.kh || '',
+            image_url: category.image_url || null,
+            productCount: category.productCount || 0
+          }));
+          setCategories(categoriesData);
+        } else {
+          setError(currentTexts.error + 'Failed to fetch categories');
+          console.error('API Error:', response.data.message);
+        }
+      } catch (err) {
+        setError(currentTexts.error + (err.response?.data?.message || err.message));
+        console.error('Fetch Categories Error:', err);
+      }
+    };
+
     const fetchItems = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -855,11 +874,13 @@ const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
         }
       } catch (err) {
         setError(currentTexts.error + (err.response?.data?.message || err.message));
-        console.error('Fetch Error:', err);
+        console.error('Fetch Items Error:', err);
       }
     };
+
+    fetchCategories();
     fetchItems();
-  }, []);
+  }, []); // Empty dependency array to run once on mount
 
   // Handle click outside for actions menu
   useEffect(() => {
@@ -876,7 +897,7 @@ const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
     const matchesSearch = currentLanguage === 'kh'
       ? product.name_kh?.toLowerCase().includes(searchTerm.toLowerCase())
       : product.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === '' || product.category.name === filterCategory;
+    const matchesCategory = filterCategory === '' || product.category?.name === filterCategory;
     const matchesStatus = filterStatus === '' || product.status === filterStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -1359,7 +1380,7 @@ const ProductManagement = ({ currentLanguage = 'en', setCurrentLanguage }) => {
                         </div>
                       </td>
                       <td className="py-4 px-6 text-[#333333]">
-                        {currentLanguage === 'kh' ? product.category.nameKh : product.category.name}
+                        {currentLanguage === 'kh' ? product.category?.nameKh : product.category?.name}
                       </td>
                       <td className="py-4 px-6 font-semibold text-[#333333]">
                         ${product.price}/{currentLanguage === 'kh' ? product.unit_kh : product.unit}
