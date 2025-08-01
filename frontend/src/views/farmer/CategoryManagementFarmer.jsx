@@ -138,72 +138,86 @@ const CategoryManagement = () => {
   };
 
   const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name[kh]', formData.name_kh);
-      formDataToSend.append('name[en]', formData.name_kh); // Map Khmer name to English for backend compatibility
-      formDataToSend.append('description[kh]', formData.description_kh || '');
-      formDataToSend.append('description[en]', formData.description_kh || ''); // Map Khmer description to English
-      formDataToSend.append('status', formData.status);
-      if (formData.image) {
-        formDataToSend.append('image', formData.image);
-      } else if (modalMode === 'edit' && selectedCategory?.image_url) {
-        formDataToSend.append('existing_image_url', selectedCategory.image_url);
-      }
+  setIsLoading(true);
+  try {
+    const formDataToSend = new FormData();
 
-      if (modalMode === 'edit' && selectedCategory) {
-        const response = await axios.post(
-          `${CATEGORIES_ENDPOINT}/${selectedCategory.id}?_method=PUT`,
-          formDataToSend,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        );
-        setCategories(
-          categories.map((cat) =>
-            cat.id === selectedCategory.id
-              ? {
-                  ...cat,
-                  name: response.data.data.name.kh,
-                  description: response.data.data.description.kh,
-                  status: response.data.data.status,
-                  image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
-                }
-              : cat
-          )
-        );
-      } else if (modalMode === 'add') {
-        const response = await axios.post(CATEGORIES_ENDPOINT, formDataToSend, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        const newCategory = {
-          id: response.data.data.id,
-          name: response.data.data.name.kh,
-          description: response.data.data.description.kh,
-          productCount: response.data.data.productCount || 0,
-          createdAt: response.data.data.created_at,
-          status: response.data.data.status,
-          image_url: response.data.data.image_url,
-        };
-        setCategories([newCategory, ...categories]);
-      }
-      handleCloseModal();
-      setError(null);
-      alert(texts.categorySaved);
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការរក្សាទុកប្រភេទ';
-      setError(errorMessage);
-      console.error('Save Category Error:', {
-        message: err.message,
-        code: err.code,
-        response: err.response,
-      });
-    } finally {
-      setIsLoading(false);
+    // Append multilingual fields
+    formDataToSend.append('name[kh]', formData.name_kh);
+    formDataToSend.append('name[en]', formData.name_kh); // You can change to formData.name_en if available
+
+    formDataToSend.append('description[kh]', formData.description_kh || '');
+    formDataToSend.append('description[en]', formData.description_kh || ''); // You can change to formData.description_en if available
+
+    formDataToSend.append('status', formData.status);
+
+    // Append image only if uploading a new one
+    if (formData.image) {
+      formDataToSend.append('image', formData.image);
     }
-  };
+
+    let response;
+
+    // EDIT Mode
+    if (modalMode === 'edit' && selectedCategory) {
+      response = await axios.post(
+        `${CATEGORIES_ENDPOINT}/${selectedCategory.id}?_method=PUT`,
+        formDataToSend,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
+
+      // Update category in list
+      setCategories(
+        categories.map((cat) =>
+          cat.id === selectedCategory.id
+            ? {
+                ...cat,
+                name: response.data.data.name.kh,
+                description: response.data.data.description.kh,
+                status: response.data.data.status,
+                image_url: response.data.data.image_url,
+                productCount: response.data.data.productCount,
+              }
+            : cat
+        )
+      );
+    }
+    // ADD Mode
+    else if (modalMode === 'add') {
+      response = await axios.post(CATEGORIES_ENDPOINT, formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const newCategory = {
+        id: response.data.data.id,
+        name: response.data.data.name.kh,
+        description: response.data.data.description.kh,
+        productCount: response.data.data.productCount || 0,
+        createdAt: response.data.data.created_at,
+        status: response.data.data.status,
+        image_url: response.data.data.image_url,
+      };
+
+      setCategories([newCategory, ...categories]);
+    }
+
+    handleCloseModal();
+    setError(null);
+    alert(texts.categorySaved);
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការរក្សាទុកប្រភេទ';
+    setError(errorMessage);
+    console.error('Save Category Error:', {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleDelete = (category) => {
     setCategoryToDelete(category);
