@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { useState, useMemo, useEffect } from "react";
-import '../../styles/ProductStyle.css';
-import provinces from "../../services/provinces";
-import ProductCard from "../../components/ProductCard";
-import productData from "../../data/productData";
-import ProductSection from "../../components/ProductSection";
-import LocationMap from "../../components/LocationMap";
-import { MapPin, Search, Star, SlidersHorizontal, Grid, List, ChevronDown, MapIcon, Users, Package, ArrowRight, Navigation, Loader2, AlertCircle } from 'lucide-react';
-import axios from "axios";
-=======
 // "use client"
 
 // import { useState, useMemo, useEffect, useRef } from "react"
@@ -981,7 +970,7 @@ import axios from "axios";
 //       {/* All Products Section */}
 //       {/* All Items Section */}
 //       <ProductSection/>
-      
+
 //     </div>
 //   )
 // }
@@ -1000,6 +989,7 @@ import "../../styles/ProductStyle.css"
 import provinces from "../../services/provinces"
 import ProductCard from "../../components/ProductCard"
 import LocationMap from "../../components/LocationMap"
+import ProductSection from "../../components/ProductSection"
 import {
   MapPin,
   Search,
@@ -1017,43 +1007,11 @@ import {
   AlertCircle,
 } from "lucide-react"
 import axios from "axios"
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 
 // Replace with your actual API endpoint
 const ITEMS_ENDPOINT = "http://your-api-url.com/api/items"
 
 export default function ProductsPage({ currentLanguage = "en" }) {
-<<<<<<< HEAD
-  const [selectedProvince, setSelectedProvince] = useState("all");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showMap, setShowMap] = useState(false);
-  const [favorites, setFavorites] = useState([]);
-  const [sortBy, setSortBy] = useState("popular");
-  const [viewMode, setViewMode] = useState("grid");
-  const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 10]);
-  const [orderingProducts, setOrderingProducts] = useState([]);
-  const [orderedProducts, setOrderedProducts] = useState([]);
-  const [currLocation, setCurrLocation] = useState({});
-  const [userLocation, setUserLocation] = useState(null);
-  const [locationLoading, setLocationLoading] = useState(false);
-  const [locationError, setLocationError] = useState(null);
-  const [nearbyRadius, setNearbyRadius] = useState(50); // km
-
-  // Handle order
-  const handleOrder = (productId) => {
-    setOrderingProducts((prev) => [...prev, productId]);
-    setTimeout(() => {
-      setOrderingProducts((prev) => prev.filter((id) => id !== productId));
-      setOrderedProducts((prev) => [...prev, productId]);
-      alert(currentTexts.orderSuccess);
-      setTimeout(() => {
-        setOrderedProducts((prev) => prev.filter((id) => id !== productId));
-      }, 3000);
-    }, 1500);
-  };
-=======
   const [selectedProvince, setSelectedProvince] = useState("all")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -1077,7 +1035,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
   // Refs for scrolling
   const productsRef = useRef(null)
   const filtersRef = useRef(null)
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 
   // Language texts
   const texts = {
@@ -1144,7 +1101,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     en: {
       heroTitle: "Fresh Agricultural Products",
       heroSubtitle: "Direct from Local Farmers",
-      heroDescription: "Discover and buy high-quality agricultural products from farmers in your area. Connect directly with trusted local farmers for the freshest produce.",
+      heroDescription:
+        "Discover and buy high-quality agricultural products from farmers in your area. Connect directly with trusted local farmers for the freshest produce.",
       searchPlaceholder: "Search for products...",
       exploreProducts: "Explore Products",
       sortBy: "Sort by",
@@ -1201,9 +1159,9 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       within: "Within",
       noProductsFound: "No products found",
     },
-  };
+  }
 
-  const currentTexts = texts[currentLanguage];
+  const currentTexts = texts[currentLanguage]
 
   // Categories
   const categories = [
@@ -1214,7 +1172,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     { id: "livestock", name: currentTexts.livestock, color: "bg-blue-100" },
     { id: "beverages", name: currentTexts.beverages, color: "bg-purple-100" },
     { id: "seafood", name: currentTexts.seafood, color: "bg-teal-100" },
-  ];
+  ]
 
   // Sort options
   const sortOptions = [
@@ -1224,7 +1182,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     { id: "rating", name: currentTexts.sortRating },
     { id: "newest", name: currentTexts.sortNewest },
     { id: "distance", name: currentTexts.sortDistance },
-  ];
+  ]
 
   // Fetch filtered products
   const fetchFilteredProducts = async () => {
@@ -1279,9 +1237,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
   // Get user location
   const getLocation = async () => {
-    setLocationLoading(true);
-    setLocationError(null);
-
+    setLocationLoading(true)
+    setLocationError(null)
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -1290,179 +1247,136 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               accuracy: position.coords.accuracy,
-<<<<<<< HEAD
-              source: 'gps'
-            };
-
-            // Get additional location details from reverse geocoding
-=======
               source: "gps",
             }
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
             try {
               const response = await axios.get(
-                `https://api.opencagedata.com/geocode/v1/json?q=${location.latitude}+${location.longitude}&key=YOUR_API_KEY`
-              );
+                `https://api.opencagedata.com/geocode/v1/json?q=${location.latitude}+${location.longitude}&key=YOUR_API_KEY`,
+              )
               if (response.data.results[0]) {
-                location.city = response.data.results[0].components.city || response.data.results[0].components.town;
-                location.country = response.data.results[0].components.country;
-                location.province = response.data.results[0].components.state;
+                location.city = response.data.results[0].components.city || response.data.results[0].components.town
+                location.country = response.data.results[0].components.country
+                location.province = response.data.results[0].components.state
               }
             } catch (error) {
-              console.log("Reverse geocoding failed, using IP location as fallback");
+              console.log("Reverse geocoding failed, using IP location as fallback")
             }
-
-            setUserLocation(location);
-            setCurrLocation(location);
-            setLocationLoading(false);
+            setUserLocation(location)
+            setCurrLocation(location)
+            setLocationLoading(false)
           },
           async (error) => {
-            console.log("GPS failed, trying IP location:", error);
-            await getIPLocation();
+            console.log("GPS failed, trying IP location:", error)
+            await getIPLocation()
           },
           {
             enableHighAccuracy: true,
             timeout: 10000,
-            maximumAge: 300000
-          }
-        );
+            maximumAge: 300000,
+          },
+        )
       } else {
-        await getIPLocation();
+        await getIPLocation()
       }
     } catch (error) {
-      console.error("Location error:", error);
-      setLocationError(error.message);
-      setLocationLoading(false);
+      console.error("Location error:", error)
+      setLocationError(error.message)
+      setLocationLoading(false)
     }
-  };
+  }
 
   // Fallback to IP-based location
   const getIPLocation = async () => {
     try {
-      const response = await axios.get('https://ipapi.co/json/');
+      const response = await axios.get("https://ipapi.co/json/")
       const location = {
         latitude: response.data.latitude,
         longitude: response.data.longitude,
         city: response.data.city,
         country: response.data.country_name,
         province: response.data.region,
-        source: 'ip'
-      };
-
-      setUserLocation(location);
-      setCurrLocation(location);
-      setLocationLoading(false);
+        source: "ip",
+      }
+      setUserLocation(location)
+      setCurrLocation(location)
+      setLocationLoading(false)
     } catch (error) {
-      console.error("IP location failed:", error);
-      setLocationError("Unable to determine location");
-      setLocationLoading(false);
+      console.error("IP location failed:", error)
+      setLocationError("Unable to determine location")
+      setLocationLoading(false)
     }
-  };
+  }
 
   // Calculate distance (Haversine formula)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const R = 6371 // Radius of the Earth in kilometers
+    const dLat = ((lat2 - lat1) * Math.PI) / 180
+    const dLon = ((lon2 - lon1) * Math.PI) / 180
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
-  };
+      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c // Distance in kilometers
+  }
 
   // Filtering and sorting logic
   const filteredAndSortedProducts = useMemo(() => {
-<<<<<<< HEAD
-    let filtered = productData.map((product) => {
-      let distance = null;
-=======
     let filtered = products.map((product) => {
       let distance = null
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
       if (userLocation && product.farmer.location) {
         distance = calculateDistance(
           userLocation.latitude,
           userLocation.longitude,
           product.farmer.location.lat,
-          product.farmer.location.lng
-        );
+          product.farmer.location.lng,
+        )
       }
-      return { ...product, distance };
-    });
+      return { ...product, distance }
+    })
 
     filtered = filtered.filter((product) => {
-<<<<<<< HEAD
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.nameKh && product.nameKh.includes(searchQuery));
-      const matchesProvince = selectedProvince === "all" || product.province === selectedProvince;
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesDistance = !userLocation || !product.distance || product.distance <= nearbyRadius;
-
-      return matchesSearch && matchesProvince && matchesCategory && matchesPrice && matchesDistance;
-    });
-=======
       const matchesDistance = !userLocation || !product.distance || product.distance <= nearbyRadius
       return matchesDistance
     })
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 
     switch (sortBy) {
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
+        filtered.sort((a, b) => a.price - b.price)
+        break
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
+        filtered.sort((a, b) => b.price - a.price)
+        break
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
+        filtered.sort((a, b) => b.rating - a.rating)
+        break
       case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        break
       case "distance":
         filtered.sort((a, b) => {
-          if (!a.distance && !b.distance) return 0;
-          if (!a.distance) return 1;
-          if (!b.distance) return -1;
-          return a.distance - b.distance;
-        });
-        break;
+          if (!a.distance && !b.distance) return 0
+          if (!a.distance) return 1
+          if (!b.distance) return -1
+          return a.distance - b.distance
+        })
+        break
       case "popular":
       default:
-        filtered.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
-        break;
+        filtered.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0))
+        break
     }
 
-<<<<<<< HEAD
-    return filtered;
-  }, [searchQuery, selectedProvince, selectedCategory, priceRange, sortBy, userLocation, nearbyRadius]);
-=======
     return filtered
   }, [products, sortBy, userLocation, nearbyRadius])
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 
-  const popularProducts = filteredAndSortedProducts.filter((product) => product.isPopular);
-  const nearbyProducts = filteredAndSortedProducts.filter((product) => product.distance && product.distance <= 20);
+  const popularProducts = filteredAndSortedProducts.filter((product) => product.isPopular)
+  const nearbyProducts = filteredAndSortedProducts.filter((product) => product.distance && product.distance <= 20)
 
   const toggleFavorite = (productId) => {
-    setFavorites((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]));
-  };
+    setFavorites((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]))
+  }
 
   const clearFilters = () => {
-<<<<<<< HEAD
-    setSelectedProvince("all");
-    setSelectedCategory("all");
-    setSearchQuery("");
-    setPriceRange([0, 10]);
-    setNearbyRadius(50);
-  };
-=======
     setSelectedProvince("all")
     setSelectedCategory("all")
     setSearchQuery("")
@@ -1491,11 +1405,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       }, 3000)
     }, 1500)
   }
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 
   useEffect(() => {
-    getLocation();
-  }, []);
+    getLocation()
+  }, [])
 
   useEffect(() => {
     const handleHashNavigation = () => {
@@ -1547,8 +1460,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 <>
                   <MapPin className="w-4 h-4" />
                   <span className="text-sm">
-                    {currentTexts.yourLocation}: {userLocation.city || 'Unknown'}, {userLocation.country || 'Cambodia'}
-                    {userLocation.source === 'gps' && ' (GPS)'}
+                    {currentTexts.yourLocation}: {userLocation.city || "Unknown"}, {userLocation.country || "Cambodia"}
+                    {userLocation.source === "gps" && " (GPS)"}
                   </span>
                 </>
               )}
@@ -1601,8 +1514,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 </div>
               </div>
               <button
-                onClick={() => setShowMap(true)}
-                className="bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto lg:mx-0 hero-cta"
+                onClick={scrollToProducts}
+                className="bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto lg:mx-0 hero-cta transform hover:scale-105"
               >
                 {currentTexts.exploreProducts}
                 <ArrowRight className="w-5 h-5" />
@@ -1636,7 +1549,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                     <h3 className="font-bold text-gray-800 text-sm mb-1">{product.name}</h3>
                     <div className="flex items-center justify-between">
                       <span className="text-green-600 font-bold">
-                        {product.currency}{product.price}
+                        {product.currency}
+                        {product.price}
                       </span>
                       <div className="flex items-center gap-1">
                         <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -1654,9 +1568,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               </div>
               <div className="absolute -top-4 -right-4 bg-white rounded-lg p-4 shadow-lg hero-stat">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-yellow-600">
-                    {userLocation ? `${nearbyRadius}km` : '∞'}
-                  </div>
+                  <div className="text-xl font-bold text-yellow-600">{userLocation ? `${nearbyRadius}km` : "∞"}</div>
                   <div className="text-xs text-gray-600">Search Radius</div>
                 </div>
               </div>
@@ -1728,9 +1640,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               </button>
               {userLocation && (
                 <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-gray-700">
-                    {currentTexts.within}:
-                  </label>
+                  <label className="text-sm font-medium text-gray-700">{currentTexts.within}:</label>
                   <select
                     value={nearbyRadius}
                     onChange={(e) => setNearbyRadius(Number(e.target.value))}
@@ -1746,7 +1656,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               )}
             </div>
           </div>
-
           {showMap && (
             <LocationMap
               userLocation={userLocation}
@@ -1834,13 +1743,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </section>
       )}
 
-<<<<<<< HEAD
-      {/* Enhanced Filters and Controls */}
-      <section className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
-=======
       {/* Filters Section */}
       <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
@@ -1854,13 +1758,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                     >
                       <SlidersHorizontal className="w-4 h-4" />
                       <span>{currentTexts.filters}</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+                      />
                     </button>
-<<<<<<< HEAD
-
-                    {/* Province Filter - Desktop */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                     <div className="relative hidden lg:block">
                       <select
                         value={selectedProvince}
@@ -1877,22 +1778,12 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
-<<<<<<< HEAD
-
-                  {/* Right Section - View Controls */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                   <div className="flex items-center gap-3">
                     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg">
                       <span className="text-xs font-medium text-gray-600">
                         {filteredAndSortedProducts.length} {currentTexts.of} {products.length}
                       </span>
                     </div>
-<<<<<<< HEAD
-
-                    {/* Sort Dropdown */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                     <div className="relative">
                       <select
                         value={sortBy}
@@ -1907,17 +1798,12 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       </select>
                       <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
-<<<<<<< HEAD
-
-                    {/* View Mode Toggle */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                     <div className="flex bg-gray-100 rounded-xl p-1">
                       <button
                         onClick={() => setViewMode("grid")}
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
-                          ? "bg-white text-green-600 shadow-sm"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                            ? "bg-white text-green-600 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                           }`}
                         title="Grid View"
                       >
@@ -1926,8 +1812,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <button
                         onClick={() => setViewMode("list")}
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
-                          ? "bg-white text-green-600 shadow-sm"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                            ? "bg-white text-green-600 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                           }`}
                         title="List View"
                       >
@@ -1936,44 +1822,21 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                     </div>
                   </div>
                 </div>
-<<<<<<< HEAD
-
-                {/* Categories - Desktop */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                 <div className="hidden lg:flex items-center justify-between">
                   <div className="flex gap-2 flex-wrap">
                     {categories.map((category) => (
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-<<<<<<< HEAD
                         className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
-                          : `${category.color === 'green'
-                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
-                            : category.color === 'orange'
-                              ? 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
-                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                          } hover:shadow-md hover:scale-105`
-                          }`}
-=======
-                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                          selectedCategory === category.id
                             ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
                             : `${category.color} text-gray-700 hover:shadow-md hover:scale-105 border border-gray-200`
-                        }`}
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
+                          }`}
                       >
                         {category.name}
                       </button>
                     ))}
                   </div>
-<<<<<<< HEAD
-
-                  {/* Clear Filters */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                   {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
                     <button
                       onClick={clearFilters}
@@ -1988,21 +1851,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 </div>
               </div>
             </div>
-<<<<<<< HEAD
-
-            {/* Mobile Filters Dropdown */}
-            <div className={`lg:hidden transition-all duration-300 ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
-=======
             <div
               className={`lg:hidden transition-all duration-300 ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
             >
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
               <div className="p-6 border-b border-gray-100 bg-gray-50">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Province
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
                     <div className="relative">
                       <select
                         value={selectedProvince}
@@ -2019,48 +1874,23 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
-<<<<<<< HEAD
-
-                  {/* Mobile Categories */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Categories
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
                     <div className="grid grid-cols-2 gap-2">
                       {categories.map((category) => (
                         <button
                           key={category.id}
                           onClick={() => setSelectedCategory(category.id)}
-<<<<<<< HEAD
                           className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-                            : `${category.color === 'green'
-                              ? 'bg-green-50 text-green-700 border border-green-200'
-                              : category.color === 'orange'
-                                ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                                : 'bg-gray-50 text-gray-700 border border-gray-200'
-                            }`
-                            }`}
-=======
-                          className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                            selectedCategory === category.id
                               ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                               : `${category.color} text-gray-700 border border-gray-200`
-                          }`}
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
+                            }`}
                         >
                           {category.name}
                         </button>
                       ))}
                     </div>
                   </div>
-<<<<<<< HEAD
-
-                  {/* Mobile Clear Filters */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
                   {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
                     <button
                       onClick={clearFilters}
@@ -2075,141 +1905,22 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 </div>
               </div>
             </div>
-<<<<<<< HEAD
-
-            {/* Active Filters Summary (Mobile) */}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
             {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
               <div className="lg:hidden px-6 py-3 bg-blue-50 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-blue-700">
                     {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.products}
                   </span>
-                  <span className="text-xs text-blue-600">
-                    Filters active
-                  </span>
+                  <span className="text-xs text-blue-600">Filters active</span>
                 </div>
               </div>
             )}
           </div>
-<<<<<<< HEAD
-
-          {/* Mobile Filters Panel */}
-          {showFilters && (
-            <div className="lg:hidden mt-6 p-4 bg-stone-50 rounded-lg border border-stone-200">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
-                  <select
-                    value={selectedProvince}
-                    onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    {provinces.map((province) => (
-                      <option key={province.id} value={province.id}>
-                        {province.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {categories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`p-3 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
-                          ? "bg-green-700 text-white"
-                          : `${category.color} text-gray-700`
-                          }`}
-                      >
-                        <span className="text-sm">{category.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {userLocation && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {currentTexts.radiusFilter}
-                    </label>
-                    <select
-                      value={nearbyRadius}
-                      onChange={(e) => setNearbyRadius(Number(e.target.value))}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value={10}>10 km</option>
-                      <option value={25}>25 km</option>
-                      <option value={50}>50 km</option>
-                      <option value={100}>100 km</option>
-                      <option value={500}>All Cambodia</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-=======
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
         </div>
       </section>
 
       {/* All Products Section */}
-<<<<<<< HEAD
-        <ProductSection/>
-    </div>
-  );
-=======
-      <section ref={productsRef} className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              {selectedCategory === "all"
-                ? currentTexts.allProducts
-                : categories.find((category) => category.id === selectedCategory)?.name || currentTexts.allProducts}
-            </h2>
-            <div className="w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
-          </div>
-          {isLoading ? (
-            <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-              <p className="mt-2 text-gray-600">Loading products...</p>
-            </div>
-          ) : filteredAndSortedProducts.length === 0 ? (
-            <div className="text-center">
-              <p className="text-gray-600">{currentTexts.noProductsFound}</p>
-            </div>
-          ) : (
-            <div
-              className={`grid gap-8 ${
-                viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid-cols-1"
-              }`}
-            >
-              {filteredAndSortedProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  currentTexts={currentTexts}
-                  currentLanguage={currentLanguage}
-                  isFavorite={favorites.includes(product.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onOrder={handleOrder}
-                  orderingProducts={orderingProducts}
-                  orderedProducts={orderedProducts}
-                  viewMode={viewMode}
-                  provinces={provinces}
-                  showDistance={userLocation}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <ProductSection />
     </div>
   )
->>>>>>> 291f769db664b6821191e23ee7bde534fb4cb8e5
 }
