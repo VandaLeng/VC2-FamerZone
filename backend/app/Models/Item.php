@@ -11,18 +11,19 @@ class Item extends Model
 
     protected $fillable = [
         'name',
-        'name_kh',
         'category_id',
         'price',
         'stock',
         'unit',
-        'unit_kh',
         'image',
-        'province',       // ✅ Added
-        'description',    // ✅ Added
+        'province',
+        'description',
         'status',
-        'orders'
+        'orders',
+        'user_id',
     ];
+
+    protected $appends = ['image_url'];
 
     public function category()
     {
@@ -32,5 +33,11 @@ class Item extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Accessor to get full image URL
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/items/' . $this->image) : null;
     }
 }

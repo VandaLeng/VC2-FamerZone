@@ -10,16 +10,15 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // 👈 User relationship
             $table->string('name');
-            $table->string('name_kh');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->decimal('price', 8, 2);
             $table->integer('stock');
             $table->string('unit');
-            $table->string('unit_kh');
             $table->string('image')->nullable();
-            $table->string('province'); // Add this line for province
-            $table->text('description')->nullable(); // Add this line for description
+            $table->string('province');
+            $table->text('description')->nullable();
             $table->string('status')->default('active');
             $table->integer('orders')->default(0);
             $table->timestamps();

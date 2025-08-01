@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_id')->unique(); // Add order ID like ORD-001
             $table->foreignId('buyer_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Added missing product_id
+            $table->foreignId('product_id')->constrained('items')->onDelete('cascade');
             $table->string('product_name'); // Store product name for history
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2); // Price per unit
