@@ -93,12 +93,12 @@ const FarmerSidebar = ({
             onClick={collapsed ? toggleSidebar : undefined}
             className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white"
           >
-            <span className="font-bold text-xl font-serif">F</span>
+            <span className="font-bold text-xl">F</span>
           </button>
           {!collapsed && (
             <div>
               <h1 className="text-xl text-gray-800 font-bold">{currentTexts.framerZone}</h1>
-              <p className="text-sm text-gray-500 font-serif">{currentTexts.farmerPanel}</p>
+              <p className="text-sm text-gray-500">{currentTexts.farmerPanel}</p>
             </div>
           )}
         </div>
@@ -126,7 +126,7 @@ const FarmerSidebar = ({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-medium text-gray-800">{userData?.name || "John Farmer"}</h3>
-              <p className="text-sm text-gray-500 font-serif">{currentTexts.premiumFarmer}</p>
+              <p className="text-sm text-gray-500">{currentTexts.premiumFarmer}</p>
             </div>
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
           </div>
