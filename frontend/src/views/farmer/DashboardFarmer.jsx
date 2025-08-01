@@ -63,23 +63,23 @@ const FarmerDashboard = () => {
   };
 
   const StatCard = ({ icon: Icon, title, value, subtitle, trend, color = 'text-green-600', bgGradient = 'from-green-500 to-emerald-500' }) => (
-    <div className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <div className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${bgGradient} opacity-5 rounded-full -translate-y-4 translate-x-4 group-hover:opacity-10 transition-opacity`}></div>
       <div className="relative">
         <div className="flex items-center justify-between mb-3">
           <div className={`p-2 rounded-lg bg-gradient-to-br ${bgGradient} shadow-md`}>
-            <Icon className="w-4 h-4 text-white" />
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           {trend && (
-            <div className="flex items-center text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-              <ArrowUpRight className="w-2.5 h-2.5 mr-0.5" />
+            <div className="flex items-center text-xs sm:text-sm text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+              <ArrowUpRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />
               +{trend}%
             </div>
           )}
         </div>
         <div>
-          <p className="text-sm text-gray-600 mb-0.5 font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mb-0.5">{value}</p>
+          <p className="text-xs sm:text-sm text-gray-600 mb-0.5 font-medium">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-0.5">{value}</p>
           {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
         </div>
       </div>
@@ -87,26 +87,26 @@ const FarmerDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">ផ្ទាំងគ្រប់គ្រង</h1>
-              <p className="text-gray-600 text-lg">ស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នក</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1 sm:mb-2 tracking-tight">ផ្ទាំងគ្រប់គ្រង</h1>
+              <p className="text-sm sm:text-base text-gray-600">ស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នក</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-100">
-                <Calendar className="w-5 h-5 text-green-600" />
-                <span className="text-sm text-gray-700 font-medium">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-3 bg-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-sm border border-gray-100">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <span className="text-xs sm:text-sm text-gray-700 font-medium">
                   {new Date().toLocaleDateString('km-KH')}
                 </span>
               </div>
               <div className="relative">
-                <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
-                  <Bell className="w-5 h-5 text-gray-600" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                <div className="p-2 sm:p-3 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"></span>
                 </div>
               </div>
             </div>
@@ -114,9 +114,9 @@ const FarmerDashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">ស្ថិតិរហ័ស</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">ស្ថិតិរហ័ស</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <StatCard
               icon={DollarSign}
               title="ចំណូលសរុប"
@@ -157,15 +157,15 @@ const FarmerDashboard = () => {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Sales Overview Chart */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">ទិដ្ឋភាពលក់ដូរ</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-0">ទិដ្ឋភាពលក់ដូរ</h3>
               <div className="flex bg-gray-50 rounded-xl p-1 border border-gray-200">
                 <button
                   onClick={() => setTimeRange('weekly')}
-                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'weekly'
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg font-medium transition-all ${timeRange === 'weekly'
                     ? 'bg-green-600 text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                     }`}
@@ -174,7 +174,7 @@ const FarmerDashboard = () => {
                 </button>
                 <button
                   onClick={() => setTimeRange('monthly')}
-                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'monthly'
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg font-medium transition-all ${timeRange === 'monthly'
                     ? 'bg-green-600 text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                     }`}
@@ -183,16 +183,16 @@ const FarmerDashboard = () => {
                 </button>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={salesData[timeRange]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <ResponsiveContainer width="100%" height={280} className="min-w-[200px]">
+              <BarChart data={salesData[timeRange]} margin={{ top: 15, right: 20, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#64748b' }}
                   axisLine={{ stroke: '#e2e8f0' }}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#64748b' }}
                   axisLine={{ stroke: '#e2e8f0' }}
                 />
                 <Tooltip
@@ -201,7 +201,7 @@ const FarmerDashboard = () => {
                     border: '1px solid #e2e8f0',
                     borderRadius: '12px',
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    fontSize: '14px'
+                    fontSize: '12px'
                   }}
                 />
                 <Bar
@@ -220,28 +220,28 @@ const FarmerDashboard = () => {
           </div>
 
           {/* Top Products */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">ផលិតផលល្អបំផុត</h3>
-            <div className="space-y-4">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">ផលិតផលល្អបំផុត</h3>
+            <div className="space-y-3 sm:space-y-4">
               {topProducts.map((product, index) => (
-                <div key={index} className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-modern-green transition-all duration-200 hover:shadow-sm">
-                  <div className="flex items-center space-x-4">
+                <div key={index} className="group flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl hover:bg-modern-green transition-all duration-200 hover:shadow-sm">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
                     <div className="relative">
                       <div
-                        className="w-4 h-4 rounded-full shadow-sm"
+                        className="w-3 h-3 sm:w-4 sm:h-4 rounded-full shadow-sm"
                         style={{ backgroundColor: product.color }}
                       ></div>
                       <div className="absolute inset-0 rounded-full bg-white opacity-20"></div>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.sales} ការលក់</p>
+                      <p className="font-semibold text-sm sm:text-base text-gray-900 group-hover:text-green-800 transition-colors">{product.name}</p>
+                      <p className="text-xs text-gray-500">{product.sales} ការលក់</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-green-600 text-lg">${product.revenue}</p>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Star className="w-3 h-3 mr-1 fill-current text-amber-400" />
+                    <p className="font-bold text-green-600 text-base sm:text-lg">${product.revenue}</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 fill-current text-amber-400" />
                       4.8
                     </div>
                   </div>
@@ -253,53 +253,53 @@ const FarmerDashboard = () => {
 
         {/* Recent Orders Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <h3 className="text-xl font-semibold text-gray-900">ការបញ្ជាទិញថ្មីៗ</h3>
-            <button className="text-green-600 hover:text-green-700 font-semibold text-sm transition-colors flex items-center bg-green-50 px-4 py-2 rounded-lg hover:bg-green-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-6 border-b border-gray-100">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-0">ការបញ្ជាទិញថ្មីៗ</h3>
+            <button className="text-green-600 hover:text-green-700 font-semibold text-xs sm:text-sm transition-colors flex items-center bg-green-50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-green-100">
               មើលទាំងអស់
-              <Eye className="w-4 h-4 ml-2" />
+              <Eye className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto touch-auto">
+            <table className="w-full min-w-[640px]">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">លេខរៀងការបញ្ជាទិញ</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">អតិថិជន</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">ផលិតផល</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">បរិមាណ</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">សរុប</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">ស្ថានភាព</th>
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">កាលបរិច្ឆេទ</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">លេខរៀងការបញ្ជាទិញ</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">អតិថិជន</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">ផលិតផល</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">បរិមាណ</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">សរុប</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">ស្ថានភាព</th>
+                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">កាលបរិច្ឆេទ</th>
                 </tr>
               </thead>
               <tbody>
                 {recentOrders.map((order, index) => (
                   <tr key={index} className="border-b border-gray-50 hover:bg-modern-green transition-colors">
-                    <td className="p-4">
-                      <span className="font-mono text-sm text-green-600 font-semibold">{order.id}</span>
+                    <td className="p-3 sm:p-4">
+                      <span className="font-mono text-xs sm:text-sm text-green-600 font-semibold">{order.id}</span>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
-                          <span className="text-xs font-bold text-white">
+                    <td className="p-3 sm:p-4">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
+                          <span className="text-[10px] sm:text-xs font-bold text-white">
                             {order.customer.split(' ').map(n => n[0]).join('')}
                           </span>
                         </div>
-                        <span className="text-sm text-gray-900 font-medium">{order.customer}</span>
+                        <span className="text-xs sm:text-sm text-gray-900 font-medium">{order.customer}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-gray-700">{order.product}</td>
-                    <td className="p-4 text-sm text-gray-700 font-medium">{order.quantity}</td>
-                    <td className="p-4 text-sm font-bold text-green-600">${order.total.toFixed(2)}</td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
+                    <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-700">{order.product}</td>
+                    <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-700 font-medium">{order.quantity}</td>
+                    <td className="p-3 sm:p-4 text-xs sm:text-sm font-bold text-green-600">${order.total.toFixed(2)}</td>
+                    <td className="p-3 sm:p-4">
+                      <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold border ${getStatusColor(order.status)}`}>
                         {order.status === 'pending' ? 'កំពុងរង់ចាំ' : 
                          order.status === 'confirmed' ? 'បានបញ្ជាក់' : 
                          order.status === 'delivered' ? 'បានដឹកជញ្ជូន' : order.status}
                       </span>
                     </td>
-                    <td className="p-4 text-sm text-gray-500">
+                    <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-500">
                       {new Date().toLocaleDateString('km-KH')}
                     </td>
                   </tr>
@@ -310,13 +310,23 @@ const FarmerDashboard = () => {
         </div>
       </div>
 
-      {/* Custom CSS for modern colors */}
+      {/* Custom CSS for modern colors and mobile enhancements */}
       <style jsx>{`
         .bg-modern-green { 
           background-color: #DCFCE7; 
         }
         .hover\\:bg-modern-green:hover { 
           background-color: #DCFCE7; 
+        }
+        /* Ensure touch scrolling is smooth */
+        .touch-auto {
+          -webkit-overflow-scrolling: touch;
+        }
+        /* Prevent text from being too small on mobile */
+        @media (max-width: 640px) {
+          .min-w-[640px] {
+            min-width: 100%;
+          }
         }
       `}</style>
     </div>
