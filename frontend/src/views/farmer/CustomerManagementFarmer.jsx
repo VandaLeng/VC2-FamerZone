@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MoreVertical, User, Phone, Mail, MapPin, Calendar, ShoppingBag, Star, MessageCircle, Eye, UserX, Archive } from 'lucide-react';
+
+const STORAGE_KEY = 'farmer_customer_status_overrides';
 
 const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
   const [customers, setCustomers] = useState([]);
@@ -7,6 +9,7 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   // Translations
   const texts = {
@@ -74,8 +77,8 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
 
   const currentTexts = texts[currentLanguage];
 
-  // Sample customer data
-  const sampleCustomers = [
+  // Sample base customer data
+  const baseCustomers = useMemo(() => [
     {
       id: 'CUST-001',
       name: 'Sophea Chan',
@@ -146,12 +149,42 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
       avatar: '/api/placeholder/40/40',
       rating: 3.0
     }
-  ];
+  ], []);
 
+  // Load persisted status overrides from localStorage
+  const loadOverrides = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  };
+
+  const saveOverrides = (overrides) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
+    } catch {}
+  };
+
+  // Merge base customers with overrides
   useEffect(() => {
-    setCustomers(sampleCustomers);
-    setFilteredCustomers(sampleCustomers);
-  }, []);
+    const overrides = loadOverrides();
+    const merged = baseCustomers.map(c => {
+      if (overrides[c.id]) {
+        return { ...c, status: overrides[c.id] };
+      }
+      return c;
+    });
+    setCustomers(merged);
+    setFilteredCustomers(merged);
+  }, [baseCustomers]);
+
+  // Debounce search term
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(searchTerm), 250);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   // Filter customers based on status and search term
   useEffect(() => {
@@ -161,17 +194,18 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
       filtered = filtered.filter(customer => customer.status === statusFilter);
     }
 
-    if (searchTerm) {
+    if (debouncedSearch) {
+      const term = debouncedSearch.toLowerCase();
       filtered = filtered.filter(customer =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.phone.includes(searchTerm) ||
-        customer.location.toLowerCase().includes(searchTerm.toLowerCase())
+        customer.name.toLowerCase().includes(term) ||
+        customer.email.toLowerCase().includes(term) ||
+        customer.phone.includes(term) ||
+        customer.location.toLowerCase().includes(term)
       );
     }
 
     setFilteredCustomers(filtered);
-  }, [statusFilter, searchTerm, customers]);
+  }, [statusFilter, debouncedSearch, customers]);
 
   const getStatusColor = (status) => {
     const colors = {
@@ -183,15 +217,24 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
   };
 
   const handleCustomerAction = (customerId, action) => {
+    setCustomers(prev =>
+      prev.map(customer => {
+        if (customer.id !== customerId) return customer;
+        let newStatus = customer.status;
+        if (action === 'block') newStatus = 'blocked';
+        else if (action === 'unblock') newStatus = 'active';
+        return { ...customer, status: newStatus };
+      })
+    );
+
+    // persist override
+    const overrides = loadOverrides();
     if (action === 'block') {
-      setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'blocked' } : customer
-      ));
+      overrides[customerId] = 'blocked';
     } else if (action === 'unblock') {
-      setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'active' } : customer
-      ));
+      overrides[customerId] = 'active';
     }
+    saveOverrides(overrides);
     setActiveDropdown(null);
   };
 
@@ -225,12 +268,23 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
     return stars;
   };
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('[data-dropdown-root]')) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">{currentTexts.title}</h1>
-        
+
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -353,9 +407,12 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
 
                     {/* Actions */}
                     <div className="col-span-1">
-                      <div className="relative">
+                      <div className="relative" data-dropdown-root>
                         <button
-                          onClick={() => setActiveDropdown(activeDropdown === customer.id ? null : customer.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveDropdown(activeDropdown === customer.id ? null : customer.id);
+                          }}
                           className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                         >
                           <MoreVertical className="w-4 h-4 text-gray-600" />
@@ -371,7 +428,7 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
                                 <Eye className="w-4 h-4 mr-2" />
                                 {currentTexts.viewProfile}
                               </button>
-                              
+
                               <button
                                 onClick={() => setActiveDropdown(null)}
                                 className="flex items-center w-full px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
@@ -379,7 +436,7 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
                                 <ShoppingBag className="w-4 h-4 mr-2" />
                                 {currentTexts.viewOrders}
                               </button>
-                              
+
                               <button
                                 onClick={() => setActiveDropdown(null)}
                                 className="flex items-center w-full px-4 py-2 text-sm text-green-700 hover:bg-green-50"
@@ -387,7 +444,7 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
                                 <MessageCircle className="w-4 h-4 mr-2" />
                                 {currentTexts.sendMessage}
                               </button>
-                              
+
                               {customer.status === 'blocked' ? (
                                 <button
                                   onClick={() => handleCustomerAction(customer.id, 'unblock')}
@@ -405,7 +462,7 @@ const FarmerCustomerManagement = ({ currentLanguage = 'en' }) => {
                                   {currentTexts.blockCustomer}
                                 </button>
                               )}
-                              
+
                               <button
                                 onClick={() => setActiveDropdown(null)}
                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
