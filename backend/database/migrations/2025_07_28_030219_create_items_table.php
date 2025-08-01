@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('unit');
             $table->string('unit_kh');
             $table->string('image')->nullable();
+            $table->string('province'); // Add this line for province
+            $table->text('description')->nullable(); // Add this line for description
             $table->string('status')->default('active');
             $table->integer('orders')->default(0);
             $table->timestamps();
