@@ -40,7 +40,6 @@ class ItemController extends Controller
 
         $data = $validator->validated();
 
-        // Handle file upload
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('items', 'public');
         }
@@ -60,47 +59,48 @@ class ItemController extends Controller
         return response()->json($item);
     }
 
-    // PUT /api/items/{id}
+    // PUT or POST (with _method=PUT) /api/items/{id}
     public function update(Request $request, $id)
     {
         $item = Item::find($id);
+
         if (!$item) {
             return response()->json(['message' => 'Item not found'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|numeric',
-            'stock' => 'sometimes|required|integer',
-            'unit' => 'sometimes|required|string|max:50',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'province' => 'sometimes|required|string|max:100',
-            'description' => 'nullable|string',
-            'status' => 'in:active,inactive',
-            'orders' => 'integer',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'user_id' => 'sometimes|required|exists:users,id',
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'price' => 'sometimes|numeric',
+            'stock' => 'sometimes|integer',
+            'unit' => 'sometimes|string',
+            'province' => 'sometimes|string',
+            'description' => 'sometimes|string',
+            'status' => 'sometimes|string',
+            'orders' => 'sometimes|integer',
+            'category_id' => 'sometimes|exists:categories,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'image' => 'sometimes|image|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $data = $validator->validated();
-
-        // Handle new image upload
+        // Handle image upload
         if ($request->hasFile('image')) {
-            if ($item->image && Storage::disk('public')->exists($item->image)) {
-                Storage::disk('public')->delete($item->image);
+            // Optional: delete old image
+            if ($item->image) {
+                Storage::delete('public/' . $item->image);
             }
-            $data['image'] = $request->file('image')->store('items', 'public');
+
+            $imagePath = $request->file('image')->store('items', 'public');
+            $validated['image'] = $imagePath;
         }
 
-        $item->update($data);
+        $item->update($validated);
 
-        return response()->json(['message' => 'Item updated successfully', 'item' => $item]);
+        return response()->json([
+            'message' => 'Item updated successfully.',
+            'data' => $item
+        ]);
     }
-
+    
     // DELETE /api/items/{id}
     public function destroy($id)
     {
@@ -118,33 +118,32 @@ class ItemController extends Controller
         return response()->json(['message' => 'Item deleted successfully']);
     }
 
+    // Filter items
     public function filter(Request $request)
-{
-    $query = Item::query();
+    {
+        $query = Item::query();
 
-    if ($request->has('province') && $request->province !== 'all') {
-        $query->where('province', $request->province);
+        if ($request->has('province') && $request->province !== 'all') {
+            $query->where('province', $request->province);
+        }
+
+        if ($request->has('category') && $request->category !== 'all') {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->has('search') && $request->search !== '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $query->whereBetween('price', [$request->min_price, $request->max_price]);
+        }
+
+        $items = $query->with(['category', 'user'])->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items
+        ]);
     }
-
-    if ($request->has('category') && $request->category !== 'all') {
-        $query->where('category_id', $request->category);
-    }
-
-    if ($request->has('search') && $request->search !== '') {
-        $query->where('title', 'like', '%' . $request->search . '%');
-    }
-
-    // Example: filter price between min and max
-    if ($request->has('min_price') && $request->has('max_price')) {
-        $query->whereBetween('price', [$request->min_price, $request->max_price]);
-    }
-
-    $items = $query->with('category')->get();
-
-    return response()->json([
-        'success' => true,
-        'data' => $items
-    ]);
-}
-
 }
