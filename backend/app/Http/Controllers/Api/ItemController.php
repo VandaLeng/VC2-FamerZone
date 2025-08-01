@@ -4,107 +4,142 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ItemController extends Controller
 {
-    // Display a listing of the items
     public function index()
     {
-        $items = Item::with(['user' => function ($query) {
-            $query->withoutGlobalScopes();
-        }, 'category'])->get();
+        $items = Item::with('category')->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'name_kh' => $item->name_kh,
+                'category_id' => $item->category_id,
+                'price' => $item->price,
+                'stock' => $item->stock,
+                'unit' => $item->unit,
+                'unit_kh' => $item->unit_kh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
+                'orders' => $item->orders ?? 0,
+            ];
+        });
 
-        return response()->json(['success' => true, 'data' => $items], 200);
+        return response()->json([
+            'success' => true,
+            'data' => $items
+        ]);
     }
 
-    // Store a newly created item
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'price' => 'required|numeric|min:0',
-            'province' => 'required|string|max:100',
+            'name_kh' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
+            'unit_kh' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $data = $validator->validated();
+        $data = $request->only([
+            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+        ]);
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('items', 'public');
-            if (!$path) {
-                return response()->json(['success' => false, 'message' => 'Image upload failed'], 500);
-            }
             $data['image'] = $path;
         }
 
         $item = Item::create($data);
 
-        return response()->json(['success' => true, 'data' => $item], 201);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'name_kh' => $item->name_kh,
+                'category_id' => $item->category_id,
+                'price' => $item->price,
+                'stock' => $item->stock,
+                'unit' => $item->unit,
+                'unit_kh' => $item->unit_kh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
+                'orders' => $item->orders ?? 0,
+            ]
+        ], 201);
     }
 
-    // Show a single item
-    public function show(string $id)
-    {
-        $item = Item::with(['user', 'category'])->findOrFail($id);
-        return response()->json(['success' => true, 'data' => $item], 200);
-    }
-
-    // Update an item
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $item = Item::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'price' => 'sometimes|required|numeric|min:0',
-            'province' => 'sometimes|required|string|max:100',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'user_id' => 'sometimes|exists:users,id', // Added to allow optional update
+            'name' => 'required|string|max:255',
+            'name_kh' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
+            'unit_kh' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $data = $validator->validated();
+        $data = $request->only([
+            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+        ]);
 
-        // Handle image update only if a new file is uploaded
         if ($request->hasFile('image')) {
+            // Delete old image if exists
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
             $path = $request->file('image')->store('items', 'public');
-            if (!$path) {
-                return response()->json(['success' => false, 'message' => 'Image upload failed'], 500);
-            }
             $data['image'] = $path;
-        } elseif (!isset($data['image']) && $item->image) {
-            // Preserve existing image if no new one is provided
-            $data['image'] = $item->image;
         }
 
         $item->update($data);
 
-        // Refresh the model to get latest data
-        $item->refresh();
-
-        return response()->json(['success' => true, 'message' => 'Item updated successfully', 'data' => $item], 200);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'name_kh' => $item->name_kh,
+                'category_id' => $item->category_id,
+                'price' => $item->price,
+                'stock' => $item->stock,
+                'unit' => $item->unit,
+                'unit_kh' => $item->unit_kh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
+                'orders' => $item->orders ?? 0,
+            ]
+        ]);
     }
 
-    // Delete an item
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $item = Item::findOrFail($id);
 
@@ -114,6 +149,9 @@ class ItemController extends Controller
 
         $item->delete();
 
-        return response()->json(['success' => true, 'message' => 'Item deleted successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Item deleted successfully'
+        ]);
     }
 }

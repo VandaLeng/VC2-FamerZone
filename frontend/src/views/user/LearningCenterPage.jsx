@@ -41,7 +41,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.8,
           students: 1250,
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1132684948/photo/rice-paddies.jpg?s=612x612&w=0&k=20&c=UECzCG66U281TiWWdewOMS_ZA_NxeBlKAXXqIR-ExQA=",
           instructor: "Prof. Sambo Khen",
           highlights: ['SRI Method', 'Pest Management', 'Soil Health', 'Water Management'],
           platforms: [
@@ -61,7 +61,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Beginner",
           rating: 4.9,
           students: 890,
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/2159967225/photo/growing-lettuce-watering-the-garden-bed-with-a-watering-can.jpg?s=612x612&w=0&k=20&c=WeZSKGyPUNe4ix1-S-dXdQZRoGLJEUKVNIhXqB8GCBI=",
           instructor: "Ms. Sreypov Lim",
           highlights: ['Organic Certification', 'Composting', 'Natural Pesticides', 'Market Premium'],
           platforms: [
@@ -81,7 +81,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.7,
           students: 650,
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1436256943/photo/egg-production-on-selection-process-from-laying-hens.jpg?s=612x612&w=0&k=20&c=OodQhLye2DdmUIBUwX0S0fRCfmMqkCFkE-F6oWq2MOM=",
           instructor: "Dr. Pisach Teng",
           highlights: ['Disease Prevention', 'Feed Optimization', 'Housing Design', 'Profit Analysis'],
           platforms: [
@@ -101,7 +101,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Beginner",
           rating: 4.6,
           students: 420,
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1215793469/photo/farmer-using-technology-at-a-hydroponic-lettuce-crop.jpg?s=612x612&w=0&k=20&c=NI1190rn8KqxUpiFjGEHqRwR3RwyB0KvpzMMLf3h51A=",
           instructor: "Mr. Virak Chan",
           highlights: ['Social Media Marketing', 'E-commerce Setup', 'Customer Relations', 'Price Strategy'],
           platforms: [
@@ -121,7 +121,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Advanced",
           rating: 4.8,
           students: 320,
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/898449496/photo/agriculture-drone-fly-to-sprayed-fertilizer-on-the-green-tea-fie.jpg?s=612x612&w=0&k=20&c=XB9L5U65qaNqs8k7KPKOiL6N_mj1d1JpKPJFcmMsrz0=",
           instructor: "Eng. Sopheak Ros",
           highlights: ['Sensor Technology', 'Mobile Apps', 'Water Conservation', 'Cost Analysis'],
           platforms: [
@@ -141,7 +141,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "Intermediate",
           rating: 4.5,
           students: 280,
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1400960132/photo/light-bulb-is-located-on-soil-plants-grow-on-stacked-coins-renewable-energy-generation-is.jpg?s=612x612&w=0&k=20&c=BdJbzNurQMAsxkINA9dF1quvLNPK-zqA9FwOodTdbn8=",
           instructor: "Ms. Chanthy Sok",
           highlights: ['Loan Applications', 'Investment Planning', 'Risk Management', 'Profit Optimization'],
           platforms: [
@@ -191,7 +191,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.8,
           students: 1250,
-          image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1132684948/photo/rice-paddies.jpg?s=612x612&w=0&k=20&c=UECzCG66U281TiWWdewOMS_ZA_NxeBlKAXXqIR-ExQA=",
           instructor: "លោកបណ្ឌិត សំបូខេន",
           highlights: ['វិធី SRI', 'ការគ្រប់គ្រងសត្វល្អ', 'សុខភាពដី', 'ការគ្រប់គ្រងទឹក'],
           platforms: [
@@ -211,7 +211,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតចាប់ផ្តើម",
           rating: 4.9,
           students: 890,
-          image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/2159967225/photo/growing-lettuce-watering-the-garden-bed-with-a-watering-can.jpg?s=612x612&w=0&k=20&c=WeZSKGyPUNe4ix1-S-dXdQZRoGLJEUKVNIhXqB8GCBI=",
           instructor: "នាង ស្រីពៅ លីម",
           highlights: ['សញ្ញាបត្រសរីរាង្គ', 'ការផលិតលាមក', 'ថ្នាំកសិកម្មធម្មជាតិ', 'តម្លៃផ្សារខ្ពស់'],
           platforms: [
@@ -231,7 +231,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.7,
           students: 650,
-          image: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1436256943/photo/egg-production-on-selection-process-from-laying-hens.jpg?s=612x612&w=0&k=20&c=OodQhLye2DdmUIBUwX0S0fRCfmMqkCFkE-F6oWq2MOM=",
           instructor: "លោកវេជ្ជបណ្ឌិត ពិសាច ទេង",
           highlights: ['ការបង្ការជំងឺ', 'ការប្រសើរអាហារ', 'ការរចនាផ្ទះ', 'ការវិភាគប្រាក់ចំណេញ'],
           platforms: [
@@ -251,7 +251,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតចាប់ផ្តើម",
           rating: 4.6,
           students: 420,
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1215793469/photo/farmer-using-technology-at-a-hydroponic-lettuce-crop.jpg?s=612x612&w=0&k=20&c=NI1190rn8KqxUpiFjGEHqRwR3RwyB0KvpzMMLf3h51A=",
           instructor: "លោក វីរៈ ចាន់",
           highlights: ['ទីផ្សារបណ្តាញសង្គម', 'ការដំឡើងអេ-វណ្ណៈ', 'ទំនាក់ទំនងអតិថិជន', 'យុទ្ធសាស្ត្រតម្លៃ'],
           platforms: [
@@ -271,7 +271,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតខ្ពស់",
           rating: 4.8,
           students: 320,
-          image: "https://images.unsplash.com/photo-1581092795442-65ad172097c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/898449496/photo/agriculture-drone-fly-to-sprayed-fertilizer-on-the-green-tea-fie.jpg?s=612x612&w=0&k=20&c=XB9L5U65qaNqs8k7KPKOiL6N_mj1d1JpKPJFcmMsrz0=",
           instructor: "លោកវិស្វករ សុផាក រ៉ុស",
           highlights: ['បច្ចេកវិទ្យាឧបករណ៍', 'កម្មវិធីទូរស័ព្ទ', 'ការអភិរក្សទឹក', 'ការវិភាគថ្លៃដើម'],
           platforms: [
@@ -291,7 +291,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
           level: "កម្រិតមធ្យម",
           rating: 4.5,
           students: 280,
-          image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          image: "https://media.istockphoto.com/id/1400960132/photo/light-bulb-is-located-on-soil-plants-grow-on-stacked-coins-renewable-energy-generation-is.jpg?s=612x612&w=0&k=20&c=BdJbzNurQMAsxkINA9dF1quvLNPK-zqA9FwOodTdbn8=",
           instructor: "នាង ចន្ទី សុខ",
           highlights: ['ការដាក់ពាក្យឥណទាន', 'ផែនការវិនិយោគ', 'ការគ្រប់គ្រងហានិភ័យ', 'ការប្រសើរប្រាក់ចំណេញ'],
           platforms: [
@@ -323,37 +323,37 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
 
   const filteredCourses = activeCategory === 'all'
     ? (getTranslation('courses', []).map(course => ({
-        ...course,
-        title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
-        description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
-        duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
-        lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
-        level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
-        instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
-        highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
-        platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
-        contact: {
-          ...course.contact,
-          name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
-          organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
-        }
-      })))
+      ...course,
+      title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
+      description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
+      duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
+      lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
+      level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
+      instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
+      highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
+      platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
+      contact: {
+        ...course.contact,
+        name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
+        organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
+      }
+    })))
     : (getTranslation('courses', []).filter(course => course.category === activeCategory).map(course => ({
-        ...course,
-        title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
-        description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
-        duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
-        lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
-        level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
-        instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
-        highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
-        platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
-        contact: {
-          ...course.contact,
-          name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
-          organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
-        }
-      })));
+      ...course,
+      title: getTranslation(`courses[${course.id - 1}].title`, course.title, course),
+      description: getTranslation(`courses[${course.id - 1}].description`, course.description, course),
+      duration: getTranslation(`courses[${course.id - 1}].duration`, course.duration, course),
+      lessons: getTranslation(`courses[${course.id - 1}].lessons`, course.lessons, course),
+      level: getTranslation(`courses[${course.id - 1}].level`, course.level, course),
+      instructor: getTranslation(`courses[${course.id - 1}].instructor`, course.instructor, course),
+      highlights: getTranslation(`courses[${course.id - 1}].highlights`, course.highlights, course) || [],
+      platforms: getTranslation(`courses[${course.id - 1}].platforms`, course.platforms, course) || [],
+      contact: {
+        ...course.contact,
+        name: getTranslation(`courses[${course.id - 1}].contact.name`, course.contact?.name, course),
+        organization: getTranslation(`courses[${course.id - 1}].contact.organization`, course.contact?.organization, course),
+      }
+    })));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -436,7 +436,7 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
                 className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 animate-slide-in-left animation-delay-${index * 100} ${activeCategory === category.id
                   ? 'bg-green-600 text-white shadow-lg transform scale-105'
                   : 'bg-white text-gray-700 hover:bg-green-50 hover:text-green-600 border border-gray-200 hover:border-green-200'
-                }`}
+                  }`}
               >
                 {category.title} ({category.count})
               </button>
@@ -570,75 +570,130 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
 
       {/* Course Detail Modal */}
       {selectedCourse && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
             <div className="relative">
-              <img
-                src={selectedCourse.image}
-                alt={selectedCourse.title}
-                className="w-full h-64 object-cover rounded-t-2xl animate-zoom-in"
-              />
-              <button
-                onClick={() => setSelectedCourse(null)}
-                className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl animate-fade-in"
-              >
-                ×
-              </button>
-              <div className="absolute bottom-4 left-6 animate-fade-in animation-delay-100">
-                <span className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  {currentLanguage === 'en' ? 'Online Resources Available' : 'ធនធានអនឡាញអាចរកបាន'}
-                </span>
+              {/* Modern gradient header instead of image */}
+              <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 h-48 rounded-t-2xl relative overflow-hidden">
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 left-0 w-full h-full">
+                    <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <defs>
+                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
+                        </pattern>
+                      </defs>
+                      <rect width="100" height="100" fill="url(#grid)" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Course level badge */}
+                <div className="absolute top-6 left-6">
+                  <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold border border-white/30">
+                    {selectedCourse.level}
+                  </span>
+                </div>
+
+                {/* Close button */}
+                <button
+                  onClick={() => setSelectedCourse(null)}
+                  className="absolute top-6 right-6 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl border border-white/30 transition-all"
+                >
+                  ×
+                </button>
+
+                {/* Course title and basic info in header */}
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+                    {selectedCourse.title}
+                  </h2>
+                  <div className="flex items-center gap-4 text-white/90">
+                    <span className="flex items-center gap-1 text-sm">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {selectedCourse.duration}
+                    </span>
+                    <span className="flex items-center gap-1 text-sm">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      {selectedCourse.lessons}
+                    </span>
+                    <span className="flex items-center gap-1 text-sm">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                      </svg>
+                      {selectedCourse.students}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Status badge */}
+                <div className="absolute bottom-6 right-6">
+                  <span className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                    {currentLanguage === 'en' ? 'Online Available' : 'អាចរកបានអនឡាញ'}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="p-8">
               <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4 animate-slide-in-up">
-                    {selectedCourse.title}
-                  </h2>
-                  <p className="text-gray-600 mb-6 leading-relaxed animate-slide-in-up animation-delay-100">
+                  <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                     {selectedCourse.description}
                   </p>
 
                   <div className="grid md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-gray-50 rounded-lg p-4 text-center animate-pop-in animation-delay-200">
-                      <div className="font-semibold">{selectedCourse.duration}</div>
-                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Duration' : 'រយៈពេល'}</div>
+                    <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                      <div className="font-semibold text-blue-900">{selectedCourse.duration}</div>
+                      <div className="text-sm text-blue-600">{currentLanguage === 'en' ? 'Duration' : 'រយៈពេល'}</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 text-center animate-pop-in animation-delay-300">
-                      <div className="font-semibold">{selectedCourse.lessons}</div>
-                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Lessons' : 'មេរៀន'}</div>
+                    <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                      <div className="font-semibold text-purple-900">{selectedCourse.lessons}</div>
+                      <div className="text-sm text-purple-600">{currentLanguage === 'en' ? 'Lessons' : 'មេរៀន'}</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 text-center animate-pop-in animation-delay-400">
-                      <div className="font-semibold">{selectedCourse.students}</div>
-                      <div className="text-sm text-gray-500">{currentLanguage === 'en' ? 'Students' : 'សិស្ស'}</div>
+                    <div className="bg-green-50 rounded-lg p-4 text-center border border-green-100">
+                      <div className="font-semibold text-green-900">{selectedCourse.students}</div>
+                      <div className="text-sm text-green-600">{currentLanguage === 'en' ? 'Students' : 'សិស្ស'}</div>
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 animate-slide-in-up animation-delay-500">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       {currentLanguage === 'en' ? 'Course Highlights' : 'ចំណុចសំខាន់នៃមេរៀន'}
                     </h3>
                     <div className="grid md:grid-cols-2 gap-3">
                       {selectedCourse.highlights?.map((highlight, index) => (
-                        <div key={index} className="flex items-center animate-fade-in animation-delay-600">
-                          <span className="text-gray-700">{highlight}</span>
+                        <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                          <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                          </svg>
+                          <span className="text-gray-700 text-sm">{highlight}</span>
                         </div>
-                      )) || <p className="animate-fade-in">{currentLanguage === 'en' ? 'No highlights available' : 'គ្មានចំណុចសំខាន់អាចរកបាន'}</p>}
+                      )) || <p>{currentLanguage === 'en' ? 'No highlights available' : 'គ្មានចំណុចសំខាន់អាចរកបាន'}</p>}
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 animate-slide-in-up animation-delay-700">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                      </svg>
                       {currentLanguage === 'en' ? 'Recommended Learning Platforms' : 'វេទិកាសិក្សាដែលបានណែនាំ'}
                     </h3>
                     <div className="space-y-4">
                       {selectedCourse.platforms?.map((platform, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors animate-slide-in-up animation-delay-800">
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-semibold text-gray-900">{platform.name}</h4>
-                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
+                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
                               {platform.type}
                             </span>
                           </div>
@@ -648,21 +703,24 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
                               href={platform.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors animate-bounce-in animation-delay-900"
+                              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105"
                             >
                               {getTranslation('buttons.visitPlatform', 'Visit Platform')}
                             </a>
                           </div>
                         </div>
-                      )) || <p className="animate-fade-in">{currentLanguage === 'en' ? 'No platforms available' : 'គ្មានវេទិកាអាចរកបាន'}</p>}
+                      )) || <p>{currentLanguage === 'en' ? 'No platforms available' : 'គ្មានវេទិកាអាចរកបាន'}</p>}
                     </div>
                   </div>
 
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 animate-slide-in-up animation-delay-1000">
-                    <h4 className="font-semibold text-yellow-800 mb-2">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                      </svg>
                       {currentLanguage === 'en' ? 'Note:' : 'ចំណាំ៖'}
                     </h4>
-                    <p className="text-yellow-700 text-sm">
+                    <p className="text-amber-700 text-sm">
                       {currentLanguage === 'en'
                         ? 'These are curated recommendations from trusted educational platforms. For personalized guidance and additional support, contact the expert instructor directly.'
                         : 'ទាំងនេះគឺជាការណែនាំដែលបានជ្រើសរើសពីវេទិកាអប់រំដែលអាចទុកចិត្តបាន។ សម្រាប់ការណែនាំផ្ទាល់ខ្លួន និងការគាំទ្របន្ថែម សូមទាក់ទងគ្រូបង្រៀនជំនាញដោយផ្ទាល់។'}
@@ -671,21 +729,24 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
                 </div>
 
                 <div className="lg:col-span-1">
-                  <div className="bg-gray-50 rounded-2xl p-6 sticky top-6 animate-slide-in-up animation-delay-1100">
+                  <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 sticky top-6 border border-gray-200">
                     <div className="text-center mb-6">
                       <div className="text-sm text-gray-500 mb-1">
                         {currentLanguage === 'en' ? 'Expert Instructor' : 'គ្រូបង្រៀនជំនាញ'}
                       </div>
-                      <div className="text-2xl font-bold text-green-600 mb-2">
+                      <div className="text-2xl font-bold text-gray-900 mb-2">
                         {selectedCourse.instructor}
                       </div>
                       <div className="flex items-center justify-center mb-2">
-                        <span className="font-semibold">{selectedCourse.rating}/5.0</span>
+                        <span className="font-semibold text-amber-600">{selectedCourse.rating}/5.0</span>
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 mb-6 border-2 border-green-200 animate-pop-in animation-delay-1200">
-                      <h4 className="font-semibold text-green-800 mb-3">
+                    <div className="bg-white rounded-lg p-4 mb-6 border border-green-200 shadow-sm">
+                      <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
                         {currentLanguage === 'en' ? 'Contact Information' : 'ព័ត៌មានទំនាក់ទំនង'}
                       </h4>
                       <div className="space-y-3">
@@ -708,16 +769,16 @@ const EnhancedLearningCenter = ({ currentLanguage = 'en' }) => {
                     </div>
 
                     <div className="space-y-3">
-                      <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center animate-bounce-in animation-delay-1300">
+                      <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105">
                         {getTranslation('buttons.contactInstructor', 'Contact Instructor')}
                       </button>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center animate-bounce-in animation-delay-1400">
+                      <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105">
                         {getTranslation('buttons.viewResources', 'View Resources')}
                       </button>
                     </div>
 
                     <div className="mt-6 text-center">
-                      <p className="text-xs text-gray-500 animate-fade-in animation-delay-1500">
+                      <p className="text-xs text-gray-500">
                         {currentLanguage === 'en'
                           ? 'Contact the instructor for personalized guidance and enrollment assistance'
                           : 'ទាក់ទងគ្រូបង្រៀនសម្រាប់ការណែនាំផ្ទាល់ខ្លួន និងជំនួយក្នុងការចុះឈ្មោះ'}

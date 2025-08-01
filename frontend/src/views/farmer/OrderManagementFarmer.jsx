@@ -1,188 +1,267 @@
-import React, { useState, useEffect } from 'react';
-import { MoreVertical, Package, Calendar, User, MapPin, Phone, Mail, Eye, CheckCircle, XCircle, Clock } from 'lucide-react';
+"use client"
 
-const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeDropdown, setActiveDropdown] = useState(null);
+import { useState, useEffect } from "react"
+import { MoreVertical, Package, Calendar, User, Eye, CheckCircle, XCircle, Clock } from "lucide-react"
+
+const FarmerOrderManagement = ({ currentLanguage = "en" }) => {
+  const [orders, setOrders] = useState([])
+  const [filteredOrders, setFilteredOrders] = useState([])
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [activeDropdown, setActiveDropdown] = useState(null)
 
   // Translations
   const texts = {
     kh: {
-      title: 'ការគ្រប់គ្រងការបញ្ជាទិញ',
-      searchPlaceholder: 'ស្វែងរកការបញ្ជាទិញ...',
-      filterByStatus: 'តម្រងតាមស្ថានភាព',
-      all: 'ទាំងអស់',
-      pending: 'កំពុងរង់ចាំ',
-      confirmed: 'បានបញ្ជាក់',
-      delivered: 'បានដឹកជញ្ជូន',
-      cancelled: 'បានលុបចោល',
-      orderID: 'លេខបញ្ជាទិញ',
-      product: 'ផលិតផល',
-      customer: 'អតិថិជន',
-      quantity: 'បរិមាណ',
-      total: 'សរុប',
-      status: 'ស្ថានភាព',
-      orderDate: 'កាលបរិច្ឆេទបញ្ជាទិញ',
-      actions: 'សកម្មភាព',
-      viewDetails: 'មើលព័ត៌មានលម្អិត',
-      confirmOrder: 'បញ្ជាក់ការបញ្ជាទិញ',
-      markDelivered: 'សម្គាល់ថាបានដឹកជញ្ជូន',
-      cancelOrder: 'លុបចោលការបញ្ជាទិញ',
-      customerInfo: 'ព័ត៌មានអតិថិជន',
-      deliveryAddress: 'អាសយដ្ឋានដឹកជញ្ជូន',
-      noOrders: 'មិនមានការបញ្ជាទិញ',
-      contactCustomer: 'ទាក់ទងអតិថិជន',
-      orderSummary: 'សរុបការបញ្ជាទិញ'
+      title: "ការគ្រប់គ្រងការបញ្ជាទិញ",
+      searchPlaceholder: "ស្វែងរកការបញ្ជាទិញ...",
+      filterByStatus: "តម្រងតាមស្ថានភាព",
+      all: "ទាំងអស់",
+      pending: "កំពុងរង់ចាំ",
+      confirmed: "បានបញ្ជាក់",
+      delivered: "បានដឹកជញ្ជូន",
+      cancelled: "បានលុបចោល",
+      orderID: "លេខបញ្ជាទិញ",
+      product: "ផលិតផល",
+      customer: "អតិថិជន",
+      quantity: "បរិមាណ",
+      total: "សរុប",
+      status: "ស្ថានភាព",
+      orderDate: "កាលបរិច្ឆេទបញ្ជាទិញ",
+      actions: "សកម្មភាព",
+      viewDetails: "មើលព័ត៌មានលម្អិត",
+      confirmOrder: "បញ្ជាក់ការបញ្ជាទិញ",
+      markDelivered: "សម្គាល់ថាបានដឹកជញ្ជូន",
+      cancelOrder: "លុបចោលការបញ្ជាទិញ",
+      customerInfo: "ព័ត៌មានអតិថិជន",
+      deliveryAddress: "អាសយដ្ឋានដឹកជញ្ជូន",
+      noOrders: "មិនមានការបញ្ជាទិញ",
+      contactCustomer: "ទាក់ទងអតិថិជន",
+      orderSummary: "សរុបការបញ្ជាទិញ",
     },
     en: {
-      title: 'Order Management',
-      searchPlaceholder: 'Search orders...',
-      filterByStatus: 'Filter by Status',
-      all: 'All',
-      pending: 'Pending',
-      confirmed: 'Confirmed',
-      delivered: 'Delivered',
-      cancelled: 'Cancelled',
-      orderID: 'Order ID',
-      product: 'Product',
-      customer: 'Customer',
-      quantity: 'Quantity',
-      total: 'Total',
-      status: 'Status',
-      orderDate: 'Order Date',
-      actions: 'Actions',
-      viewDetails: 'View Details',
-      confirmOrder: 'Confirm Order',
-      markDelivered: 'Mark as Delivered',
-      cancelOrder: 'Cancel Order',
-      customerInfo: 'Customer Information',
-      deliveryAddress: 'Delivery Address',
-      noOrders: 'No orders found',
-      contactCustomer: 'Contact Customer',
-      orderSummary: 'Order Summary'
-    }
-  };
+      title: "Order Management",
+      searchPlaceholder: "Search orders...",
+      filterByStatus: "Filter by Status",
+      all: "All",
+      pending: "Pending",
+      confirmed: "Confirmed",
+      delivered: "Delivered",
+      cancelled: "Cancelled",
+      orderID: "Order ID",
+      product: "Product",
+      customer: "Customer",
+      quantity: "Quantity",
+      total: "Total",
+      status: "Status",
+      orderDate: "Order Date",
+      actions: "Actions",
+      viewDetails: "View Details",
+      confirmOrder: "Confirm Order",
+      markDelivered: "Mark as Delivered",
+      cancelOrder: "Cancel Order",
+      customerInfo: "Customer Information",
+      deliveryAddress: "Delivery Address",
+      noOrders: "No orders found",
+      contactCustomer: "Contact Customer",
+      orderSummary: "Order Summary",
+    },
+  }
 
-  const currentTexts = texts[currentLanguage];
+  const currentTexts = texts[currentLanguage]
 
-  // Sample order data
+  // Sample order data (default data)
   const sampleOrders = [
     {
-      id: 'ORD-001',
-      productName: 'Fresh Tomatoes',
-      productImage: '/api/placeholder/60/60',
-      customerName: 'Sophea Chan',
-      customerPhone: '+855 12 345 678',
-      customerEmail: 'sophea@email.com',
+      id: "ORD-001",
+      productName: "Fresh Tomatoes",
+      productImage: "/placeholder.svg?height=60&width=60",
+      customerName: "Sophea Chan",
+      customerPhone: "+855 12 345 678",
+      customerEmail: "sophea@email.com",
       quantity: 5,
-      unit: 'kg',
-      price: 2.50,
-      total: 12.50,
-      status: 'pending',
-      orderDate: '2024-01-15',
-      deliveryAddress: 'Phnom Penh, Cambodia'
+      unit: "kg",
+      price: 2.5,
+      total: 12.5,
+      status: "pending",
+      orderDate: "2024-01-15",
+      deliveryAddress: "Phnom Penh, Cambodia",
     },
     {
-      id: 'ORD-002',
-      productName: 'Organic Lettuce',
-      productImage: '/api/placeholder/60/60',
-      customerName: 'David Kim',
-      customerPhone: '+855 87 654 321',
-      customerEmail: 'david@email.com',
+      id: "ORD-002",
+      productName: "Organic Lettuce",
+      productImage: "/placeholder.svg?height=60&width=60",
+      customerName: "David Kim",
+      customerPhone: "+855 87 654 321",
+      customerEmail: "david@email.com",
       quantity: 3,
-      unit: 'bunches',
-      price: 1.80,
-      total: 5.40,
-      status: 'confirmed',
-      orderDate: '2024-01-14',
-      deliveryAddress: 'Siem Reap, Cambodia'
+      unit: "bunches",
+      price: 1.8,
+      total: 5.4,
+      status: "confirmed",
+      orderDate: "2024-01-14",
+      deliveryAddress: "Siem Reap, Cambodia",
     },
     {
-      id: 'ORD-003',
-      productName: 'Fresh Carrots',
-      productImage: '/api/placeholder/60/60',
-      customerName: 'Maria Santos',
-      customerPhone: '+855 96 789 012',
-      customerEmail: 'maria@email.com',
+      id: "ORD-003",
+      productName: "Fresh Carrots",
+      productImage: "/placeholder.svg?height=60&width=60",
+      customerName: "Maria Santos",
+      customerPhone: "+855 96 789 012",
+      customerEmail: "maria@email.com",
       quantity: 2,
-      unit: 'kg',
-      price: 3.00,
-      total: 6.00,
-      status: 'delivered',
-      orderDate: '2024-01-13',
-      deliveryAddress: 'Battambang, Cambodia'
-    }
-  ];
+      unit: "kg",
+      price: 3.0,
+      total: 6.0,
+      status: "delivered",
+      orderDate: "2024-01-13",
+      deliveryAddress: "Battambang, Cambodia",
+    },
+    {
+      id: "ORD-004",
+      productName: "Sweet Corn",
+      productImage: "/placeholder.svg?height=60&width=60",
+      customerName: "John Doe",
+      customerPhone: "+855 11 222 333",
+      customerEmail: "john@email.com",
+      quantity: 4,
+      unit: "pieces",
+      price: 1.25,
+      total: 5.0,
+      status: "pending",
+      orderDate: "2024-01-16",
+      deliveryAddress: "Kampong Cham, Cambodia",
+    },
+    {
+      id: "ORD-005",
+      productName: "Fresh Spinach",
+      productImage: "/placeholder.svg?height=60&width=60",
+      customerName: "Lisa Wong",
+      customerPhone: "+855 99 888 777",
+      customerEmail: "lisa@email.com",
+      quantity: 2,
+      unit: "bunches",
+      price: 2.0,
+      total: 4.0,
+      status: "confirmed",
+      orderDate: "2024-01-12",
+      deliveryAddress: "Kandal, Cambodia",
+    },
+  ]
 
+  // Load orders from localStorage or use sample data
+  const loadOrdersFromStorage = () => {
+    try {
+      const savedOrders = localStorage.getItem("farmerOrders")
+      if (savedOrders) {
+        return JSON.parse(savedOrders)
+      } else {
+        // If no saved orders, save sample orders to localStorage and return them
+        localStorage.setItem("farmerOrders", JSON.stringify(sampleOrders))
+        return sampleOrders
+      }
+    } catch (error) {
+      console.error("Error loading orders from localStorage:", error)
+      return sampleOrders
+    }
+  }
+
+  // Save orders to localStorage
+  const saveOrdersToStorage = (ordersToSave) => {
+    try {
+      localStorage.setItem("farmerOrders", JSON.stringify(ordersToSave))
+    } catch (error) {
+      console.error("Error saving orders to localStorage:", error)
+    }
+  }
+
+  // Initialize orders from localStorage
   useEffect(() => {
-    setOrders(sampleOrders);
-    setFilteredOrders(sampleOrders);
-  }, []);
+    const loadedOrders = loadOrdersFromStorage()
+    setOrders(loadedOrders)
+    setFilteredOrders(loadedOrders)
+  }, [])
 
   // Filter orders based on status and search term
   useEffect(() => {
-    let filtered = orders;
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.status === statusFilter);
+    let filtered = orders
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((order) => order.status === statusFilter)
     }
-
     if (searchTerm) {
-      filtered = filtered.filter(order =>
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter(
+        (order) =>
+          order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.customerName.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
     }
-
-    setFilteredOrders(filtered);
-  }, [statusFilter, searchTerm, orders]);
+    setFilteredOrders(filtered)
+  }, [statusFilter, searchTerm, orders])
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      delivered: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800'
-    };
-    return colors[status] || 'bg-gray-100 text-gray-800';
-  };
+      pending: "bg-yellow-100 text-yellow-800",
+      confirmed: "bg-blue-100 text-blue-800",
+      delivered: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+    }
+    return colors[status] || "bg-gray-100 text-gray-800"
+  }
 
   const getStatusIcon = (status) => {
     const icons = {
       pending: <Clock className="w-4 h-4" />,
       confirmed: <CheckCircle className="w-4 h-4" />,
       delivered: <Package className="w-4 h-4" />,
-      cancelled: <XCircle className="w-4 h-4" />
-    };
-    return icons[status] || <Clock className="w-4 h-4" />;
-  };
+      cancelled: <XCircle className="w-4 h-4" />,
+    }
+    return icons[status] || <Clock className="w-4 h-4" />
+  }
 
   const handleStatusUpdate = (orderId, newStatus) => {
-    setOrders(orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
-    setActiveDropdown(null);
-  };
+    const updatedOrders = orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order))
+
+    // Update state
+    setOrders(updatedOrders)
+
+    // Save to localStorage to persist the changes
+    saveOrdersToStorage(updatedOrders)
+
+    // Close dropdown
+    setActiveDropdown(null)
+  }
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(currentLanguage === 'kh' ? 'km-KH' : 'en-US');
-  };
+    const date = new Date(dateString)
+    return date.toLocaleDateString(currentLanguage === "kh" ? "km-KH" : "en-US")
+  }
 
   const formatCurrency = (amount) => {
-    return `$${amount.toFixed(2)}`;
-  };
+    return `$${amount.toFixed(2)}`
+  }
+
+  // Function to reset all orders to sample data (for testing purposes)
+  const resetToSampleData = () => {
+    setOrders(sampleOrders)
+    saveOrdersToStorage(sampleOrders)
+  }
 
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">{currentTexts.title}</h1>
-        
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-gray-800">{currentTexts.title}</h1>
+          {/* Reset button for testing - you can remove this in production */}
+          <button
+            onClick={resetToSampleData}
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm"
+          >
+            Reset Data
+          </button>
+        </div>
+
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -250,13 +329,15 @@ const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
                     <div className="col-span-3">
                       <div className="flex items-center space-x-3">
                         <img
-                          src={order.productImage}
+                          src={order.productImage || "/placeholder.svg"}
                           alt={order.productName}
                           className="w-12 h-12 rounded-lg object-cover border border-gray-200"
                         />
                         <div>
                           <div className="font-medium text-gray-900">{order.productName}</div>
-                          <div className="text-sm text-gray-500">{formatCurrency(order.price)} per {order.unit}</div>
+                          <div className="text-sm text-gray-500">
+                            {formatCurrency(order.price)} per {order.unit}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -285,7 +366,9 @@ const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
 
                     {/* Status */}
                     <div className="col-span-2">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+                      >
                         {getStatusIcon(order.status)}
                         <span className="ml-1">{currentTexts[order.status]}</span>
                       </span>
@@ -300,7 +383,6 @@ const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
                         >
                           <MoreVertical className="w-4 h-4 text-gray-600" />
                         </button>
-
                         {activeDropdown === order.id && (
                           <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                             <div className="py-1">
@@ -311,30 +393,30 @@ const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
                                 <Eye className="w-4 h-4 mr-2" />
                                 {currentTexts.viewDetails}
                               </button>
-                              
-                              {order.status === 'pending' && (
+
+                              {order.status === "pending" && (
                                 <button
-                                  onClick={() => handleStatusUpdate(order.id, 'confirmed')}
+                                  onClick={() => handleStatusUpdate(order.id, "confirmed")}
                                   className="flex items-center w-full px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
                                   {currentTexts.confirmOrder}
                                 </button>
                               )}
-                              
-                              {order.status === 'confirmed' && (
+
+                              {order.status === "confirmed" && (
                                 <button
-                                  onClick={() => handleStatusUpdate(order.id, 'delivered')}
+                                  onClick={() => handleStatusUpdate(order.id, "delivered")}
                                   className="flex items-center w-full px-4 py-2 text-sm text-green-700 hover:bg-green-50"
                                 >
                                   <Package className="w-4 h-4 mr-2" />
                                   {currentTexts.markDelivered}
                                 </button>
                               )}
-                              
-                              {(order.status === 'pending' || order.status === 'confirmed') && (
+
+                              {(order.status === "pending" || order.status === "confirmed") && (
                                 <button
-                                  onClick={() => handleStatusUpdate(order.id, 'cancelled')}
+                                  onClick={() => handleStatusUpdate(order.id, "cancelled")}
                                   className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
                                 >
                                   <XCircle className="w-4 h-4 mr-2" />
@@ -354,7 +436,7 @@ const FarmerOrderManagement = ({ currentLanguage = 'en' }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FarmerOrderManagement;
+export default FarmerOrderManagement
