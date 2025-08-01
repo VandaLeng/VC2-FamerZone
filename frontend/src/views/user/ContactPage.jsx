@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/ContactStyle.css';
 
 const ContactPage = ({ currentLanguage = 'en' }) => {
@@ -11,12 +12,14 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
     message: ''
   });
 
+  const navigate = useNavigate();
+  const faqRef = useRef(null);
+
   const content = {
     en: {
       heroTitle: "Contact FramerZone",
       heroSubtitle: "Connect with Cambodia's Agricultural Community",
       heroDescription: "We're here to help farmers, buyers, and partners build stronger agricultural connections. Get in touch with us for support, partnerships, or any questions about our platform.",
-
       contactInfoTitle: "Get in Touch",
       contactInfo: {
         office: {
@@ -46,7 +49,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           hours: "Monday - Saturday: 7:00 AM - 9:00 PM"
         }
       },
-
       formTitle: "Send us a Message",
       formSubtitle: "Fill out the form below and we'll get back to you within 24 hours",
       form: {
@@ -70,7 +72,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         submit: "Send Message",
         required: "Required"
       },
-
       servicesTitle: "How We Can Help",
       services: [
         {
@@ -94,7 +95,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           features: ["Account recovery", "Security guidance", "Feature tutorials", "Bug reporting"]
         }
       ],
-
       faqTitle: "Frequently Asked Questions",
       faqs: [
         {
@@ -122,18 +122,15 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           answer: "Contact our support team immediately. We have a dispute resolution process and work with both farmers and buyers to ensure fair outcomes."
         }
       ],
-
       emergencyTitle: "Emergency Support",
       emergencyDescription: "For urgent issues affecting your livelihood, orders, or account security:",
       emergencyPhone: "+855 23 xxx xxx",
       emergencyHours: "Available 24/7 for emergencies"
     },
-
     kh: {
       heroTitle: "ទាក់ទង FramerZone",
       heroSubtitle: "តភ្ជាប់ជាមួយសហគមន៍កសិកម្មកម្ពុជា",
       heroDescription: "យើងនៅទីនេះដើម្បីជួយកសិករ អ្នកទិញ និងដៃគូសាងសង់ការតភ្ជាប់កសិកម្មកាន់តែរឹងមាំ។ ទាក់ទងមកយើងសម្រាប់ការគាំទ្រ ភាពជាដៃគូ ឬសំណួរណាមួយអំពីវេទិការបស់យើង។",
-
       contactInfoTitle: "ទាក់ទងមកយើង",
       contactInfo: {
         office: {
@@ -163,7 +160,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           hours: "ច័ន្ទ - សៅរ៍: 7:00 ព្រឹក - 9:00 ល្ងាច"
         }
       },
-
       formTitle: "ផ្ញើសារមកយើង",
       formSubtitle: "បំពេញទម្រង់ខាងក្រោម ហើយយើងនឹងតបស្នើងក្នុងរយៈពេល 24 ម៉ោង",
       form: {
@@ -187,7 +183,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         submit: "ផ្ញើសារ",
         required: "ទាមទារ"
       },
-
       servicesTitle: "របៀបដែលយើងអាចជួយ",
       services: [
         {
@@ -207,11 +202,10 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         },
         {
           title: "ការគាំទ្រវេទិកា",
-          description: "ជំនួយបច្ចេកទេស ការគ្រប់គ្រងគណនី បារម្ភសុវត្ថិភាព និងការណែនាំវេទិកាទូទៅសម្រាប់អ្នកប្រើប្រាស់ទាំងអស់។",
+          description: "ជំនួយបច្ចេកទេស ការគ្រប់គ្រងគណនី បារម្ភសុវត្ថិភាព និងការណែនាំវេទិកាទូទៅសម្រាប់អ្នកប្រើប្រាស់ទាំងអស់�।",
           features: ["ការស្តារគណនី", "ការណែនាំសុវត្ថិភាព", "ការបង្រៀនលក្ខណៈពិសេស", "ការរាយការណ៍កំហុស"]
         }
       ],
-
       faqTitle: "សំណួរដែលសួរញឹកញាប់",
       faqs: [
         {
@@ -224,7 +218,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         },
         {
           question: "តើខ្ញុំធានាគុណភាព និងភាពស្រស់របស់ផលិតផលយ៉ាងដូចម្តេច?",
-          answer: "យើងមានប្រព័ន្ធវាយតម្លៃ ដំណើរការផ្ទៀងផ្ទាត់កសិករ និងគោលការណ៍ណែនាំគុណភាព។ អ្នកទិញក៏អាចទំនាក់ទំនងដោយផ្ទាល់ជាមួយកសិករអំពីកាលបរិច្ឆេទប្រមូលផល និងការដោះស្រាយ។"
+          answer: "យើងមានប្រព័ន្ធវាយតម្លៃ ដំណើរការផ្ទៀងផ្ទាត់កសិករ និងគោលការណ៍ណែនាំគុណភាព�। អ្នកទិញក៏អាចទំនាក់ទំនងដោយផ្ទាល់ជាមួយកសិករអំពីកាលបរិច្ឆេទប្រមូលផល និងការដោះស្រាយ។"
         },
         {
           question: "តើខ្ញុំអាចប្រើ FramerZone នៅលើទូរស័ព្ទរបស់ខ្ញុំបានទេ?",
@@ -232,14 +226,13 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         },
         {
           question: "តើការទូទាត់ដំណើរការយ៉ាងដូចម្តេច?",
-          answer: "យើងគាំទ្រវិធីសាស្ត្រទូទាត់ផ្សេងៗរួមទាំងលុយទូរស័ព្ទ ការផ្ទេរប្រាក់ធនាគារ និងការទូទាត់សាច់ប្រាក់នៅពេលដឹកជញ្ជូន។ ប្រតិបត្តិការទាំងអស់មានសុវត្ថិភាព និងការពារ។"
+          answer: "យើងគាំទ្រវិធីសាស្ត្រទូទាត់ផ្សេងៗរួមទាំងលុយទូរស័ព្ទ ការផ្ទេរប្រាក់ធនាគារ និងការទូទាត់សាច់ប្រាក់នៅពេលដឹកជញ្ជូន�। ប្រតិបត្តិការទាំងអស់មានសុវត្ថិភាព និងការពារ។"
         },
         {
           question: "តើប្រសិនបើខ្ញុំមានបញ្ហាជាមួយការបញ្ជាទិញរបស់ខ្ញុំ?",
-          answer: "ទាក់ទងក្រុមគាំទ្ររបស់យើងភ្លាមៗ។ យើងមានដំណើរការដោះស្រាយជម្លោះ ហើយធ្វើការជាមួយទាំងកសិករ និងអ្នកទិញដើម្បីធានាលទ្ធផលយុត្តិធម៌។"
+          answer: "ទាក់ទងក្រុមគាំទ្ររបស់យើងភ្លាមៗ។ យើងមានដំណើរការដោះស្រាយជម្លោះ ហើយធ្វើការជាមួយទាំងកសិករ និងអ្នកទិញដើម្បីធានាលទ្ធផលយុត្តិធម៌�।"
         }
       ],
-
       emergencyTitle: "ការគាំទ្រអាសន្ន",
       emergencyDescription: "សម្រាប់បញ្ហាបន្ទាន់ដែលប៉ះពាល់ដល់ការរស់នៅ ការបញ្ជាទិញ ឬសុវត្ថិភាពគណនីរបស់អ្នក:",
       emergencyPhone: "+855 23 xxx xxx",
@@ -265,7 +258,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
     console.log('Form submitted:', formData);
     setFormSubmitted(true);
 
-    // Reset form after 3 seconds
     setTimeout(() => {
       setFormData({
         name: '',
@@ -279,22 +271,34 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
     }, 3000);
   };
 
+  // Scroll to FAQ section
+  const scrollToFAQ = () => {
+    if (faqRef.current) {
+      faqRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
+
+  // Navigate to Products page and scroll to products section
+  const handleBrowseProducts = () => {
+    navigate('/products', { state: { scrollToProducts: true } });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-yellow-50">
       {/* Hero Section */}
       <div className="relative h-[85vh] bg-gradient-to-br from-emerald-900 via-green-800 to-teal-700 text-white overflow-hidden">
-        {/* Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-12 left-12 w-28 h-28 bg-white/10 rounded-full animate-float"></div>
           <div className="absolute bottom-16 right-16 w-20 h-20 bg-white/15 rounded-full animate-float-delayed"></div>
           <div className="absolute top-1/3 left-1/3 w-16 h-16 bg-white/10 rounded-full animate-float-slow"></div>
         </div>
 
-        {/* Main Content */}
         <div className="relative container mx-auto px-6 h-full flex items-center">
           <div className="max-w-5xl mx-auto w-full">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
-              {/* Left Content */}
               <div className="space-y-6">
                 <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 animate-fade-in">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
@@ -320,17 +324,22 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
                   {currentContent.heroDescription}
                 </p>
 
-                {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 animate-slide-in-left animate-delay-500">
-                  <button className="group bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-gray-900 font-bold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+                  <button
+                    onClick={handleBrowseProducts}
+                    className="group bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-gray-900 font-bold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle"
+                  >
                     <span className="flex items-center justify-center">
-                      {currentLanguage === 'kh' ? 'ចាប់ផ្តើមសន្ទនា' : 'Start Conversation'}
+                      {currentLanguage === 'kh' ? 'រកមើលផលិតផល' : 'Browse Products'}
                       <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </span>
                   </button>
-                  <button className="group border-2 border-white/30 hover:border-white text-white hover:bg-white hover:text-emerald-800 font-semibold px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm animate-bounce-subtle animate-delay-100">
+                  <button
+                    onClick={scrollToFAQ}
+                    className="group border-2 border-white/30 hover:border-white text-white hover:bg-white hover:text-emerald-800 font-semibold px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm animate-bounce-subtle animate-delay-100"
+                  >
                     <span className="flex items-center justify-center">
                       {currentLanguage === 'kh' ? 'មើលព័ត៌មានបន្ថែម' : 'Learn More'}
                       <svg className="w-5 h-5 ml-2 group-hover:rotate-45 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +350,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
                 </div>
               </div>
 
-              {/* Right Content - Contact Methods Preview */}
               <div className="relative animate-slide-in-right animate-delay-300">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-lg">
                   <h3 className="text-xl font-bold text-white mb-4 animate-slide-in-right">
@@ -377,7 +385,6 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           </div>
         </div>
 
-        {/* Bottom Wave */}
         <div className="absolute bottom-0 left-0 w-full overflow-hidden">
           <svg className="relative block w-full h-16" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" className="fill-white"></path>
@@ -638,7 +645,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
       </div>
 
       {/* FAQ Section */}
-      <div className="py-16 bg-gradient-to-r from-yellow-50 to-orange-50">
+      <div ref={faqRef} className="py-16 bg-gradient-to-r from-yellow-50 to-orange-50">
         <div className="container mx-auto px-6 max-w-4xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 animate-text-shimmer">
             {currentContent.faqTitle}
@@ -687,13 +694,19 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
             <a href="/register" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
               {currentLanguage === 'kh' ? 'ចុះឈ្មោះជាកសិករ' : 'Register as Farmer'}
             </a>
-            <a href="/products" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
+            <a
+              href="/products"
+              onClick={(e) => {
+                e.preventDefault();
+                handleBrowseProducts();
+              }}
+              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle"
+            >
               {currentLanguage === 'kh' ? 'រកមើលផលិតផល' : 'Browse Products'}
             </a>
           </div>
         </div>
       </div>
-
     </div>
   );
 };
