@@ -23,11 +23,13 @@ class ItemController extends Controller
                 'stock' => $item->stock,
                 'unit' => $item->unit,
                 'unit_kh' => $item->unit_kh,
+                'province' => $item->province,
+                'description' => $item->description,
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
             ];
-        });
+        }); // ✅ Close map() function here correctly
 
         return response()->json([
             'success' => true,
@@ -45,6 +47,8 @@ class ItemController extends Controller
             'stock' => 'required|integer|min:0',
             'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
             'unit_kh' => 'required|string|max:255',
+            'province' => 'required|string|max:255', // ✅ added
+            'description' => 'nullable|string', // ✅ added
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -56,7 +60,15 @@ class ItemController extends Controller
         }
 
         $data = $request->only([
-            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+            'name',
+            'name_kh',
+            'category_id',
+            'price',
+            'stock',
+            'unit',
+            'unit_kh',
+            'province',
+            'description' // ✅ added
         ]);
 
         if ($request->hasFile('image')) {
@@ -77,6 +89,8 @@ class ItemController extends Controller
                 'stock' => $item->stock,
                 'unit' => $item->unit,
                 'unit_kh' => $item->unit_kh,
+                'province' => $item->province, // ✅ added
+                'description' => $item->description, // ✅ added
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
@@ -96,6 +110,8 @@ class ItemController extends Controller
             'stock' => 'required|integer|min:0',
             'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
             'unit_kh' => 'required|string|max:255',
+            'province' => 'required|string|max:255', // ✅ added
+            'description' => 'nullable|string', // ✅ added
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -107,11 +123,18 @@ class ItemController extends Controller
         }
 
         $data = $request->only([
-            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+            'name',
+            'name_kh',
+            'category_id',
+            'price',
+            'stock',
+            'unit',
+            'unit_kh',
+            'province',
+            'description' // ✅ added
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
@@ -132,6 +155,8 @@ class ItemController extends Controller
                 'stock' => $item->stock,
                 'unit' => $item->unit,
                 'unit_kh' => $item->unit_kh,
+                'province' => $item->province, // ✅ added
+                'description' => $item->description, // ✅ added
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
