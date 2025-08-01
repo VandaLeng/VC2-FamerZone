@@ -117,4 +117,34 @@ class ItemController extends Controller
 
         return response()->json(['message' => 'Item deleted successfully']);
     }
+
+    public function filter(Request $request)
+{
+    $query = Item::query();
+
+    if ($request->has('province') && $request->province !== 'all') {
+        $query->where('province', $request->province);
+    }
+
+    if ($request->has('category') && $request->category !== 'all') {
+        $query->where('category_id', $request->category);
+    }
+
+    if ($request->has('search') && $request->search !== '') {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    // Example: filter price between min and max
+    if ($request->has('min_price') && $request->has('max_price')) {
+        $query->whereBetween('price', [$request->min_price, $request->max_price]);
+    }
+
+    $items = $query->with('category')->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $items
+    ]);
+}
+
 }

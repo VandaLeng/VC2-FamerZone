@@ -5,7 +5,7 @@ import {
   ShoppingCart,
   Users,
   Package,
-  LayoutGrid, // Replaced Grid3X3 with LayoutGrid
+  LayoutGrid, 
   Bell,
   Settings,
   LogOut,
@@ -80,6 +80,9 @@ const FarmerSidebar = ({
     setCurrentLanguage(currentLanguage === "en" ? "kh" : "en");
   };
 
+  console.log("Rendering FarmerSidebar at left:0, top:0"); // Debug log
+
+
   return (
     <div
       className={`bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out ${
@@ -133,7 +136,7 @@ const FarmerSidebar = ({
         </div>
       )}
 
-      {/* Main Navigation */}
+      {/* Bottom Navigation (Single Menu) */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {bottomMenuItems.slice(0, -3).map((item) => {
           const Icon = item.icon;
@@ -155,6 +158,7 @@ const FarmerSidebar = ({
           );
         })}
       </div>
+
 
       {/* Bottom Menu Items */}
       <div className="p-2 space-y-1 border-t border-gray-100">
