@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, User, MapPin, Phone, Mail, Calendar, Globe, Save, Edit } from 'lucide-react';
+import { Camera, User, MapPin, Phone, Mail, Calendar, Save, Edit } from 'lucide-react';
 
 const FarmerProfileSettings = () => {
-  const [language, setLanguage] = useState('en');
   const [profileData, setProfileData] = useState({
     profilePhoto: null,
-    fullNameEn: '',
-    fullNameKh: '',
+    fullName: '',
     primaryPhone: '',
     secondaryPhone: '',
     email: '',
@@ -31,97 +29,6 @@ const FarmerProfileSettings = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  const content = {
-    en: {
-      title: "Profile Settings",
-      subtitle: "View your personal and farm information",
-      personalInfo: "Personal Information",
-      farmInfo: "Farm Information",
-      contactInfo: "Contact Information",
-      profilePhoto: "Profile Photo",
-      fullNameEn: "Full Name (English)",
-      fullNameKh: "Full Name (Khmer)",
-      dateOfBirth: "Date of Birth",
-      gender: "Gender",
-      male: "Male",
-      female: "Female",
-      other: "Other",
-      primaryPhone: "Primary Phone",
-      secondaryPhone: "Secondary Phone (Optional)",
-      email: "Email Address (Optional)",
-      homeAddress: "Home Address",
-      street: "Street Address",
-      district: "District",
-      province: "Province",
-      postalCode: "Postal Code",
-      farmLocation: "Farm Location",
-      farmLocationDesc: "Farm address (if different from home)",
-      gpsCoordinates: "GPS Coordinates (Optional)",
-      farmSize: "Farm Size (Hectares)",
-      primaryCrops: "Primary Crops",
-      farmingExperience: "Years of Farming Experience",
-      farmingMethods: "Farming Methods",
-      organic: "Organic",
-      traditional: "Traditional",
-      modern: "Modern",
-      mixed: "Mixed Methods",
-      update: "Update",
-      saveChanges: "Save Changes",
-      cancel: "Cancel",
-      enterName: "Enter your full name",
-      enterPhone: "Enter phone number",
-      enterEmail: "Enter email address",
-      enterAddress: "Enter address",
-      selectProvince: "Select Province",
-      enterCrops: "e.g., Rice, Corn, Vegetables",
-      enterExperience: "Enter years of experience"
-    },
-    kh: {
-      title: "ការកំណត់ប្រវត្តិរូប",
-      subtitle: "មើលព័ត៌មានផ្ទាល់ខ្លួន និងកសិដ្ឋានរបស់អ្នក",
-      personalInfo: "ព័ត៌មានផ្ទាល់ខ្លួន",
-      farmInfo: "ព័ត៌មានកសិដ្ឋាន",
-      contactInfo: "ព័ត៌មានទំនាក់ទំនង",
-      profilePhoto: "រូបថតប្រវត្តិរូប",
-      fullNameEn: "ឈ្មោះពេញ (អង់គ្លេស)",
-      fullNameKh: "ឈ្មោះពេញ (ខ្មែរ)",
-      dateOfBirth: "ថ្ងៃខែកំណើត",
-      gender: "ភេទ",
-      male: "ប្រុស",
-      female: "ស្រី",
-      other: "ផ្សេងទៀត",
-      primaryPhone: "លេខទូរស័ព្ទមេ",
-      secondaryPhone: "លេខទូរស័ព្ទបន្ទាប់បន្សំ (ស្រេចចិត្ត)",
-      email: "អ៊ីមែល (ស្រេចចិត្ត)",
-      homeAddress: "អាសយដ្ឋានផ្ទះ",
-      street: "អាសយដ្ឋានផ្លូវ",
-      district: "ស្រុក/ខណ្ឌ",
-      province: "ខេត្ត/រាជធានី",
-      postalCode: "លេខប្រៃសណីយ៍",
-      farmLocation: "ទីតាំងកសិដ្ឋាន",
-      farmLocationDesc: "អាសយដ្ឋានកសិដ្ឋាន (ប្រសិនបើខុសពីផ្ទះ)",
-      gpsCoordinates: "កូអរដោនេ GPS (ស្រេចចិត្ត)",
-      farmSize: "ទំហំកសិដ្ឋាន (ហិកតា)",
-      primaryCrops: "ដំណាំចម្បង",
-      farmingExperience: "ចំនួនឆ្នាំបទពិសោធន៍កសិកម្ម",
-      farmingMethods: "វិធីសាស្ត្រកសិកម្ម",
-      organic: "កសិកម្មធម្មជាតិ",
-      traditional: "កសិកម្មបុរាណ",
-      modern: "កសិកម្មទំនើប",
-      mixed: "វិធីសាស្ត្របញ្ចូលគ្នា",
-      update: "ធ្វើបច្ចុប្បន្នភាព",
-      saveChanges: "រក្សាទុកការផ្លាស់ប្តូរ",
-      cancel: "បោះបង់",
-      enterName: "បញ្ចូលឈ្មោះពេញរបស់អ្នក",
-      enterPhone: "បញ្ចូលលេខទូរស័ព្ទ",
-      enterEmail: "បញ្ចូលអ៊ីមែល",
-      enterAddress: "បញ្ចូលអាសយដ្ឋាន",
-      selectProvince: "ជ្រើសរើសខេត្ត",
-      enterCrops: "ឧ. ស្រូវ ពោត បន្លែ",
-      enterExperience: "បញ្ចូលចំនួនឆ្នាំបទពិសោធន៍"
-    }
-  };
-
   const cambodianProvinces = [
     "Banteay Meanchey", "Battambang", "Kampong Cham", "Kampong Chhnang", 
     "Kampong Speu", "Kampong Thom", "Kampot", "Kandal", "Kep", 
@@ -136,8 +43,7 @@ const FarmerProfileSettings = () => {
       if (userData) {
         setProfileData((prev) => ({
           ...prev,
-          fullNameEn: userData.name || '',
-          fullNameKh: userData.name || '',
+          fullName: userData.name || '',
           email: userData.email || '',
           primaryPhone: userData.phone || '',
           homeAddress: {
@@ -183,7 +89,7 @@ const FarmerProfileSettings = () => {
 
   const handleSave = () => {
     console.log('Saving profile data:', profileData);
-    alert(language === 'en' ? 'Profile saved successfully!' : 'ការរក្សាទុកប្រវត្តិរូបបានជោគជ័យ!');
+    alert('ការរក្សាទុកប្រវត្តិរូបបានជោគជ័យ!');
     setIsEditing(false);
   };
 
@@ -192,8 +98,7 @@ const FarmerProfileSettings = () => {
     if (userData) {
       setProfileData((prev) => ({
         ...prev,
-        fullNameEn: userData.name || '',
-        fullNameKh: userData.name || '',
+        fullName: userData.name || '',
         email: userData.email || '',
         primaryPhone: userData.phone || '',
         homeAddress: {
@@ -204,8 +109,6 @@ const FarmerProfileSettings = () => {
     }
     setIsEditing(false);
   };
-
-  const t = content[language];
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
@@ -223,17 +126,8 @@ const FarmerProfileSettings = () => {
         <div className="gradient-header text-white p-8 rounded-xl mb-8 shadow-custom">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">{t.title}</h1>
-              <p className="text-xl opacity-90">{t.subtitle}</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setLanguage(language === 'en' ? 'kh' : 'en')}
-                className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all"
-              >
-                <Globe className="w-5 h-5" />
-                <span>{language === 'en' ? 'ខ្មែរ' : 'English'}</span>
-              </button>
+              <h1 className="text-3xl font-bold mb-2">ការកំណត់ប្រវត្តិរូប</h1>
+              <p className="text-xl opacity-90">មើលព័ត៌មានផ្ទាល់ខ្លួន និងកសិដ្ឋានរបស់អ្នក</p>
             </div>
           </div>
         </div>
@@ -243,7 +137,7 @@ const FarmerProfileSettings = () => {
             <div className="bg-white p-6 rounded-xl shadow-custom">
               <h3 className="text-xl font-semibold mb-4 text-dark flex items-center">
                 <Camera className="w-5 h-5 mr-2" style={{ color: '#228B22' }} />
-                {t.profilePhoto}
+                រូបថតប្រវត្តិរូប
               </h3>
               
               <div className="text-center">
@@ -268,6 +162,7 @@ const FarmerProfileSettings = () => {
                       onChange={handlePhotoUpload}
                       className="hidden"
                     />
+                    ផ្ទុករូបថត
                   </label>
                 )}
               </div>
@@ -278,42 +173,27 @@ const FarmerProfileSettings = () => {
             <div className="bg-white p-6 rounded-xl shadow-custom">
               <h3 className="text-xl font-semibold mb-6 text-dark flex items-center">
                 <User className="w-5 h-5 mr-2" style={{ color: '#228B22' }} />
-                {t.personalInfo}
+                ព័ត៌មានផ្ទាល់ខ្លួន
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.fullNameEn}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">ឈ្មោះពេញ</label>
                   {isEditing ? (
                     <input
                       type="text"
-                      value={profileData.fullNameEn}
-                      onChange={(e) => handleInputChange('fullNameEn', e.target.value)}
-                      placeholder={t.enterName}
+                      value={profileData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      placeholder="បញ្ចូលឈ្មោះពេញរបស់អ្នក"
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.fullNameEn || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.fullName || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.fullNameKh}</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={profileData.fullNameKh}
-                      onChange={(e) => handleInputChange('fullNameKh', e.target.value)}
-                      placeholder={t.enterName}
-                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                  ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.fullNameKh || 'Not provided'}</p>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.dateOfBirth}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">ថ្ងៃខែកំណើត</label>
                   {isEditing ? (
                     <input
                       type="date"
@@ -322,25 +202,25 @@ const FarmerProfileSettings = () => {
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.dateOfBirth || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.dateOfBirth || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.gender}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">ភេទ</label>
                   {isEditing ? (
                     <select
                       value={profileData.gender}
                       onChange={(e) => handleInputChange('gender', e.target.value)}
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                      <option value="">{t.gender}</option>
-                      <option value="male">{t.male}</option>
-                      <option value="female">{t.female}</option>
-                      <option value="other">{t.other}</option>
+                      <option value="">ភេទ</option>
+                      <option value="male">ប្រុស</option>
+                      <option value="female">ស្រី</option>
+                      <option value="other">ផ្សេងទៀត</option>
                     </select>
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.gender || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.gender || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
               </div>
@@ -349,52 +229,52 @@ const FarmerProfileSettings = () => {
             <div className="bg-white p-6 rounded-xl shadow-custom">
               <h3 className="text-xl font-semibold mb-6 text-dark flex items-center">
                 <Phone className="w-5 h-5 mr-2" style={{ color: '#228B22' }} />
-                {t.contactInfo}
+                ព័ត៌មានទំនាក់ទំនង
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.primaryPhone}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">លេខទូរស័ព្ទមេ</label>
                   {isEditing ? (
                     <input
                       type="tel"
                       value={profileData.primaryPhone}
                       onChange={(e) => handleInputChange('primaryPhone', e.target.value)}
-                      placeholder={t.enterPhone}
+                      placeholder="បញ្ចូលលេខទូរស័ព្ទ"
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.primaryPhone || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.primaryPhone || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.secondaryPhone}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">លេខទូរស័ព្ទបន្ទាប់បន្សំ (ស្រេចចិត្ត)</label>
                   {isEditing ? (
                     <input
                       type="tel"
                       value={profileData.secondaryPhone}
                       onChange={(e) => handleInputChange('secondaryPhone', e.target.value)}
-                      placeholder={t.enterPhone}
+                      placeholder="បញ្ចូលលេខទូរស័ព្ទ"
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.secondaryPhone || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.secondaryPhone || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-dark">{t.email}</label>
+                  <label className="block text-sm font-medium mb-2 text-dark">អ៊ីមែល (ស្រេចចិត្ត)</label>
                   {isEditing ? (
                     <input
                       type="email"
                       value={profileData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder={t.enterEmail}
+                      placeholder="បញ្ចូលអ៊ីមែល"
                       className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.email || 'Not provided'}</p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.email || 'មិនបានផ្តល់'}</p>
                   )}
                 </div>
               </div>
@@ -402,25 +282,25 @@ const FarmerProfileSettings = () => {
               <div className="mt-6">
                 <h4 className="text-lg font-medium mb-4 text-dark flex items-center">
                   <MapPin className="w-4 h-4 mr-2" style={{ color: '#8B4513' }} />
-                  {t.homeAddress}
+                  អាសយដ្ឋានផ្ទះ
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2 text-dark">{t.street}</label>
+                    <label className="block text-sm font-medium mb-2 text-dark">អាសយដ្ឋានផ្លូវ</label>
                     {isEditing ? (
                       <input
                         type="text"
                         value={profileData.homeAddress.street}
                         onChange={(e) => handleInputChange('street', e.target.value, 'homeAddress')}
-                        placeholder={t.enterAddress}
+                        placeholder="បញ្ចូលអាសយដ្ឋាន"
                         className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     ) : (
-                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.street || 'Not provided'}</p>
+                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.street || 'មិនបានផ្តល់'}</p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-dark">{t.district}</label>
+                    <label className="block text-sm font-medium mb-2 text-dark">ស្រុក/ខណ្ឌ</label>
                     {isEditing ? (
                       <input
                         type="text"
@@ -429,26 +309,154 @@ const FarmerProfileSettings = () => {
                         className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     ) : (
-                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.district || 'Not provided'}</p>
+                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.district || 'មិនបានផ្តល់'}</p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-dark">{t.province}</label>
+                    <label className="block text-sm font-medium mb-2 text-dark">ខេត្ត/រាជធានី</label>
                     {isEditing ? (
                       <select
                         value={profileData.homeAddress.province}
                         onChange={(e) => handleInputChange('province', e.target.value, 'homeAddress')}
                         className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
-                        <option value="">{t.selectProvince}</option>
+                        <option value="">ជ្រើសរើសខេត្ត</option>
                         {cambodianProvinces.map((province) => (
                           <option key={province} value={province}>{province}</option>
                         ))}
                       </select>
                     ) : (
-                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.province || 'Not provided'}</p>
+                      <p className="p-2 bg-gray-100 rounded-lg">{profileData.homeAddress.province || 'មិនបានផ្តល់'}</p>
                     )}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-custom">
+              <h3 className="text-xl font-semibold mb-6 text-dark flex items-center">
+                <MapPin className="w-5 h-5 mr-2" style={{ color: '#228B22' }} />
+                ព័ត៌មានកសិដ្ឋាន
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2 text-dark">អាសយដ្ឋានកសិដ្ឋាន (ប្រសិនបើខុសពីផ្ទះ)</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profileData.farmLocation.street}
+                      onChange={(e) => handleInputChange('street', e.target.value, 'farmLocation')}
+                      placeholder="បញ្ចូលអាសយដ្ឋាន"
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmLocation.street || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">ស្រុក/ខណ្ឌ</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profileData.farmLocation.district}
+                      onChange={(e) => handleInputChange('district', e.target.value, 'farmLocation')}
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmLocation.district || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">ខេត្ត/រាជធានី</label>
+                  {isEditing ? (
+                    <select
+                      value={profileData.farmLocation.province}
+                      onChange={(e) => handleInputChange('province', e.target.value, 'farmLocation')}
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="">ជ្រើសរើសខេត្ត</option>
+                      {cambodianProvinces.map((province) => (
+                        <option key={province} value={province}>{province}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmLocation.province || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">កូអរដោនេ GPS (ស្រេចចិត្ត)</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profileData.farmLocation.gpsCoordinates}
+                      onChange={(e) => handleInputChange('gpsCoordinates', e.target.value, 'farmLocation')}
+                      placeholder="ឧ. 11.562108, 104.916144"
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmLocation.gpsCoordinates || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">ទំហំកសិដ្ឋាន (ហិកតា)</label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      value={profileData.farmSize}
+                      onChange={(e) => handleInputChange('farmSize', e.target.value)}
+                      placeholder="ឧ. 5"
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmSize || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">ដំណាំចម្បង</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profileData.primaryCrops}
+                      onChange={(e) => handleInputChange('primaryCrops', e.target.value)}
+                      placeholder="ឧ. ស្រូវ ពោត បន្លែ"
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.primaryCrops || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">ចំនួនឆ្នាំបទពិសោធន៍កសិកម្ម</label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      value={profileData.farmingExperience}
+                      onChange={(e) => handleInputChange('farmingExperience', e.target.value)}
+                      placeholder="បញ្ចូលចំនួនឆ្នាំបទពិសោធន៍"
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmingExperience || 'មិនបានផ្តល់'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-dark">វិធីសាស្ត្រកសិកម្ម</label>
+                  {isEditing ? (
+                    <select
+                      value={profileData.farmingMethods}
+                      onChange={(e) => handleInputChange('farmingMethods', e.target.value)}
+                      className="w-full p-3 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="">ជ្រើសរើសវិធីសាស្ត្រ</option>
+                      <option value="organic">កសិកម្មធម្មជាតិ</option>
+                      <option value="traditional">កសិកម្មបុរាណ</option>
+                      <option value="modern">កសិកម្មទំនើប</option>
+                      <option value="mixed">វិធីសាស្ត្របញ្ចូលគ្នា</option>
+                    </select>
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-lg">{profileData.farmingMethods || 'មិនបានផ្តល់'}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -460,14 +468,14 @@ const FarmerProfileSettings = () => {
                     onClick={handleCancel}
                     className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    {t.cancel}
+                    បោះបង់
                   </button>
                   <button
                     onClick={handleSave}
                     className="px-8 py-3 primary-green text-white rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center"
                   >
                     <Save className="w-5 h-5 mr-2" />
-                    {t.saveChanges}
+                    រក្សាទុកការផ្លាស់ប្តូរ
                   </button>
                 </>
               ) : (
@@ -476,7 +484,7 @@ const FarmerProfileSettings = () => {
                   className="px-8 py-3 primary-green text-white rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center"
                 >
                   <Edit className="w-5 h-5 mr-2" />
-                  {t.update}
+                  ធ្វើបច្ចុប្បន្នភាព
                 </button>
               )}
             </div>

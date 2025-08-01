@@ -23,8 +23,10 @@ const FarmerSidebar = ({
 }) => {
   const location = useLocation();
 
-  // Use external collapse state if provided, otherwise use internal state
+  // Define internalCollapsed state to handle collapse if external prop not provided
   const [internalCollapsed, setInternalCollapsed] = useState(false);
+
+  // Use external collapse state if provided, otherwise fallback to internal state
   const collapsed = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
   const setCollapsed = setIsCollapsed !== undefined ? setIsCollapsed : setInternalCollapsed;
 
@@ -64,7 +66,7 @@ const FarmerSidebar = ({
     { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
     { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
     { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
-    { id: "categories", label: currentTexts.categories, icon: LayoutGrid, path: "/farmer/categories" }, // Replaced Grid3X3 with LayoutGrid
+    { id: "categories", label: currentTexts.categories, icon: LayoutGrid, path: "/farmer/categories" },
     { id: "notifications", label: currentTexts.notifications, icon: Bell, path: "/farmer/notifications", badge: "2" },
     { id: "settings", label: currentTexts.settings, icon: Settings, path: "/farmer/settings" },
     { id: "logout", label: currentTexts.logout, icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
@@ -111,10 +113,7 @@ const FarmerSidebar = ({
             >
               {currentLanguage.toUpperCase()}
             </button>
-            <button
-              onClick={toggleSidebar}
-              className="p-1 rounded-full hover:bg-gray-100"
-            >
+            <button onClick={toggleSidebar} className="p-1 rounded-full hover:bg-gray-100">
               <X size={24} className="text-gray-600" />
             </button>
           </div>
@@ -175,8 +174,8 @@ const FarmerSidebar = ({
                 isActive
                   ? "bg-green-100 text-green-800"
                   : isLogout
-                    ? "text-red-600 hover:bg-red-50"
-                    : "text-gray-600 hover:bg-gray-100"
+                  ? "text-red-600 hover:bg-red-50"
+                  : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <Icon size={20} className={isActive ? "text-green-800" : isLogout ? "text-red-500" : "text-gray-400"} />
