@@ -11,24 +11,38 @@ const useProduct = () => {
     axios
       .get("http://127.0.0.1:8000/api/items")
       .then((response) => {
-        const productsWithImages = (response.data.data || []).map((product) => ({
-          ...product,
-          image: product.image ? `http://127.0.0.1:8000/storage/${product.image}` : "/placeholder.svg",
-          farmer: {
-            ...product.user,
-            name: product.user?.name || "Unknown",
-            nameKh: product.user?.name_kh || null,
-            address: product.user?.address || "N/A",
-            phone: product.user?.phone || "N/A",
-            email: product.user?.email || "N/A",
-            rating: product.user?.rating || 0,
-            avatar: product.user?.avatar ? `http://127.0.0.1:8000/storage/${product.user.avatar}` : "/placeholder.svg",
-          },
-          category: {
-            ...product.category,
-            name: product.category?.name || "Unknown",
-          },
-        }));
+        const productsWithImages = (response.data.data || []).map((product) => {
+          // Check if the image already contains the base URL
+          const rawImage = product.image || null;
+          const mappedImage = rawImage.startsWith("http")
+            ? rawImage // Use as-is if it’s a full URL
+            : rawImage
+            ? `http://127.0.0.1:8000/storage/${rawImage}` // Add base URL if relative
+            : "/placeholder.svg"; // Fallback
+          console.log("Product ID:", product.id, "Raw Image:", rawImage, "Mapped URL:", mappedImage);
+          return {
+            ...product,
+            image: mappedImage,
+            farmer: {
+              ...product.user,
+              name: product.user?.name || "Unknown",
+              nameKh: product.user?.name_kh || null,
+              address: product.user?.address || "N/A",
+              phone: product.user?.phone || "N/A",
+              email: product.user?.email || "N/A",
+              rating: product.user?.rating || 0,
+              avatar: product.user?.avatar
+                ? (product.user.avatar.startsWith("http")
+                    ? product.user.avatar
+                    : `http://127.0.0.1:8000/storage/${product.user.avatar}`)
+                : "/placeholder.svg",
+            },
+            category: {
+              ...product.category,
+              name: product.category?.name || "Unknown",
+            },
+          };
+        });
         setAllProducts(productsWithImages);
         setProvinces(response.data.provinces || []);
         setLoading(false);

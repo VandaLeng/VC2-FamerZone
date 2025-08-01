@@ -24,7 +24,7 @@ function ProductCard({
   const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
 
   // Determine inStock based on quantity
-  const isInStock = product.quantity > 0;
+  const isInStock = product.stock > 0;
 
   if (viewMode === "list") {
     return (

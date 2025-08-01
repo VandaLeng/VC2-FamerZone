@@ -109,7 +109,7 @@ function ProductSection() {
                       </p>
                     </div>
                     <span className="text-lg text-gray-700">
-                      Quantity: {selectedProduct.quantity || "none"} {selectedProduct.unit || "items"}
+                      Quantity: {selectedProduct.stock || "none"} {selectedProduct.unit || "items"}
                     </span>
                     <div className="flex items-center gap-3">
                       <MapPin className="w-6 h-6 text-green-600" />
