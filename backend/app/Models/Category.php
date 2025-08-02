@@ -10,10 +10,6 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'description', 'image', 'status'];
-    protected $casts = [
-    'name' => 'array',
-    'description' => 'array',
-];
 
     public function items()
     {
