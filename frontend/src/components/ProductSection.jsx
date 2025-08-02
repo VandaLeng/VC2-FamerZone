@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 function ProductSection() {
-  const { allProducts, loading, error } = useProduct(); // Removed provinces from destructuring
+  const { allProducts, loading, error } = useProduct();
   const [viewMode, setViewMode] = useState("grid");
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
   const [selectedProvince, setSelectedProvince] = useState("all");
@@ -41,12 +41,35 @@ function ProductSection() {
     }));
   }, [allProducts]);
 
+  // Derive categories from allProducts
+  const categories = React.useMemo(() => {
+    const uniqueCategories = new Set();
+    allProducts.forEach((product) => {
+      if (typeof product.category === "object" && product.category?.id) {
+        uniqueCategories.add(product.category.id);
+      } else if (product.categoryId) {
+        uniqueCategories.add(product.categoryId);
+      }
+    });
+    return Array.from(uniqueCategories).map((id) => ({
+      id,
+      name: allProducts.find((p) => 
+        (typeof p.category === "object" && p.category?.id === id) || p.categoryId === id
+      )?.category?.name || id,
+      color: `bg-${id === "cat1" ? "green" : id === "cat2" ? "yellow" : "blue"}-50`, // Optional: Assign colors based on ID
+    }));
+  }, [allProducts]);
+
   useEffect(() => {
     console.log("Provinces:", provinces);
-    console.log("All Products with Provinces:", allProducts.map(p => ({
+    console.log("Categories:", categories);
+    console.log("All Products with Provinces and Categories:", allProducts.map(p => ({
       id: p.id,
       province: p.province,
-      provinceType: typeof p.province
+      provinceType: typeof p.province,
+      category: p.category,
+      categoryId: p.categoryId,
+      categoryType: typeof p.category
     })));
     let updatedProducts = [...allProducts];
 
@@ -61,7 +84,7 @@ function ProductSection() {
 
     if (selectedCategory !== "all") {
       updatedProducts = updatedProducts.filter(
-        (product) => product.category?.id === selectedCategory || product.categoryId === selectedCategory
+        (product) => (product.category?.id === selectedCategory || product.categoryId === selectedCategory)
       );
     }
 
@@ -99,12 +122,6 @@ function ProductSection() {
   const onOrder = () => {};
   const orderingProducts = [];
   const orderedProducts = [];
-
-  const categories = [
-    { id: "cat1", name: "Vegetables", color: "bg-green-50" },
-    { id: "cat2", name: "Fruits", color: "bg-yellow-50" },
-    { id: "cat3", name: "Grains", color: "bg-blue-50" },
-  ];
 
   const clearFilters = () => {
     setSelectedProvince("all");
