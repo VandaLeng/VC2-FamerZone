@@ -12,10 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // 👈 User relationship
             $table->string('name');
-<<<<<<< HEAD
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-=======
->>>>>>> 669d743ece670f79fd732c3ac4b4209d671a7f79
             $table->decimal('price', 8, 2);
             $table->integer('stock');
             $table->string('unit');
