@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Users,
-  Package,
-  LayoutGrid, 
-  Bell,
-  Settings,
-  LogOut,
-  User,
-  X,
-} from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, Globe } from 'lucide-react';
 
 const FarmerSidebar = ({
   currentLanguage,
@@ -22,11 +11,8 @@ const FarmerSidebar = ({
   setIsCollapsed,
 }) => {
   const location = useLocation();
-
-  // Define internalCollapsed state to handle collapse if external prop not provided
   const [internalCollapsed, setInternalCollapsed] = useState(false);
 
-  // Use external collapse state if provided, otherwise fallback to internal state
   const collapsed = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
   const setCollapsed = setIsCollapsed !== undefined ? setIsCollapsed : setInternalCollapsed;
 
@@ -43,6 +29,7 @@ const FarmerSidebar = ({
       framerZone: "FramerZone",
       farmerPanel: "ផ្ទាំងកសិករ",
       premiumFarmer: "កសិករពិសេស",
+      switchLanguage: "ប្តូរភាសា",
     },
     en: {
       dashboard: "Dashboard",
@@ -56,6 +43,7 @@ const FarmerSidebar = ({
       framerZone: "FramerZone",
       farmerPanel: "Farmer Panel",
       premiumFarmer: "Premium Farmer",
+      switchLanguage: "Switch Language",
     },
   };
 
@@ -77,11 +65,13 @@ const FarmerSidebar = ({
   };
 
   const toggleLanguage = () => {
-    setCurrentLanguage(currentLanguage === "en" ? "kh" : "en");
+    const newLanguage = currentLanguage === "en" ? "kh" : "en";
+    setCurrentLanguage(newLanguage);
+    
+    // Apply language class to body immediately
+    document.body.className = document.body.className.replace(/lang-\w+/, '');
+    document.body.classList.add(`lang-${newLanguage}`);
   };
-
-  console.log("Rendering FarmerSidebar at left:0, top:0"); // Debug log
-
 
   return (
     <div
@@ -109,9 +99,11 @@ const FarmerSidebar = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleLanguage}
-              className="px-2 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
+              className="flex items-center space-x-1 px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+              title={currentTexts.switchLanguage}
             >
-              {currentLanguage.toUpperCase()}
+              <Globe size={14} />
+              <span>{currentLanguage.toUpperCase()}</span>
             </button>
             <button onClick={toggleSidebar} className="p-1 rounded-full hover:bg-gray-100">
               <X size={24} className="text-gray-600" />
@@ -136,7 +128,7 @@ const FarmerSidebar = ({
         </div>
       )}
 
-      {/* Bottom Navigation (Single Menu) */}
+      {/* Navigation Menu */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {bottomMenuItems.slice(0, -3).map((item) => {
           const Icon = item.icon;
@@ -159,9 +151,19 @@ const FarmerSidebar = ({
         })}
       </div>
 
-
       {/* Bottom Menu Items */}
       <div className="p-2 space-y-1 border-t border-gray-100">
+        {/* Language Toggle for Collapsed State */}
+        {collapsed && (
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center justify-center w-full px-2 py-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+            title={currentTexts.switchLanguage}
+          >
+            <Globe size={20} className="text-gray-400" />
+          </button>
+        )}
+        
         {bottomMenuItems.slice(-3).map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
