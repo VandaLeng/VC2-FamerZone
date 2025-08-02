@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // 👈 User relationship
             $table->string('name');
+<<<<<<< HEAD
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+=======
+>>>>>>> 669d743ece670f79fd732c3ac4b4209d671a7f79
             $table->decimal('price', 8, 2);
             $table->integer('stock');
             $table->string('unit');
@@ -22,11 +25,13 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->integer('orders')->default(0);
             $table->timestamps();
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('items'); // Fix table name here (was 'order_item' which is wrong)
+        Schema::dropIfExists('items'); 
     }
 };
