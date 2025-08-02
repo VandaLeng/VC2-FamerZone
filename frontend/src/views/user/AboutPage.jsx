@@ -1,9 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/AboutStyle.css';
 import contentData from '../..//data/aboutdata';
 
 const AboutPage = ({ currentLanguage }) => {
   const currentContent = contentData[currentLanguage || 'en'];
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    // Navigate to register with farmer preselected
+    navigate('/register?role=farmer');
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -45,9 +52,12 @@ const AboutPage = ({ currentLanguage }) => {
                 >
                   {currentContent.heroDescription}
                 </p>
-                <button className="group bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-bold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl animate-fade-in-up delay-200">
+                <button
+                  onClick={handleGetStarted}
+                  className="group bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-bold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl animate-fade-in-up delay-200"
+                >
                   <span className="flex items-center">
-                    {currentContent.ctaButton}
+                    {currentContent.ctaButton || "Get Started Today"}
                     <svg
                       className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
                       fill="none"
@@ -227,7 +237,7 @@ const AboutPage = ({ currentLanguage }) => {
                   </svg>
                 </div>
               </div>
-              <div className="bg-[#FAF0E6]/80 backdrop-blur-sm rounded-xl p-5 shadow-md border border-[#228B22]/20 group-hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-[#FAF0E6]/80 backdrop-blur-sm rounded-xl p-5 shadow-md border border-[#228B22]/20 group-hover:shadow-lg transition-colors duration-300">
                 <h3 className={`${currentLanguage === 'kh' ? 'text-base lg:text-lg' : 'text-lg lg:text-xl'} font-bold text-[#333333] mb-3 group-hover:text-[#FFD700] transition-colors duration-300`}>
                   {currentContent.buyers.title}
                 </h3>
@@ -239,7 +249,7 @@ const AboutPage = ({ currentLanguage }) => {
             <div className="text-center group animate-fade-in-up" style={{ animationDelay: '300ms' }}>
               <div className="relative mb-6">
                 <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full border-2 border-[#8B4513]/20 group-hover:border-[#8B4513]/40 transition-colors duration-500 group-hover:rotate-12 transform"></div>
-                <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-white">
+                <div className="relative w-40 h-40 mx-auto rounded-full overflow-hidden shadow-lg group-hover:shadow-xl transition-transform duration-300 border-2 border-white">
                   <img
                     src={currentContent.admins.image}
                     alt={currentContent.admins.title}
@@ -254,7 +264,7 @@ const AboutPage = ({ currentLanguage }) => {
                   </svg>
                 </div>
               </div>
-              <div className="bg-[#FAF0E6]/80 backdrop-blur-sm rounded-xl p-5 shadow-md border border-[#8B4513]/20 group-hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-[#FAF0E6]/80 backdrop-blur-sm rounded-xl p-5 shadow-md border border-[#8B4513]/20 group-hover:shadow-lg transition-colors duration-300">
                 <h3 className={`${currentLanguage === 'kh' ? 'text-base lg:text-lg' : 'text-lg lg:text-xl'} font-bold text-[#333333] mb-3 group-hover:text-[#8B4513] transition-colors duration-300`}>
                   {currentContent.admins.title}
                 </h3>
@@ -263,48 +273,6 @@ const AboutPage = ({ currentLanguage }) => {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      <section className="py-16 lg:py-24 bg-white relative overflow-hidden animate-fade-in">
-        <div className="absolute inset-0 opacity-3">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, #FFD700 1px, transparent 1px), radial-gradient(circle at 75% 75%, #228B22 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }}
-          ></div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 animate-fade-in-up">
-            <h2 className={`${currentLanguage === 'kh' ? 'text-xl lg:text-2xl' : 'text-2xl lg:text-3xl'} font-bold text-[#333333] mb-3`}>
-              {currentContent.featuresTitle}
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-[#228B22] via-[#FFD700] to-[#8B4513] mx-auto rounded-full"></div>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentContent.features.map((feature, index) => (
-              <div key={index} className="group bg-gradient-to-br from-[#FAF0E6]/50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-500 hover:-translate-y-2 transform animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-[#FFD700]/20 to-[#228B22]/20 rounded-bl-2xl opacity-50"></div>
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 relative">
-                  <h3 className={`${currentLanguage === 'kh' ? 'text-base' : 'text-lg'} font-bold text-[#333333] mb-3 group-hover:text-[#228B22] transition-colors duration-300 flex items-center`}>
-                    <div className="w-2 h-2 bg-[#FFD700] rounded-full mr-2 group-hover:scale-150 transition-transform duration-300"></div>
-                    {feature.title}
-                  </h3>
-                  <p className={`${currentLanguage === 'kh' ? 'text-sm' : 'text-base'} text-[#8B4513] leading-relaxed mb-4`}>
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -327,9 +295,12 @@ const AboutPage = ({ currentLanguage }) => {
             <p className={`${currentLanguage === 'kh' ? 'text-base lg:text-lg' : 'text-lg lg:text-xl'} text-green-50 mb-8 leading-relaxed`}>
               {currentContent.ctaText}
             </p>
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-yellow-400/25 group animate-fade-in-up delay-100">
+            <button
+              onClick={handleGetStarted}
+              className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-yellow-400/25 group animate-fade-in-up delay-100"
+            >
               <span className="flex items-center justify-center">
-                {currentContent.ctaButton}
+                {currentContent.ctaButton || "Get Started Today"}
                 <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
