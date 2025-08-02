@@ -1744,7 +1744,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       )}
 
       {/* Filters Section */}
-      <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
+      {/* <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
@@ -1917,7 +1917,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
             )}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* All Products Section */}
       <ProductSection />
