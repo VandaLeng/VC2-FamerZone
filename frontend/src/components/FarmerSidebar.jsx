@@ -70,6 +70,7 @@ const FarmerSidebar = ({
           { id: "orders", label: "ការបញ្ជាទិញ", icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
           { id: "customers", label: "ការគ្រប់គ្រងអតិថិជន", icon: Users, path: "/farmer/customers" },
           { id: "products", label: "ការគ្រប់គ្រងផលិតផល", icon: Package, path: "/farmer/products" },
+          { id: "categories", label: "ការគ្រប់គ្រងប្រភេទ", icon: LayoutGrid, path: "/farmer/categories" },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
