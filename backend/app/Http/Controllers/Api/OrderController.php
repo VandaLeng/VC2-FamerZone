@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\Order\OrderResource;
-use App\Http\Requests\Order\StoreRequest;
 use App\Models\Order;
-
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Order\OrderResource as OrderOrderResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -18,8 +13,12 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('buyer_id', Auth::id())->with('buyer')->get();
-        return OrderResource::collection($orders);
+        $orders = Order::with('user')->get();
+
+        return response()->json([
+            'message' => 'Orders retrieved successfully',
+            'data' => $orders,
+        ]);
     }
 
     /**
@@ -27,7 +26,19 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'address' => 'required|string|max:255',
+            'total_price' => 'required|numeric|min:0',
+            'status' => 'in:pending,confirmed,cancelled,delivered',
+        ]);
+
+        $order = Order::create($validated);
+
+        return response()->json([
+            'message' => 'Order created successfully',
+            'order' => $order,
+        ], 201);
     }
 
     /**
@@ -35,15 +46,40 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::with('user')->find($id);
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        return response()->json(['order' => $order], 200);
     }
 
     /**
      * Update the specified resource in storage.
+     * Allows partial updates (e.g., only status).
      */
     public function update(Request $request, string $id)
     {
-        //
+        $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'user_id' => 'sometimes|required|exists:users,id',
+            'address' => 'sometimes|required|string|max:255',
+            'total_price' => 'sometimes|required|numeric|min:0',
+            'status' => 'sometimes|in:pending,confirmed,cancelled,delivered',
+        ]);
+
+        $order->update($validated);
+
+        return response()->json([
+            'message' => 'Order updated successfully',
+            'order' => $order,
+        ]);
     }
 
     /**
@@ -51,6 +87,13 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $order->delete();
+
+        return response()->json(['message' => 'Order deleted successfully']);
     }
 }

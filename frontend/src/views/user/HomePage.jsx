@@ -1,10 +1,14 @@
+"use client"
+
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import '../../styles/HomeStyle.css';
 import homeData from '../../data/homedata.js';
 
 export default function HomePage({ currentLanguage }) {
     const [isVisible, setIsVisible] = useState({});
     const [isVideoOpen, setIsVideoOpen] = useState(false);
+    const navigate = useNavigate();
 
     // Intersection Observer hook for scroll animations
     useEffect(() => {
@@ -31,12 +35,35 @@ export default function HomePage({ currentLanguage }) {
 
     const currentTexts = homeData[currentLanguage];
 
+    // Navigation function to products page with auto-scroll
+    const navigateToProducts = () => {
+        window.location.href = "/products#products-section";
+    };
+
+    const navigateToProductsCategory = (category = "") => {
+        const categoryParam = category ? `?category=${category}` : "";
+        window.location.href = `/products${categoryParam}#products-section`;
+    };
+
+    // Navigation functions for registration with specific roles
+    const navigateToRegisterAsBuyer = () => {
+        navigate("/register", { state: { defaultRole: "buyer" } });
+    };
+
+    const navigateToRegisterAsFarmer = () => {
+        navigate("/register", { state: { defaultRole: "farmer" } });
+    };
+
+    const navigateToRegister = () => {
+        navigate("/register");
+    };
+
     return (
         <div className="min-h-screen bg-cream-50 overflow-hidden">
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-green-50 to-yellow-50 overflow-hidden">
                 <div className="absolute inset-0 bg-white/20"></div>
-
+                
                 {/* Floating Elements Background */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-20 left-10 w-20 h-20 bg-green-200 rounded-full opacity-20 animate-float"></div>
@@ -56,12 +83,18 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.heroDescription}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-in-up animate-delay-500">
-                                <a href="/products" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle">
+                                <button
+                                    onClick={navigateToProducts}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle cursor-pointer"
+                                >
                                     {currentTexts.heroButton}
-                                </a>
-                                <a href="/register" className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle">
+                                </button>
+                                <button
+                                    onClick={navigateToRegisterAsFarmer}
+                                    className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle cursor-pointer"
+                                >
                                     {currentTexts.heroSecondaryButton}
-                                </a>
+                                </button>
                             </div>
                         </div>
                         <div className="relative animate-slide-in-right">
@@ -101,7 +134,9 @@ export default function HomePage({ currentLanguage }) {
                         ].map((stat, index) => (
                             <div
                                 key={index}
-                                className={`p-6 transform transition-all duration-700 hover-lift hover-glow ${isVisible.stats ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 200}`}
+                                className={`p-6 transform transition-all duration-700 hover-lift hover-glow ${
+                                    isVisible.stats ? "animate-card-pop" : "opacity-0"
+                                } animate-delay-${index * 200}`}
                             >
                                 <div className={`text-4xl font-bold ${stat.color} mb-2 animate-number-count`}>{stat.number}</div>
                                 <p className="text-gray-600 font-medium">{stat.text}</p>
@@ -116,7 +151,9 @@ export default function HomePage({ currentLanguage }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div
-                        className={`text-center mb-16 transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
+                        className={`text-center mb-16 transition-all duration-500 ${
+                            isVisible.features ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                        }`}
                     >
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.featuresTitle}
@@ -178,7 +215,9 @@ export default function HomePage({ currentLanguage }) {
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift hover-glow ${isVisible.features ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 100}`}
+                                className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift hover-glow ${
+                                    isVisible.features ? "animate-card-pop" : "opacity-0"
+                                } animate-delay-${index * 100}`}
                             >
                                 {/* Image Section */}
                                 <div className="relative h-48 overflow-hidden">
@@ -188,11 +227,12 @@ export default function HomePage({ currentLanguage }) {
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${feature.color === 'green' ? 'bg-green-500/90 text-white' :
+                                    <div className={`absolute bottom-4 left-4 p-3 rounded-lg shadow-lg backdrop-blur-sm ${
+                                        feature.color === 'green' ? 'bg-green-500/90 text-white' :
                                         feature.color === 'blue' ? 'bg-blue-500/90 text-white' :
-                                            feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
-                                                'bg-purple-500/90 text-white'
-                                        }`}>
+                                        feature.color === 'orange' ? 'bg-orange-500/90 text-white' :
+                                        'bg-purple-500/90 text-white'
+                                    }`}>
                                         {feature.icon}
                                     </div>
                                 </div>
@@ -205,16 +245,20 @@ export default function HomePage({ currentLanguage }) {
                                         {feature.desc}
                                     </p>
                                     <div className="mt-4">
-                                        <a href="/about" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
-                                            feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
+                                        <button
+                                            onClick={navigateToProducts}
+                                            className={`inline-flex items-center text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                                                feature.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                                feature.color === 'blue' ? 'text-blue-600 hover:text-blue-700' :
                                                 feature.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                    'text-purple-600 hover:text-purple-700'
-                                            }`}>
+                                                'text-purple-600 hover:text-purple-700'
+                                            }`}
+                                        >
                                             {currentLanguage === "kh" ? "ស្វែងយល់បន្ថែម" : "Learn more"}
                                             <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -222,7 +266,9 @@ export default function HomePage({ currentLanguage }) {
                     </div>
 
                     {/* Bottom Section */}
-                    <div className={`mt-16 text-center transition-all duration-500 ${isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+                    <div className={`mt-16 text-center transition-all duration-500 ${
+                        isVisible.features ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                    }`}>
                         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 max-w-4xl mx-auto">
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
                                 {currentTexts.getStartedTitle || (currentLanguage === "kh" ? "ចាប់ផ្តើមលក់ជាកសិករនៅថ្ងៃនេះ" : "Start Selling as a Farmer Today")}
@@ -230,15 +276,15 @@ export default function HomePage({ currentLanguage }) {
                             <p className="text-gray-600 mb-6 leading-relaxed">
                                 {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FramerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
                             </p>
-                            <a
-                                href="/register"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            <button
+                                onClick={navigateToRegisterAsFarmer}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer"
                             >
                                 <span>{currentTexts.getStartedButton || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}</span>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -249,7 +295,9 @@ export default function HomePage({ currentLanguage }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div
-                        className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
+                        className={`text-center mb-16 transition-all duration-500 ${
+                            isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                        }`}
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,18 +359,21 @@ export default function HomePage({ currentLanguage }) {
                             ].map((step, index) => (
                                 <div
                                     key={index}
-                                    className={`relative transition-all duration-300 hover-lift hover-glow ${isVisible["how-it-works"] ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 150}`}
+                                    className={`relative transition-all duration-300 hover-lift hover-glow ${
+                                        isVisible["how-it-works"] ? "animate-card-pop" : "opacity-0"
+                                    } animate-delay-${index * 150}`}
                                 >
                                     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full">
-                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${step.color === 'green' ? 'bg-green-100 text-green-600' :
+                                        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-6 ${
+                                            step.color === 'green' ? 'bg-green-100 text-green-600' :
                                             step.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                'bg-orange-100 text-orange-600'
-                                            }`}>
+                                            'bg-orange-100 text-orange-600'
+                                        }`}>
                                             {step.icon}
                                         </div>
                                         <div className="relative mb-6 overflow-hidden rounded-lg">
                                             <img
-                                                src={step.image}
+                                                src={step.image || "/placeholder.svg"}
                                                 alt={step.title}
                                                 className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
                                             />
@@ -330,10 +381,11 @@ export default function HomePage({ currentLanguage }) {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${step.color === 'green' ? 'bg-green-100 text-green-700' :
+                                                <span className={`text-sm font-semibold px-2 py-1 rounded ${
+                                                    step.color === 'green' ? 'bg-green-100 text-green-700' :
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-orange-100 text-orange-700'
-                                                    }`}>
+                                                    'bg-orange-100 text-orange-700'
+                                                }`}>
                                                     Step {step.number}
                                                 </span>
                                             </div>
@@ -345,31 +397,37 @@ export default function HomePage({ currentLanguage }) {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${step.color === 'green' ? 'bg-green-500' :
+                                    <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 ${
+                                        step.color === 'green' ? 'bg-green-500' :
                                         step.color === 'blue' ? 'bg-blue-500' :
-                                            'bg-orange-500'
-                                        }`}>
+                                        'bg-orange-500'
+                                    }`}>
                                         <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                            <div className={`w-2 h-2 rounded-full ${step.color === 'green' ? 'bg-green-500' :
+                                            <div className={`w-2 h-2 rounded-full ${
+                                                step.color === 'green' ? 'bg-green-500' :
                                                 step.color === 'blue' ? 'bg-blue-500' :
-                                                    'bg-orange-500'
-                                                }`}></div>
+                                                'bg-orange-500'
+                                            }`}></div>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-
                     <div
-                        className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                        className={`text-center mt-16 transition-all duration-500 ${
+                            isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                        }`}
                     >
-                        <a href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button
+                            onClick={navigateToProducts}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer"
+                        >
                             <span>Get Started Today</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -378,7 +436,9 @@ export default function HomePage({ currentLanguage }) {
             <section id="categories" data-animate className="py-20 bg-gray-50 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div
-                        className={`text-center mb-16 transform transition-all duration-500 ${isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
+                        className={`text-center mb-16 transform transition-all duration-500 ${
+                            isVisible.categories ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                        }`}
                     >
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.categoriesTitle}
@@ -397,6 +457,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "green",
                                 count: "150+ varieties",
                                 description: currentLanguage === "kh" ? "បន្លែស្រស់" : "Fresh vegetables",
+                                category: "vegetables"
                             },
                             {
                                 name: currentTexts.fruits,
@@ -404,6 +465,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "orange",
                                 count: "80+ varieties",
                                 description: currentLanguage === "kh" ? "ផ្លែឈើឆ្ងាញ់" : "Sweet fruits",
+                                category: "fruits"
                             },
                             {
                                 name: currentTexts.grains,
@@ -411,6 +473,7 @@ export default function HomePage({ currentLanguage }) {
                                 color: "amber",
                                 count: "25+ varieties",
                                 description: currentLanguage === "kh" ? "គ្រាប់ធញ្ញជាតិ" : "Quality grains",
+                                category: "grains"
                             },
                             {
                                 name: currentTexts.livestock,
@@ -418,11 +481,15 @@ export default function HomePage({ currentLanguage }) {
                                 color: "blue",
                                 count: "Fresh daily",
                                 description: currentLanguage === "kh" ? "សត្វពាហនៈ" : "Livestock products",
+                                category: "livestock"
                             },
                         ].map((category, index) => (
                             <div
                                 key={index}
-                                className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift hover-glow ${isVisible.categories ? "animate-card-pop" : "opacity-0"} animate-delay-${index * 100}`}
+                                onClick={() => navigateToProductsCategory(category.category)}
+                                className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover-lift hover-glow ${
+                                    isVisible.categories ? "animate-card-pop" : "opacity-0"
+                                } animate-delay-${index * 100}`}
                             >
                                 <div className="relative h-48 overflow-hidden bg-gray-100">
                                     <img
@@ -432,11 +499,12 @@ export default function HomePage({ currentLanguage }) {
                                     />
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300"></div>
                                     <div className="absolute top-3 right-3">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${category.color === 'green' ? 'bg-green-100 text-green-800' :
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                                            category.color === 'green' ? 'bg-green-100 text-green-800' :
                                             category.color === 'orange' ? 'bg-orange-100 text-orange-800' :
-                                                category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
-                                                    'bg-blue-100 text-blue-800'
-                                            }`}>
+                                            category.color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                            'bg-blue-100 text-blue-800'
+                                        }`}>
                                             {category.count}
                                         </span>
                                     </div>
@@ -450,34 +518,39 @@ export default function HomePage({ currentLanguage }) {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 {category.description}
                                             </p>
-                                            <a href="/products" className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${category.color === 'green' ? 'text-green-600 hover:text-green-700' :
+                                            <span className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
+                                                category.color === 'green' ? 'text-green-600 hover:text-green-700' :
                                                 category.color === 'orange' ? 'text-orange-600 hover:text-orange-700' :
-                                                    category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
-                                                        'text-blue-600 hover:text-blue-700'
-                                                }`}>
+                                                category.color === 'amber' ? 'text-amber-600 hover:text-amber-700' :
+                                                'text-blue-600 hover:text-blue-700'
+                                            }`}>
                                                 {currentLanguage === "kh" ? "មើលផលិតផល" : "View products"}
                                                 <svg className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                 </svg>
-                                            </a>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`h-1 w-full transition-all duration-300 ${category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
+                                <div className={`h-1 w-full transition-all duration-300 ${
+                                    category.color === 'green' ? 'bg-green-500 group-hover:bg-green-600' :
                                     category.color === 'orange' ? 'bg-orange-500 group-hover:bg-orange-600' :
-                                        category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
-                                            'bg-blue-500 group-hover:bg-blue-600'
-                                    }`}></div>
+                                    category.color === 'amber' ? 'bg-amber-500 group-hover:bg-amber-600' :
+                                    'bg-blue-500 group-hover:bg-blue-600'
+                                }`}></div>
                             </div>
                         ))}
                     </div>
                     <div className="mt-12 text-center">
-                        <a href="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow">
+                        <button
+                            onClick={navigateToProducts}
+                            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
+                        >
                             {currentLanguage === "kh" ? "មើលផលិតផលទាំងអស់" : "View All Products"}
                             <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -491,7 +564,9 @@ export default function HomePage({ currentLanguage }) {
                 </div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div className={`transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}>
+                        <div className={`transform transition-all duration-700 ${
+                            isVisible.learning ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
+                        }`}>
                             <div className="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full text-sm font-semibold animate-fade-in-up mb-4">
                                 {currentTexts.heroBadge || (currentLanguage === 'en' ? 'Curated Learning Resources' : 'ធនធានសិក្សាដែលបានជ្រើសរើស')}
                             </div>
@@ -513,7 +588,9 @@ export default function HomePage({ currentLanguage }) {
                                 </a>
                             </div>
                         </div>
-                        <div className={`relative transform transition-all duration-700 ${isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}>
+                        <div className={`relative transform transition-all duration-700 ${
+                            isVisible.learning ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"
+                        }`}>
                             <div
                                 className="relative group animate-float cursor-pointer"
                                 onClick={() => window.location.href = '/learning-center'}
@@ -550,7 +627,9 @@ export default function HomePage({ currentLanguage }) {
                     <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float-slow"></div>
                 </div>
                 <div
-                    className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative transform transition-all duration-700 ${isVisible.cta ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+                    className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative transform transition-all duration-700 ${
+                        isVisible.cta ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                    }`}
                 >
                     <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 animate-text-shimmer">
                         {currentTexts.ctaTitle || (currentLanguage === "kh" ? "ចូលរួមជាមួយសហគមន៍កសិកម្មរបស់យើង" : "Join Our Agricultural Community")}
@@ -559,22 +638,21 @@ export default function HomePage({ currentLanguage }) {
                         {currentTexts.ctaDesc || (currentLanguage === "kh" ? "ចុះឈ្មោះជាអ្នកទិញដើម្បីទទួលបានផលិតផលកសិកម្មគុណភាពខ្ពស់ ឬជាកសិករដើម្បីបង្ហាញផលិតផលរបស់អ្នក និងភ្ជាប់ទំនាក់ទំនងជាមួយអតិថិជន។" : "Sign up as a Buyer to access premium farm products or as a Farmer to showcase your produce and connect with customers.")}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-up animation-delay-300">
-                        <a
-                            href="/register"
-                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle"
+                        <button
+                            onClick={navigateToRegisterAsBuyer}
+                            className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle cursor-pointer"
                         >
-                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Join as a Buyer")}
-                        </a>
-                        <a
-                            href="/register"
-                            className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle"
+                            {currentTexts.joinAsBuyer || (currentLanguage === "kh" ? "ចូលរួមជាអ្នកទិញ" : "Join as Buyer")}
+                        </button>
+                        <button
+                            onClick={navigateToRegisterAsFarmer}
+                            className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle cursor-pointer"
                         >
                             {currentTexts.joinAsFarmer || (currentLanguage === "kh" ? "ចូលរួមជាកសិករ" : "Join as a Farmer")}
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
-
         </div>
     );
 }

@@ -1,15 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, MapPin, Star, Eye, ArrowUpRight } from 'lucide-react';
+"use client"
 
-const FarmerDashboard = ({ currentLanguage = 'en' }) => {
-  const [timeRange, setTimeRange] = useState('weekly');
-  const [loading, setLoading] = useState(false);
+import { useState } from "react"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { Package, ShoppingCart, DollarSign, Users, Bell, Calendar, Eye, ArrowUpRight, Star } from "lucide-react"
+
+const FarmerDashboard = ({ currentLanguage = "en" }) => {
+  const [timeRange, setTimeRange] = useState("weekly")
+  const [loading, setLoading] = useState(false)
+
+  // Language texts
+  const texts = {
+    kh: {
+      dashboard: "ផ្ទាំងគ្រប់គ្រង",
+      welcome: "ស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នក",
+      quickStats: "ស្ថិតិរហ័ស",
+      totalEarnings: "ចំណូលសរុប",
+      monthlyEarnings: "ចំណូលប្រចាំខែ",
+      totalOrders: "ការបញ្ជាទិញសរុប",
+      pendingOrders: "ការបញ្ជាទិញកំពុងរង់ចាំ",
+      totalProducts: "ផលិតផលសរុប",
+      activeProducts: "ផលិតផលដែលមាន",
+      totalCustomers: "អតិថិជនសរុប",
+      newCustomers: "អតិថិជនថ្មី",
+      salesOverview: "ទិដ្ឋភាពលក់ដូរ",
+      weekly: "ប្រចាំសប្តាហ៍",
+      monthly: "ប្រចាំខែ",
+      topProducts: "ផលិតផលល្អបំផុត",
+      sales: "ការលក់",
+      recentOrders: "ការបញ្ជាទិញថ្មីៗ",
+      viewAll: "មើលទាំងអស់",
+      orderNumber: "លេខរៀងការបញ្ជាទិញ",
+      customer: "អតិថិជន",
+      product: "ផលិតផល",
+      quantity: "បរិមាណ",
+      total: "សរុប",
+      status: "ស្ថានភាព",
+      date: "កាលបរិច្ឆេទ",
+      pending: "កំពុងរង់ចាំ",
+      confirmed: "បានបញ្ជាក់",
+      delivered: "បានដឹកជញ្ជូន",
+      cancelled: "បានលុបចោល",
+    },
+    en: {
+      dashboard: "Dashboard",
+      welcome: "Welcome to your management dashboard",
+      quickStats: "Quick Stats",
+      totalEarnings: "Total Earnings",
+      monthlyEarnings: "Monthly Earnings",
+      totalOrders: "Total Orders",
+      pendingOrders: "Pending Orders",
+      totalProducts: "Total Products",
+      activeProducts: "Active Products",
+      totalCustomers: "Total Customers",
+      newCustomers: "New Customers",
+      salesOverview: "Sales Overview",
+      weekly: "Weekly",
+      monthly: "Monthly",
+      topProducts: "Top Products",
+      sales: "Sales",
+      recentOrders: "Recent Orders",
+      viewAll: "View All",
+      orderNumber: "Order ID",
+      customer: "Customer",
+      product: "Product",
+      quantity: "Quantity",
+      total: "Total",
+      status: "Status",
+      date: "Date",
+      pending: "Pending",
+      confirmed: "Confirmed",
+      delivered: "Delivered",
+      cancelled: "Cancelled",
+    },
+  }
+
+  const currentTexts = texts[currentLanguage]
 
   // Mock data - replace with actual API calls
   const [dashboardData, setDashboardData] = useState({
     totalEarnings: 2850.75,
-    monthlyEarnings: 1200.50,
+    monthlyEarnings: 1200.5,
     weeklyEarnings: 380.25,
     totalOrders: 142,
     pendingOrders: 8,
@@ -17,129 +87,188 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
     totalProducts: 24,
     activeProducts: 22,
     totalCustomers: 89,
-    newCustomers: 12
-  });
+    newCustomers: 12,
+  })
 
   const salesData = {
-    weekly: [
-      { name: 'Mon', sales: 120, orders: 5 },
-      { name: 'Tue', sales: 190, orders: 8 },
-      { name: 'Wed', sales: 250, orders: 12 },
-      { name: 'Thu', sales: 180, orders: 7 },
-      { name: 'Fri', sales: 300, orders: 15 },
-      { name: 'Sat', sales: 420, orders: 18 },
-      { name: 'Sun', sales: 350, orders: 14 }
-    ],
-    monthly: [
-      { name: 'Week 1', sales: 850, orders: 35 },
-      { name: 'Week 2', sales: 1200, orders: 48 },
-      { name: 'Week 3', sales: 950, orders: 38 },
-      { name: 'Week 4', sales: 1100, orders: 42 }
-    ]
-  };
+    weekly:
+      currentLanguage === "kh"
+        ? [
+            { name: "ច័ន្ទ", sales: 120, orders: 5 },
+            { name: "អង្គារ", sales: 190, orders: 8 },
+            { name: "ពុធ", sales: 250, orders: 12 },
+            { name: "ព្រហស្បតិ៍", sales: 180, orders: 7 },
+            { name: "សុក្រ", sales: 300, orders: 15 },
+            { name: "សៅរ៍", sales: 420, orders: 18 },
+            { name: "អាទិត្យ", sales: 350, orders: 14 },
+          ]
+        : [
+            { name: "Mon", sales: 120, orders: 5 },
+            { name: "Tue", sales: 190, orders: 8 },
+            { name: "Wed", sales: 250, orders: 12 },
+            { name: "Thu", sales: 180, orders: 7 },
+            { name: "Fri", sales: 300, orders: 15 },
+            { name: "Sat", sales: 420, orders: 18 },
+            { name: "Sun", sales: 350, orders: 14 },
+          ],
+    monthly:
+      currentLanguage === "kh"
+        ? [
+            { name: "សប្តាហ៍ ១", sales: 850, orders: 35 },
+            { name: "សប្តាហ៍ ២", sales: 1200, orders: 48 },
+            { name: "សប្តាហ៍ ៣", sales: 950, orders: 38 },
+            { name: "សប្តាហ៍ ៤", sales: 1100, orders: 42 },
+          ]
+        : [
+            { name: "Week 1", sales: 850, orders: 35 },
+            { name: "Week 2", sales: 1200, orders: 48 },
+            { name: "Week 3", sales: 950, orders: 38 },
+            { name: "Week 4", sales: 1100, orders: 42 },
+          ],
+  }
 
-  const topProducts = [
-    { name: 'Organic Tomatoes', sales: 45, revenue: 450, color: '#22c55e' },
-    { name: 'Fresh Lettuce', sales: 38, revenue: 380, color: '#16a34a' },
-    { name: 'Bell Peppers', sales: 32, revenue: 640, color: '#15803d' },
-    { name: 'Carrots', sales: 28, revenue: 280, color: '#166534' }
-  ];
+  const topProducts =
+    currentLanguage === "kh"
+      ? [
+          { name: "ប៉េងប៉ោះធម្មជាតិ", sales: 45, revenue: 450, color: "#22c55e" },
+          { name: "សាឡាត់ស្រស់", sales: 38, revenue: 380, color: "#16a34a" },
+          { name: "ម្ទេសប្លោក", sales: 32, revenue: 640, color: "#15803d" },
+          { name: "ការ៉ុត", sales: 28, revenue: 280, color: "#166534" },
+        ]
+      : [
+          { name: "Organic Tomatoes", sales: 45, revenue: 450, color: "#22c55e" },
+          { name: "Fresh Lettuce", sales: 38, revenue: 380, color: "#16a34a" },
+          { name: "Bell Peppers", sales: 32, revenue: 640, color: "#15803d" },
+          { name: "Carrots", sales: 28, revenue: 280, color: "#166534" },
+        ]
 
-  const recentOrders = [
-    { id: '#ORD-001', customer: 'John Doe', product: 'Organic Tomatoes', quantity: 5, total: 25.00, status: 'pending', date: '2025-01-20' },
-    { id: '#ORD-002', customer: 'Jane Smith', product: 'Fresh Lettuce', quantity: 3, total: 15.00, status: 'confirmed', date: '2025-01-20' },
-    { id: '#ORD-003', customer: 'Mike Johnson', product: 'Bell Peppers', quantity: 8, total: 40.00, status: 'delivered', date: '2025-01-19' },
-    { id: '#ORD-004', customer: 'Sarah Wilson', product: 'Carrots', quantity: 10, total: 20.00, status: 'confirmed', date: '2025-01-19' },
-    { id: '#ORD-005', customer: 'David Brown', product: 'Organic Tomatoes', quantity: 12, total: 60.00, status: 'pending', date: '2025-01-18' }
-  ];
-
-  const texts = {
-    kh: {
-      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
-      totalEarnings: 'ចំណូលសរុប',
-      monthlyEarnings: 'ចំណូលប្រចាំខែ',
-      weeklyEarnings: 'ចំណូលប្រចាំសប្តាហ៍',
-      totalOrders: 'ការបញ្ជាទិញសរុប',
-      pendingOrders: 'ការបញ្ជាទិញកំពុងរង់ចាំ',
-      completedOrders: 'ការបញ្ជាទិញបានបញ្ចប់',
-      totalProducts: 'ផលិតផលសរុប',
-      activeProducts: 'ផលិតផលដែលមាន',
-      totalCustomers: 'អតិថិជនសរុប',
-      newCustomers: 'អតិថិជនថ្មី',
-      salesOverview: 'ទិដ្ឋភាពលក់ដូរ',
-      weekly: 'ប្រចាំសប្តាហ៍',
-      monthly: 'ប្រចាំខែ',
-      recentOrders: 'ការបញ្ជាទិញថ្មីៗ',
-      topProducts: 'ផលិតផលល្អបំផុត',
-      orderId: 'លេខរៀងការបញ្ជាទិញ',
-      customer: 'អតិថិជន',
-      product: 'ផលិតផល',
-      quantity: 'បរិមាណ',
-      total: 'សរុប',
-      status: 'ស្ថានភាព',
-      date: 'កាលបរិច្ឆេទ',
-      pending: 'កំពុងរង់ចាំ',
-      confirmed: 'បានបញ្ជាក់',
-      delivered: 'បានដឹកជញ្ជូន',
-      viewAll: 'មើលទាំងអស់',
-      sales: 'ការលក់',
-      revenue: 'ចំណូល',
-      orders: 'ការបញ្ជាទិញ',
-      performance: 'ការអនុវត្ត',
-      quickStats: 'ស្ថិតិរហ័ស'
-    },
-    en: {
-      dashboard: 'Dashboard',
-      totalEarnings: 'Total Earnings',
-      monthlyEarnings: 'Monthly Earnings',
-      weeklyEarnings: 'Weekly Earnings',
-      totalOrders: 'Total Orders',
-      pendingOrders: 'Pending Orders',
-      completedOrders: 'Completed Orders',
-      totalProducts: 'Total Products',
-      activeProducts: 'Active Products',
-      totalCustomers: 'Total Customers',
-      newCustomers: 'New Customers',
-      salesOverview: 'Sales Overview',
-      weekly: 'Weekly',
-      monthly: 'Monthly',
-      recentOrders: 'Recent Orders',
-      topProducts: 'Top Products',
-      orderId: 'Order ID',
-      customer: 'Customer',
-      product: 'Product',
-      quantity: 'Quantity',
-      total: 'Total',
-      status: 'Status',
-      date: 'Date',
-      pending: 'Pending',
-      confirmed: 'Confirmed',
-      delivered: 'Delivered',
-      viewAll: 'View All',
-      sales: 'Sales',
-      revenue: 'Revenue',
-      orders: 'Orders',
-      performance: 'Performance',
-      quickStats: 'Quick Stats'
-    }
-  };
-
-  const currentTexts = texts[currentLanguage];
+  const recentOrders =
+    currentLanguage === "kh"
+      ? [
+          {
+            id: "#ORD-001",
+            customer: "សុភា ចាន់",
+            product: "ប៉េងប៉ោះធម្មជាតិ",
+            quantity: 5,
+            total: 25.0,
+            status: "pending",
+            date: "2025-01-20",
+          },
+          {
+            id: "#ORD-002",
+            customer: "សរិទ្ធ សុខ",
+            product: "សាឡាត់ស្រស់",
+            quantity: 3,
+            total: 15.0,
+            status: "confirmed",
+            date: "2025-01-20",
+          },
+          {
+            id: "#ORD-003",
+            customer: "វិចិត្រ គឹម",
+            product: "ម្ទេសប្លោក",
+            quantity: 8,
+            total: 40.0,
+            status: "delivered",
+            date: "2025-01-19",
+          },
+          {
+            id: "#ORD-004",
+            customer: "សុវណ្ណ លី",
+            product: "ការ៉ុត",
+            quantity: 10,
+            total: 20.0,
+            status: "confirmed",
+            date: "2025-01-19",
+          },
+          {
+            id: "#ORD-005",
+            customer: "សុជាតិ សេង",
+            product: "ប៉េងប៉ោះធម្មជាតិ",
+            quantity: 12,
+            total: 60.0,
+            status: "pending",
+            date: "2025-01-18",
+          },
+        ]
+      : [
+          {
+            id: "#ORD-001",
+            customer: "Sophea Chan",
+            product: "Organic Tomatoes",
+            quantity: 5,
+            total: 25.0,
+            status: "pending",
+            date: "2025-01-20",
+          },
+          {
+            id: "#ORD-002",
+            customer: "Sarith Sok",
+            product: "Fresh Lettuce",
+            quantity: 3,
+            total: 15.0,
+            status: "confirmed",
+            date: "2025-01-20",
+          },
+          {
+            id: "#ORD-003",
+            customer: "Vichit Kim",
+            product: "Bell Peppers",
+            quantity: 8,
+            total: 40.0,
+            status: "delivered",
+            date: "2025-01-19",
+          },
+          {
+            id: "#ORD-004",
+            customer: "Sovann Lee",
+            product: "Carrots",
+            quantity: 10,
+            total: 20.0,
+            status: "confirmed",
+            date: "2025-01-19",
+          },
+          {
+            id: "#ORD-005",
+            customer: "Socheata Seng",
+            product: "Organic Tomatoes",
+            quantity: 12,
+            total: 60.0,
+            status: "pending",
+            date: "2025-01-18",
+          },
+        ]
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'confirmed': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'delivered': return 'bg-green-50 text-green-700 border-green-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case "pending":
+        return "bg-amber-50 text-amber-700 border-amber-200"
+      case "confirmed":
+        return "bg-blue-50 text-blue-700 border-blue-200"
+      case "delivered":
+        return "bg-green-50 text-green-700 border-green-200"
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200"
     }
-  };
+  }
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, trend, color = 'text-green-600', bgGradient = 'from-green-500 to-emerald-500' }) => (
+  const getStatusText = (status) => {
+    return currentTexts[status] || status
+  }
+
+  const StatCard = ({
+    icon: Icon,
+    title,
+    value,
+    subtitle,
+    trend,
+    color = "text-green-600",
+    bgGradient = "from-green-500 to-emerald-500",
+  }) => (
     <div className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-      {/* Background gradient accent */}
-      <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${bgGradient} opacity-5 rounded-full -translate-y-4 translate-x-4 group-hover:opacity-10 transition-opacity`}></div>
-
+      <div
+        className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${bgGradient} opacity-5 rounded-full -translate-y-4 translate-x-4 group-hover:opacity-10 transition-opacity`}
+      ></div>
       <div className="relative">
         <div className="flex items-center justify-between mb-3">
           <div className={`p-2 rounded-lg bg-gradient-to-br ${bgGradient} shadow-md`}>
@@ -147,8 +276,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
           </div>
           {trend && (
             <div className="flex items-center text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-              <ArrowUpRight className="w-2.5 h-2.5 mr-0.5" />
-              +{trend}%
+              <ArrowUpRight className="w-2.5 h-2.5 mr-0.5" />+{trend}%
             </div>
           )}
         </div>
@@ -159,7 +287,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
         </div>
       </div>
     </div>
-  );
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-6">
@@ -168,18 +296,14 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
-                {currentTexts.dashboard}
-              </h1>
-              <p className="text-gray-600 text-lg">
-                {currentLanguage === 'kh' ? 'ស្វាគមន៍មកកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នក' : 'Welcome to your farmer dashboard'}
-              </p>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">{currentTexts.dashboard}</h1>
+              <p className="text-gray-600 text-lg">{currentTexts.welcome}</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-100">
                 <Calendar className="w-5 h-5 text-green-600" />
                 <span className="text-sm text-gray-700 font-medium">
-                  {new Date().toLocaleDateString(currentLanguage === 'kh' ? 'km-KH' : 'en-US')}
+                  {new Date().toLocaleDateString(currentLanguage === "kh" ? "km-KH" : "en-US")}
                 </span>
               </div>
               <div className="relative">
@@ -200,7 +324,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               icon={DollarSign}
               title={currentTexts.totalEarnings}
               value={`$${dashboardData.totalEarnings.toLocaleString()}`}
-              subtitle={currentTexts.monthlyEarnings + `: $${dashboardData.monthlyEarnings}`}
+              subtitle={`${currentTexts.monthlyEarnings}: $${dashboardData.monthlyEarnings}`}
               trend={12.5}
               color="text-green-600"
               bgGradient="from-green-500 to-emerald-500"
@@ -209,7 +333,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               icon={ShoppingCart}
               title={currentTexts.totalOrders}
               value={dashboardData.totalOrders}
-              subtitle={currentTexts.pendingOrders + `: ${dashboardData.pendingOrders}`}
+              subtitle={`${currentTexts.pendingOrders}: ${dashboardData.pendingOrders}`}
               trend={8.2}
               color="text-blue-600"
               bgGradient="from-blue-500 to-cyan-500"
@@ -218,7 +342,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               icon={Package}
               title={currentTexts.totalProducts}
               value={dashboardData.totalProducts}
-              subtitle={currentTexts.activeProducts + `: ${dashboardData.activeProducts}`}
+              subtitle={`${currentTexts.activeProducts}: ${dashboardData.activeProducts}`}
               trend={5.1}
               color="text-purple-600"
               bgGradient="from-purple-500 to-indigo-500"
@@ -227,7 +351,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               icon={Users}
               title={currentTexts.totalCustomers}
               value={dashboardData.totalCustomers}
-              subtitle={currentTexts.newCustomers + `: ${dashboardData.newCustomers}`}
+              subtitle={`${currentTexts.newCustomers}: ${dashboardData.newCustomers}`}
               trend={15.3}
               color="text-orange-600"
               bgGradient="from-orange-500 to-red-500"
@@ -243,20 +367,22 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
               <h3 className="text-xl font-semibold text-gray-900">{currentTexts.salesOverview}</h3>
               <div className="flex bg-gray-50 rounded-xl p-1 border border-gray-200">
                 <button
-                  onClick={() => setTimeRange('weekly')}
-                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'weekly'
-                    ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                    }`}
+                  onClick={() => setTimeRange("weekly")}
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${
+                    timeRange === "weekly"
+                      ? "bg-green-600 text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-white"
+                  }`}
                 >
                   {currentTexts.weekly}
                 </button>
                 <button
-                  onClick={() => setTimeRange('monthly')}
-                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${timeRange === 'monthly'
-                    ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                    }`}
+                  onClick={() => setTimeRange("monthly")}
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-all ${
+                    timeRange === "monthly"
+                      ? "bg-green-600 text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-white"
+                  }`}
                 >
                   {currentTexts.monthly}
                 </button>
@@ -265,29 +391,18 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
             <ResponsiveContainer width="100%" height={320}>
               <BarChart data={salesData[timeRange]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 12, fill: '#64748b' }}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: '#64748b' }}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#64748b" }} axisLine={{ stroke: "#e2e8f0" }} />
+                <YAxis tick={{ fontSize: 12, fill: "#64748b" }} axisLine={{ stroke: "#e2e8f0" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    fontSize: '14px'
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                    fontSize: "14px",
                   }}
                 />
-                <Bar
-                  dataKey="sales"
-                  fill="url(#colorGradient)"
-                  radius={[6, 6, 0, 0]}
-                />
+                <Bar dataKey="sales" fill="url(#colorGradient)" radius={[6, 6, 0, 0]} />
                 <defs>
                   <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#22c55e" />
@@ -303,18 +418,22 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
             <h3 className="text-xl font-semibold text-gray-900 mb-6">{currentTexts.topProducts}</h3>
             <div className="space-y-4">
               {topProducts.map((product, index) => (
-                <div key={index} className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-modern-green transition-all duration-200 hover:shadow-sm">
+                <div
+                  key={index}
+                  className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-modern-green transition-all duration-200 hover:shadow-sm"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="relative">
-                      <div
-                        className="w-4 h-4 rounded-full shadow-sm"
-                        style={{ backgroundColor: product.color }}
-                      ></div>
+                      <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: product.color }}></div>
                       <div className="absolute inset-0 rounded-full bg-white opacity-20"></div>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.sales} {currentTexts.sales.toLowerCase()}</p>
+                      <p className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors">
+                        {product.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {product.sales} {currentTexts.sales}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -343,7 +462,7 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.orderId}</th>
+                  <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.orderNumber}</th>
                   <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.customer}</th>
                   <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.product}</th>
                   <th className="text-left p-4 text-sm font-semibold text-gray-700">{currentTexts.quantity}</th>
@@ -362,7 +481,10 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
                       <div className="flex items-center space-x-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
                           <span className="text-xs font-bold text-white">
-                            {order.customer.split(' ').map(n => n[0]).join('')}
+                            {order.customer
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </span>
                         </div>
                         <span className="text-sm text-gray-900 font-medium">{order.customer}</span>
@@ -372,12 +494,14 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
                     <td className="p-4 text-sm text-gray-700 font-medium">{order.quantity}</td>
                     <td className="p-4 text-sm font-bold text-green-600">${order.total.toFixed(2)}</td>
                     <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
-                        {currentTexts[order.status]}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}
+                      >
+                        {getStatusText(order.status)}
                       </span>
                     </td>
                     <td className="p-4 text-sm text-gray-500">
-                      {new Date(order.date).toLocaleDateString(currentLanguage === 'kh' ? 'km-KH' : 'en-US')}
+                      {new Date(order.date).toLocaleDateString(currentLanguage === "kh" ? "km-KH" : "en-US")}
                     </td>
                   </tr>
                 ))}
@@ -389,15 +513,15 @@ const FarmerDashboard = ({ currentLanguage = 'en' }) => {
 
       {/* Custom CSS for modern colors */}
       <style jsx>{`
-        .bg-modern-green { 
-          background-color: #DCFCE7; 
+        .bg-modern-green {
+          background-color: #DCFCE7;
         }
-        .hover\\:bg-modern-green:hover { 
-          background-color: #DCFCE7; 
+        .hover\\:bg-modern-green:hover {
+          background-color: #DCFCE7;
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default FarmerDashboard;
+export default FarmerDashboard
