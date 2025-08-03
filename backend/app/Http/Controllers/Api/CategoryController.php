@@ -2,115 +2,178 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    // GET /api/categories
     public function index()
     {
-        return response()->json(Category::all(), 200);
+        $categories = Category::withCount('items')->latest()->get();
+
+        $categories->transform(function ($category) {
+            $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+            $category->productCount = $category->items_count;
+            return $category;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
     }
 
-    // GET /api/categories/{id}
-    public function show($id)
-    {
-        $category = Category::find($id);
-
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-
-        return response()->json($category, 200);
-    }
-
-    // POST /api/categories
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|array',
-            'description' => 'nullable|array',
-            'status' => 'nullable|string|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        $validated = $request->validate([
+            'name.en' => 'required|string|max:255',
+            'name.kh' => 'required|string|max:255',
+            'description.en' => 'nullable|string',
+            'description.kh' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'status' => 'required|in:active,inactive',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $validated['image'] = $request->file('image')->store('category_images', 'public');
         }
 
         $category = Category::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'status' => $request->status ?? 'active',
-            'image' => $imagePath,
+            'name' => ['en' => $validated['name']['en'], 'kh' => $validated['name']['kh']],
+            'description' => ['en' => $validated['description']['en'] ?? '', 'kh' => $validated['description']['kh'] ?? ''],
+            'image' => $validated['image'] ?? null,
+            'status' => $validated['status'],
         ]);
 
-        return response()->json($category, 201);
+        $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+        $category->productCount = $category->items()->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category created successfully.',
+            'data' => $category
+        ], 201);
     }
 
-    // PUT /api/categories/{id}
+    public function show($id)
+    {
+        $category = Category::withCount('items')->findOrFail($id);
+        $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+        $category->productCount = $category->items_count;
+
+        return response()->json([
+            'success' => true,
+            'data' => $category
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
+        $category = Category::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|array',
-            'description' => 'nullable|array',
-            'status' => 'nullable|string|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        $validated = $request->validate([
+            'name.en' => 'required|string|max:255',
+            'name.kh' => 'required|string|max:255',
+            'description.en' => 'nullable|string',
+            'description.kh' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'status' => 'required|in:active,inactive',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($category->image) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
-
-            // Store new image
-            $category->image = $request->file('image')->store('categories', 'public');
+            $validated['image'] = $request->file('image')->store('category_images', 'public');
         }
 
         $category->update([
-            'name' => $request->name ?? $category->name,
-            'description' => $request->description ?? $category->description,
-            'status' => $request->status ?? $category->status,
-            'image' => $category->image,
+            'name' => ['en' => $validated['name']['en'], 'kh' => $validated['name']['kh']],
+            'description' => ['en' => $validated['description']['en'] ?? '', 'kh' => $validated['description']['kh'] ?? ''],
+            'image' => $validated['image'] ?? $category->image,
+            'status' => $validated['status'],
         ]);
 
-        return response()->json($category, 200);
+        $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+        $category->productCount = $category->items()->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category updated successfully.',
+            'data' => $category,
+        ]);
     }
 
-    // DELETE /api/categories/{id}
     public function destroy($id)
     {
-        $category = Category::find($id);
+        $category = Category::findOrFail($id);
 
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-
-        if ($category->image) {
+        if ($category->image && Storage::disk('public')->exists($category->image)) {
             Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();
 
-        return response()->json(['message' => 'Category deleted'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Category deleted successfully.'
+        ]);
+    }
+
+    public function filter(Request $request)
+    {
+        $query = Category::withCount('items');
+
+        if ($request->has('name')) {
+            $query->where('name->en', 'like', '%' . $request->name . '%')
+                  ->orWhere('name->kh', 'like', '%' . $request->name . '%');
+        }
+
+        $categories = $query->get();
+
+        $categories->transform(function ($category) {
+            $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+            $category->productCount = $category->items_count;
+            return $category;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
+    }
+
+    public function withItems()
+    {
+        $categories = Category::has('items')->with('items')->withCount('items')->get();
+
+        $categories->transform(function ($category) {
+            $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+            $category->productCount = $category->items_count;
+            return $category;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
+    }
+
+    public function withoutItems()
+    {
+        $categories = Category::doesntHave('items')->withCount('items')->get();
+
+        $categories->transform(function ($category) {
+            $category->image_url = $category->image ? asset('storage/' . $category->image) : null;
+            $category->productCount = $category->items_count;
+            return $category;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
     }
 }

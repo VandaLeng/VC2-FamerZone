@@ -37,7 +37,7 @@ export default function HomePage({ currentLanguage }) {
 
     // Navigation function to products page with auto-scroll
     const navigateToProducts = () => {
-        window.location.href = "/products#products-section";
+        window.location.href = "/about";
     };
 
     const navigateToProductsCategory = (category = "") => {
@@ -61,7 +61,7 @@ export default function HomePage({ currentLanguage }) {
     return (
         <div className="min-h-screen bg-cream-50 overflow-hidden">
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-green-50 to-yellow-50 overflow-hidden">
+            <section className="relative bg-gradient-to-br from-green-50 to-yellow-50 overflow-hidden min-h-[85vh]">
                 <div className="absolute inset-0 bg-white/20"></div>
                 
                 {/* Floating Elements Background */}
