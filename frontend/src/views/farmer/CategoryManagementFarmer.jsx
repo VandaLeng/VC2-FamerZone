@@ -17,10 +17,11 @@ const CategoryManagement = () => {
   const actionsMenuRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
-    description_kh: '',
+    description: '', // Changed from description_kh
     status: 'active',
     image: null,
   });
+
 
   const texts = {
     categoryManagement: 'ការគ្រប់គ្រងប្រភេទ',
@@ -73,8 +74,8 @@ const CategoryManagement = () => {
         const response = await axios.get(CATEGORIES_ENDPOINT);
         const transformedCategories = response.data.data.map((category) => ({
           id: category.id,
-          name: category.name.kh || '',
-          description: category.description.kh || '',
+          name: category.name, // Use as string
+          description: category.description || '', // Use as string
           productCount: category.productCount || 0,
           createdAt: category.created_at,
           status: category.status,
@@ -83,7 +84,7 @@ const CategoryManagement = () => {
         setCategories(transformedCategories);
         setError(null);
       } catch (err) {
-        const errorMessage = err.response?.data?.message || err.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
+        const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
         setError(errorMessage);
         console.error('AxiosError Details:', {
           message: err.message,
@@ -112,20 +113,21 @@ const CategoryManagement = () => {
     if (category) {
       setFormData({
         name: category.name,
-        description_kh: category.description,
+        description: category.description,
         status: category.status,
         image: null,
       });
     } else {
       setFormData({
         name: '',
-        description_kh: '',
+        description: '',
         status: 'active',
         image: null,
       });
     }
     setShowModal(true);
     setDropdownOpen(null);
+    setError(null); // Clear error
   };
 
   const handleCloseModal = () => {
@@ -133,10 +135,11 @@ const CategoryManagement = () => {
     setSelectedCategory(null);
     setFormData({
       name: '',
-      description_kh: '',
+      description: '',
       status: 'active',
       image: null,
     });
+    setError(null); // Clear error
   };
 
   const handleSave = async () => {
@@ -145,19 +148,11 @@ const CategoryManagement = () => {
       return;
     }
 
-    // Basic check for English (Latin) characters
-    const hasEnglish = /[a-zA-Z]/.test(formData.name);
-    if (!hasEnglish) {
-      setError(texts.nameEnRequired);
-      return;
-    }
-
     setIsLoading(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name[kh]', formData.name);
-      formDataToSend.append('name[en]', formData.name);
-      formDataToSend.append('description[kh]', formData.description_kh || '');
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('description', formData.description || '');
       formDataToSend.append('status', formData.status);
 
       if (formData.image) {
@@ -177,13 +172,13 @@ const CategoryManagement = () => {
           categories.map((cat) =>
             cat.id === selectedCategory.id
               ? {
-                  ...cat,
-                  name: response.data.data.name.kh,
-                  description: response.data.data.description.kh,
-                  status: response.data.data.status,
-                  image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
-                }
+                ...cat,
+                name: response.data.data.name,
+                description: response.data.data.description,
+                status: response.data.data.status,
+                image_url: response.data.data.image_url,
+                productCount: response.data.data.productCount,
+              }
               : cat
           )
         );
@@ -193,8 +188,8 @@ const CategoryManagement = () => {
         });
         const newCategory = {
           id: response.data.data.id,
-          name: response.data.data.name.kh,
-          description: response.data.data.description.kh,
+          name: response.data.data.name,
+          description: response.data.data.description,
           productCount: response.data.data.productCount || 0,
           createdAt: response.data.data.created_at,
           status: response.data.data.status,
@@ -232,7 +227,7 @@ const CategoryManagement = () => {
       setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
       setShowDeleteConfirm(false);
       setCategoryToDelete(null);
-      setError(null);
+      setError(null); // Clear error
       alert(texts.categoryDeleted);
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការលុបប្រភេទ';
@@ -372,8 +367,8 @@ const CategoryManagement = () => {
                       {texts.loading}
                     </td>
                   </tr>
-                ) : filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => (
+                ) : categories.length > 0 ? ( // Changed from filteredCategories
+                  categories.map((category) => ( // Changed from filteredCategories
                     <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
                       <td className="px-6 py-4">
                         {category.image_url ? (
@@ -406,11 +401,10 @@ const CategoryManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-                            category.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${category.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}
                         >
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>
@@ -475,8 +469,8 @@ const CategoryManagement = () => {
                 {modalMode === 'add'
                   ? texts.addCategory
                   : modalMode === 'edit'
-                  ? texts.editCategory
-                  : texts.viewCategory}
+                    ? texts.editCategory
+                    : texts.viewCategory}
               </h2>
               <button
                 onClick={handleCloseModal}
@@ -489,7 +483,7 @@ const CategoryManagement = () => {
               <div className="space-y-6">
                 <div>
                   <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.categoryNameKh}
+                    {texts.categoryName}
                   </label>
                   <input
                     type="text"
@@ -497,16 +491,16 @@ const CategoryManagement = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     disabled={modalMode === 'view'}
                     className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] font-khmer text-base"
-                    placeholder="បញ្ចូលប្រភេទ"
+                    placeholder="បញ្ចូលឈ្មោះប្រភេទ"
                   />
                 </div>
                 <div>
                   <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.descriptionKh}
+                    {texts.description} 
                   </label>
                   <textarea
-                    value={formData.description_kh}
-                    onChange={(e) => setFormData({ ...formData, description_kh: e.target.value })}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     disabled={modalMode === 'view'}
                     rows={4}
                     className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] resize-none font-khmer text-base"

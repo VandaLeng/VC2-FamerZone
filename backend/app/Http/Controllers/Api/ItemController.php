@@ -14,8 +14,12 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::with(['category', 'user'])->get();
-        return response()->json($items);
+        return response()->json([
+            'success' => true,
+            'data' => $items
+        ]);
     }
+
 
     // POST /api/items
     public function store(Request $request)
@@ -100,7 +104,7 @@ class ItemController extends Controller
             'data' => $item
         ]);
     }
-    
+
     // DELETE /api/items/{id}
     public function destroy($id)
     {
