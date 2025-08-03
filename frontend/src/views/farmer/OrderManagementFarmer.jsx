@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
+"use client"
+
+import { useEffect, useState, useCallback } from "react"
 import FilterBar from "../../components/FilterBar"
 import OrderTableHeader from "../../components/OrderTableHeader"
 import OrderRow from "../../components/OrderRow"
-import { fetchOrders } from "../../services/orderService"
+import { fetchOrders, updateOrderStatus } from "../../services/orderService"
 
 const currentTexts = {
   searchPlaceholder: "ស្វែងរកការបញ្ជាទិញ...",
@@ -15,23 +17,24 @@ const OrderManagementFarmer = () => {
   const [filterStatus, setFilterStatus] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true)
+  const [updatingOrderIds, setUpdatingOrderIds] = useState(new Set())
+
+  const loadOrders = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await fetchOrders()
+      setOrders(data)
+      setFilteredOrders(data)
+    } catch (error) {
+      console.error("Failed to fetch orders:", error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    const getOrders = async () => {
-      try {
-        setLoading(true)
-        const data = await fetchOrders()
-        setOrders(data)
-        setFilteredOrders(data)
-      } catch (error) {
-        console.error("មិនអាចទាញយកការបញ្ជាទិញ:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getOrders()
-  }, [])
+    loadOrders()
+  }, [loadOrders])
 
   useEffect(() => {
     let filtered = orders
@@ -41,11 +44,12 @@ const OrderManagementFarmer = () => {
     }
 
     if (searchTerm) {
+      const term = searchTerm.toLowerCase()
       filtered = filtered.filter(
         (order) =>
-          order.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.address?.toLowerCase().includes(searchTerm.toLowerCase()),
+          order.id?.toString().toLowerCase().includes(term) ||
+          order.user?.name?.toLowerCase().includes(term) ||
+          order.address?.toLowerCase().includes(term),
       )
     }
 
@@ -53,23 +57,31 @@ const OrderManagementFarmer = () => {
   }, [filterStatus, searchTerm, orders])
 
   const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      await fetch(`/api/orders/${orderId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+    // Optimistic update
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    )
+    setUpdatingOrderIds((prev) => new Set(prev).add(orderId))
 
-      setOrders(prev =>
-        prev.map(order =>
-          order.id === orderId ? { ...order, status: newStatus } : order
+    try {
+      const updatedOrder = await updateOrderStatus(orderId, newStatus)
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, ...updatedOrder } : order
         )
-      );
+      )
     } catch (error) {
-      console.error("បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពស្ថានភាព:", error);
-      alert("បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពស្ថានភាព។");
+      console.error("Failed to update order status:", error)
+      alert("Failed to update order status. Reverting change.")
+      await loadOrders()
+    } finally {
+      setUpdatingOrderIds((prev) => {
+        const copy = new Set(prev)
+        copy.delete(orderId)
+        return copy
+      })
     }
   }
 
@@ -86,7 +98,11 @@ const OrderManagementFarmer = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <FilterBar setFilterStatus={setFilterStatus} setSearchTerm={setSearchTerm} currentTexts={currentTexts} />
+      <FilterBar
+        setFilterStatus={setFilterStatus}
+        setSearchTerm={setSearchTerm}
+        currentTexts={currentTexts}
+      />
 
       <div className="p-6">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -96,7 +112,12 @@ const OrderManagementFarmer = () => {
               <tbody>
                 {filteredOrders.length > 0 ? (
                   filteredOrders.map((order) => (
-                    <OrderRow key={order.id} order={order} onStatusChange={handleStatusChange} />
+                    <OrderRow
+                      key={order.id}
+                      order={order}
+                      onStatusChange={handleStatusChange}
+                      disabled={updatingOrderIds.has(order.id)}
+                    />
                   ))
                 ) : (
                   <tr>

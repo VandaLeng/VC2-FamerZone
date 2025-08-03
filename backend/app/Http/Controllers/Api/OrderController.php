@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -15,7 +13,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user')->get(); // Eager load the user
+        $orders = Order::with('user')->get();
 
         return response()->json([
             'message' => 'Orders retrieved successfully',
@@ -23,17 +21,13 @@ class OrderController extends Controller
         ]);
     }
 
-
-
-
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'buyer_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'address' => 'required|string|max:255',
             'total_price' => 'required|numeric|min:0',
             'status' => 'in:pending,confirmed,cancelled,delivered',
@@ -52,7 +46,7 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::find($id);
+        $order = Order::with('user')->find($id);
 
         if (!$order) {
             return response()->json(['message' => 'Order not found'], 404);
@@ -63,6 +57,7 @@ class OrderController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * Allows partial updates (e.g., only status).
      */
     public function update(Request $request, string $id)
     {
@@ -73,10 +68,10 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'buyer_id' => 'required|exists:users,id',
-            'address' => 'required|string|max:255',
-            'total_price' => 'required|numeric|min:0',
-            'status' => 'in:pending,confirmed,cancelled,delivered',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'address' => 'sometimes|required|string|max:255',
+            'total_price' => 'sometimes|required|numeric|min:0',
+            'status' => 'sometimes|in:pending,confirmed,cancelled,delivered',
         ]);
 
         $order->update($validated);
@@ -86,7 +81,6 @@ class OrderController extends Controller
             'order' => $order,
         ]);
     }
-
 
     /**
      * Remove the specified resource from storage.

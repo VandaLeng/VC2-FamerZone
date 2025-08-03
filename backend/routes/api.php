@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Models\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,4 +104,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('items', ItemController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('orders', OrderController::class);
+
+//Category
+Route::apiResource('categories', CategoryController::class);
+
+Route::get('categories/filter', [CategoryController::class, 'filter']);
+Route::get('categories/with-items', [CategoryController::class, 'withItems']);
+Route::get('categories/without-items', [CategoryController::class, 'withoutItems']);
+
 

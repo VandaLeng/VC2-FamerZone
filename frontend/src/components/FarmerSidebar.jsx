@@ -1,83 +1,21 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Users,
-  Package,
-  LayoutGrid, // Replaced Grid3X3 with LayoutGrid
-  Bell,
-  Settings,
-  LogOut,
-  User,
-  X,
-} from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X } from 'lucide-react';
 
 const FarmerSidebar = ({
-  currentLanguage,
-  setCurrentLanguage,
   userData,
   handleLogout,
   isCollapsed,
   setIsCollapsed,
 }) => {
   const location = useLocation();
-
-  // Define internalCollapsed state to handle collapse if external prop not provided
   const [internalCollapsed, setInternalCollapsed] = useState(false);
 
-  // Use external collapse state if provided, otherwise fallback to internal state
   const collapsed = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
   const setCollapsed = setIsCollapsed !== undefined ? setIsCollapsed : setInternalCollapsed;
 
-  const texts = {
-    kh: {
-      dashboard: "ផ្ទាំងគ្រប់គ្រង",
-      orders: "ការបញ្ជាទិញ",
-      customers: "ការគ្រប់គ្រងអតិថិជន",
-      products: "ការគ្រប់គ្រងផលិតផល",
-      categories: "ការគ្រប់គ្រងប្រភេទ",
-      notifications: "ការជូនដំណឹង",
-      settings: "ការកំណត់",
-      logout: "ចាកចេញ",
-      framerZone: "FramerZone",
-      farmerPanel: "ផ្ទាំងកសិករ",
-      premiumFarmer: "កសិករពិសេស",
-    },
-    en: {
-      dashboard: "Dashboard",
-      orders: "Order Management",
-      customers: "Customer Management",
-      products: "Product Management",
-      categories: "Category Management",
-      notifications: "Notifications",
-      settings: "Settings",
-      logout: "Logout",
-      framerZone: "FramerZone",
-      farmerPanel: "Farmer Panel",
-      premiumFarmer: "Premium Farmer",
-    },
-  };
-
-  const currentTexts = texts[currentLanguage];
-
-  const bottomMenuItems = [
-    { id: "dashboard", label: currentTexts.dashboard, icon: LayoutDashboard, path: "/farmer/dashboard" },
-    { id: "orders", label: currentTexts.orders, icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
-    { id: "customers", label: currentTexts.customers, icon: Users, path: "/farmer/customers" },
-    { id: "products", label: currentTexts.products, icon: Package, path: "/farmer/products" },
-    { id: "categories", label: currentTexts.categories, icon: LayoutGrid, path: "/farmer/categories" },
-    { id: "notifications", label: currentTexts.notifications, icon: Bell, path: "/farmer/notifications", badge: "2" },
-    { id: "settings", label: currentTexts.settings, icon: Settings, path: "/farmer/settings" },
-    { id: "logout", label: currentTexts.logout, icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
-  ];
-
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
-  };
-
-  const toggleLanguage = () => {
-    setCurrentLanguage(currentLanguage === "en" ? "kh" : "en");
   };
 
   return (
@@ -97,23 +35,15 @@ const FarmerSidebar = ({
           </button>
           {!collapsed && (
             <div>
-              <h1 className="text-xl text-gray-800 font-bold">{currentTexts.framerZone}</h1>
-              <p className="text-sm text-gray-500">{currentTexts.farmerPanel}</p>
+              <h1 className="text-xl text-gray-800 font-bold">FramerZone</h1>
+              <p className="text-sm text-gray-500">ផ្ទាំងកសិករ</p>
             </div>
           )}
         </div>
         {!collapsed && (
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleLanguage}
-              className="px-2 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
-            >
-              {currentLanguage.toUpperCase()}
-            </button>
-            <button onClick={toggleSidebar} className="p-1 rounded-full hover:bg-gray-100">
-              <X size={24} className="text-gray-600" />
-            </button>
-          </div>
+          <button onClick={toggleSidebar} className="p-1 rounded-full hover:bg-gray-100">
+            <X size={24} className="text-gray-600" />
+          </button>
         )}
       </div>
 
@@ -126,16 +56,22 @@ const FarmerSidebar = ({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-medium text-gray-800">{userData?.name || "John Farmer"}</h3>
-              <p className="text-sm text-gray-500">{currentTexts.premiumFarmer}</p>
+              <p className="text-sm text-gray-500">កសិករពិសេស</p>
             </div>
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
           </div>
         </div>
       )}
 
-      {/* Main Navigation */}
+      {/* Navigation Menu */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {bottomMenuItems.slice(0, -3).map((item) => {
+        {[
+          { id: "dashboard", label: "ផ្ទាំងគ្រប់គ្រង", icon: LayoutDashboard, path: "/farmer/dashboard" },
+          { id: "orders", label: "ការបញ្ជាទិញ", icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
+          { id: "customers", label: "ការគ្រប់គ្រងអតិថិជន", icon: Users, path: "/farmer/customers" },
+          { id: "products", label: "ការគ្រប់គ្រងផលិតផល", icon: Package, path: "/farmer/products" },
+          { id: "categories", label: "ការគ្រប់គ្រងប្រភេទ", icon: LayoutGrid, path: "/farmer/categories" },
+        ].map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
           return (
@@ -158,7 +94,11 @@ const FarmerSidebar = ({
 
       {/* Bottom Menu Items */}
       <div className="p-2 space-y-1 border-t border-gray-100">
-        {bottomMenuItems.slice(-3).map((item) => {
+        {[
+          { id: "notifications", label: "ការជូនដំណឹង", icon: Bell, path: "/farmer/notifications", badge: "2" },
+          { id: "settings", label: "ការកំណត់", icon: Settings, path: "/farmer/settings" },
+          { id: "logout", label: "ចាកចេញ", icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
+        ].map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
           const isLogout = item.id === "logout";
