@@ -970,7 +970,7 @@
 //       {/* All Products Section */}
 //       {/* All Items Section */}
 //       <ProductSection/>
-      
+
 //     </div>
 //   )
 // }
@@ -989,6 +989,7 @@ import "../../styles/ProductStyle.css"
 import provinces from "../../services/provinces"
 import ProductCard from "../../components/ProductCard"
 import LocationMap from "../../components/LocationMap"
+import ProductSection from "../../components/ProductSection"
 import {
   MapPin,
   Search,
@@ -1525,9 +1526,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 {nearbyProducts.slice(0, 4).map((product, index) => (
                   <div
                     key={product.id}
-                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${
-                      index === 0 ? "col-span-2" : ""
-                    } hero-card`}
+                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${index === 0 ? "col-span-2" : ""
+                      } hero-card`}
                   >
                     <div className="relative overflow-hidden rounded-lg mb-3">
                       <img
@@ -1744,7 +1744,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       )}
 
       {/* Filters Section */}
-      <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
+      {/* <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
@@ -1801,22 +1801,20 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                     <div className="flex bg-gray-100 rounded-xl p-1">
                       <button
                         onClick={() => setViewMode("grid")}
-                        className={`p-2 rounded-lg transition-all duration-200 ${
-                          viewMode === "grid"
+                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
                             ? "bg-white text-green-600 shadow-sm"
                             : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                         title="Grid View"
                       >
                         <Grid className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
-                        className={`p-2 rounded-lg transition-all duration-200 ${
-                          viewMode === "list"
+                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
                             ? "bg-white text-green-600 shadow-sm"
                             : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                         title="List View"
                       >
                         <List className="w-4 h-4" />
@@ -1830,11 +1828,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                          selectedCategory === category.id
+                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
                             ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
                             : `${category.color} text-gray-700 hover:shadow-md hover:scale-105 border border-gray-200`
-                        }`}
+                          }`}
                       >
                         {category.name}
                       </button>
@@ -1884,11 +1881,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                         <button
                           key={category.id}
                           onClick={() => setSelectedCategory(category.id)}
-                          className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                            selectedCategory === category.id
+                          className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
                               ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                               : `${category.color} text-gray-700 border border-gray-200`
-                          }`}
+                            }`}
                         >
                           {category.name}
                         </button>
@@ -1921,56 +1917,10 @@ export default function ProductsPage({ currentLanguage = "en" }) {
             )}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* All Products Section */}
-      <section ref={productsRef} className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              {selectedCategory === "all"
-                ? currentTexts.allProducts
-                : categories.find((category) => category.id === selectedCategory)?.name || currentTexts.allProducts}
-            </h2>
-            <div className="w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
-          </div>
-          {isLoading ? (
-            <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-              <p className="mt-2 text-gray-600">Loading products...</p>
-            </div>
-          ) : filteredAndSortedProducts.length === 0 ? (
-            <div className="text-center">
-              <p className="text-gray-600">{currentTexts.noProductsFound}</p>
-            </div>
-          ) : (
-            <div
-              className={`grid gap-8 ${
-                viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid-cols-1"
-              }`}
-            >
-              {filteredAndSortedProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  currentTexts={currentTexts}
-                  currentLanguage={currentLanguage}
-                  isFavorite={favorites.includes(product.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onOrder={handleOrder}
-                  orderingProducts={orderingProducts}
-                  orderedProducts={orderedProducts}
-                  viewMode={viewMode}
-                  provinces={provinces}
-                  showDistance={userLocation}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <ProductSection />
     </div>
   )
 }
