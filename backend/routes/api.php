@@ -105,5 +105,9 @@ Route::apiResource('items', ItemController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('orders', OrderController::class);
 
+//Category
+Route::apiResource('categories', CategoryController::class);
 
-
+Route::get('categories/filter', [CategoryController::class, 'filter']);
+Route::get('categories/with-items', [CategoryController::class, 'withItems']);
+Route::get('categories/without-items', [CategoryController::class, 'withoutItems']);
