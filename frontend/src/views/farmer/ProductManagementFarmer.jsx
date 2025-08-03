@@ -147,53 +147,40 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
   const API_BASE_URL = "http://localhost:8000"
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch categories first
         const token = localStorage.getItem("token")
-        const response = await axios.get(`${API_BASE_URL}/api/categories`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
+        const categoriesResponse = await axios.get(`${API_BASE_URL}/api/categories`, {
+          headers: { Authorization: token ? `Bearer ${token}` : undefined },
         })
-        if (response.data.success) {
-          const categoriesData = response.data.data.map((category) => ({
+        if (categoriesResponse.data.success && categoriesResponse.data.data) {
+          const categoriesData = categoriesResponse.data.data.map((category) => ({
             id: category.id,
-            name: category.name.en || "",
-            nameKh: category.name.kh || "",
+            name: category.name || "",
             image_url: category.image_url || null,
             productCount: category.productCount || 0,
           }))
           setCategories(categoriesData)
         } else {
           setError(currentTexts.error + "Failed to fetch categories")
-          console.error("API Error:", response.data.message)
+          console.error("API Error (Categories):", categoriesResponse.data.message)
+          return // Exit if categories fail to prevent further processing
         }
-      } catch (err) {
-        setError(currentTexts.error + (err.response?.data?.message || err.message))
-        console.error("Fetch Categories Error:", err)
-      }
-    }
 
-    const fetchItems = async () => {
-      try {
-        const token = localStorage.getItem("token")
-        const response = await axios.get(`${API_BASE_URL}/api/items`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
+        // Fetch items after categories are set
+        const itemsResponse = await axios.get(`${API_BASE_URL}/api/items`, {
+          headers: { Authorization: token ? `Bearer ${token}` : undefined },
         })
-        if (response.data.success) {
-          const productsData = response.data.data.map((item) => ({
+        if (itemsResponse.data.success && itemsResponse.data.data) {
+          const productsData = itemsResponse.data.data.map((item) => ({
             id: item.id,
             name: item.name || "",
-            name_kh: item.name_kh || "",
-            name_en: item.name_en || item.name || "",
             category_id: item.category_id,
-            category: categories.find((cat) => cat.id === item.category_id) || { name: "", nameKh: "" },
+            category: categories.find((cat) => cat.id === item.category_id)?.name || "",
             price: item.price || 0,
             stock: item.stock || 0,
-            unit: item.unit || "piece",
-            unit_kh: item.unit_kh || currentTexts.piece,
+            unit: item.unit || "Kg",
             image: item.image || "",
             status: item.status || "active",
             orders: item.orders || 0,
@@ -201,16 +188,15 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
           setProducts(productsData)
         } else {
           setError(currentTexts.error + "Failed to fetch items")
-          console.error("API Error:", response.data.message)
+          console.error("API Error (Items):", itemsResponse.data.message)
         }
       } catch (err) {
-        setError(currentTexts.error + (err.response?.data?.message || err.message))
-        console.error("Fetch Items Error:", err)
+        setError(currentTexts.error + (err.response?.data?.message || err.message || "Network error"))
+        console.error("Fetch Error:", err)
       }
     }
 
-    fetchCategories()
-    fetchItems()
+    fetchData()
   }, [currentTexts.error, currentTexts.piece])
 
   useEffect(() => {
@@ -224,10 +210,9 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
   }, [])
 
   const filteredProducts = products.filter((product) => {
-    const productName = currentLanguage === "kh" ? product.name_kh : product.name_en
-    const categoryName = currentLanguage === "kh" ? product.category?.nameKh : product.category?.name
-
-    const matchesSearch = productName?.toLowerCase().includes(searchTerm.toLowerCase())
+    const productName = product.name || ""
+    const categoryName = product.category || ""
+    const matchesSearch = productName.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = filterCategory === "" || categoryName === filterCategory
     const matchesStatus = filterStatus === "" || product.status === filterStatus
     return matchesSearch && matchesCategory && matchesStatus
@@ -247,9 +232,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
       try {
         const token = localStorage.getItem("token")
         const response = await axios.delete(`${API_BASE_URL}/api/items/${productId}`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
+          headers: { Authorization: token ? `Bearer ${token}` : undefined },
         })
         if (response.data.success) {
           setProducts(products.filter((p) => p.id !== productId))
@@ -268,13 +251,11 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
 
   const ProductForm = ({ product, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
-      name_kh: product?.name_kh || "",
-      name_en: product?.name_en || "",
+      name: product?.name || "",
       category_id: product?.category_id ? String(product.category_id) : "",
       price: product?.price || "",
       stock: product?.stock || "",
       unit: product?.unit || "piece",
-      unit_kh: product?.unit_kh || currentTexts.piece,
       image: null,
     })
 
@@ -284,14 +265,11 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
       setError(null)
 
       const form = new FormData()
-      form.append("name_kh", formData.name_kh)
-      form.append("name_en", formData.name_en)
-      form.append("name", currentLanguage === "kh" ? formData.name_kh : formData.name_en)
+      form.append("name", formData.name)
       form.append("category_id", formData.category_id)
       form.append("price", formData.price)
       form.append("stock", formData.stock)
       form.append("unit", formData.unit)
-      form.append("unit_kh", formData.unit_kh)
 
       if (formData.image) {
         form.append("image", formData.image)
@@ -321,14 +299,11 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
           const productsData = updatedItems.data.data.map((item) => ({
             id: item.id,
             name: item.name || "",
-            name_kh: item.name_kh || "",
-            name_en: item.name_en || item.name || "",
             category_id: item.category_id,
-            category: categories.find((cat) => cat.id === item.category_id) || { name: "", nameKh: "" },
+            category: categories.find((cat) => cat.id === item.category_id)?.name || "",
             price: item.price || 0,
             stock: item.stock || 0,
-            unit: item.unit || "piece",
-            unit_kh: item.unit_kh || currentTexts.piece,
+            unit: item.unit || "Kg",
             image: item.image || "",
             status: item.status || "active",
             orders: item.orders || 0,
@@ -373,9 +348,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                   <ul className="list-disc ml-5 mt-2">
                     {Object.values(validationErrors)
                       .flat()
-                      .map((error, index) => (
-                        <li key={index}>{error}</li>
-                      ))}
+                      .map((error, index) => <li key={index}>{error}</li>)}
                   </ul>
                 )}
               </div>
@@ -385,10 +358,10 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
               <label className="block text-sm font-semibold text-[#333333] mb-2">{currentTexts.productNameKh}</label>
               <input
                 type="text"
-                value={formData.name_kh}
-                onChange={(e) => setFormData({ ...formData, name_kh: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors font-khmer ${
-                  validationErrors.name_kh ? "border-red-500" : "border-gray-300"
+                  validationErrors.name ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="បញ្ចូលឈ្មោះផលិតផលជាភាសាខ្មែរ"
                 required
@@ -399,10 +372,10 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
               <label className="block text-sm font-semibold text-[#333333] mb-2">{currentTexts.productNameEn}</label>
               <input
                 type="text"
-                value={formData.name_en}
-                onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors font-english ${
-                  validationErrors.name_en ? "border-red-500" : "border-gray-300"
+                  validationErrors.name ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Enter product name in English"
                 required
@@ -422,7 +395,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                 <option value="">{currentTexts.selectCategory}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
-                    {currentLanguage === "kh" ? cat.nameKh : cat.name}
+                    {currentLanguage === "kh" ? cat.name : cat.name}
                   </option>
                 ))}
               </select>
@@ -460,13 +433,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                 <label className="block text-sm font-semibold text-[#333333] mb-2">{currentTexts.unit}</label>
                 <select
                   value={formData.unit}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      unit: e.target.value,
-                      unit_kh: e.target.value === "piece" ? currentTexts.piece : currentTexts[e.target.value],
-                    })
-                  }
+                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors ${
                     validationErrors.unit ? "border-red-500" : "border-gray-300"
                   }`}
@@ -627,8 +594,8 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
               >
                 <option value="">{currentTexts.allCategories}</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={currentLanguage === "kh" ? cat.nameKh : cat.name}>
-                    {currentLanguage === "kh" ? cat.nameKh : cat.name}
+                  <option key={cat.id} value={cat.name}>
+                    {currentLanguage === "kh" ? cat.name : cat.name}
                   </option>
                 ))}
               </select>
@@ -668,21 +635,17 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                         <div className="flex items-center gap-4">
                           <img
                             src={product.image || "https://via.placeholder.com/300x200"}
-                            alt={currentLanguage === "kh" ? product.name_kh : product.name_en}
+                            alt={product.name}
                             className="w-12 h-12 rounded-lg object-cover border border-gray-200"
                           />
                           <div>
-                            <p className="font-semibold text-[#333333]">
-                              {currentLanguage === "kh" ? product.name_kh : product.name_en}
-                            </p>
+                            <p className="font-semibold text-[#333333]">{product.name}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-[#333333]">
-                        {currentLanguage === "kh" ? product.category?.nameKh : product.category?.name}
-                      </td>
+                      <td className="py-4 px-6 text-[#333333]">{product.category}</td>
                       <td className="py-4 px-6 font-semibold text-[#333333]">
-                        ${product.price}/{currentLanguage === "kh" ? product.unit_kh : product.unit}
+                        ${product.price}/{product.unit}
                       </td>
                       <td className="py-4 px-6">
                         <span
@@ -690,7 +653,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                             product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {product.stock} {currentLanguage === "kh" ? product.unit_kh : product.unit}
+                          {product.stock} {product.unit}
                         </span>
                       </td>
                       <td className="py-4 px-6">

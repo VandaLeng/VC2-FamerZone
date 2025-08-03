@@ -116,19 +116,24 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
       setIsLoading(true);
       try {
         const response = await axios.get(CATEGORIES_ENDPOINT);
-        const transformedCategories = response.data.data.map((category) => ({
-          id: category.id,
-          name: category.name.kh || '',
-          nameEn: category.name.en || '',
-          description: category.description.kh || '',
-          descriptionEn: category.description.en || '',
-          productCount: category.productCount || 0,
-          createdAt: category.created_at,
-          status: category.status,
-          image_url: category.image_url,
-        }));
-        setCategories(transformedCategories);
-        setError(null);
+        if (response.data.success && Array.isArray(response.data.data)) {
+          const transformedCategories = response.data.data.map((category) => ({
+            id: category.id,
+            name_kh: category.name_kh || '',
+            name_en: category.name_en || '',
+            description_kh: category.description_kh || '',
+            description_en: category.description_en || '',
+            productCount: category.product_count || 0,
+            createdAt: category.created_at || new Date().toISOString(),
+            status: category.status || 'active',
+            image_url: category.image_url || null,
+          }));
+          setCategories(transformedCategories);
+          console.log('Categories State Updated:', transformedCategories); // Debug
+        } else {
+          setError('Invalid data format from API');
+          console.error('API Response:', response.data);
+        }
       } catch (err) {
         const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch categories';
         setError(errorMessage);
@@ -146,26 +151,27 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
   }, []);
 
   const filteredCategories = categories.filter((category) => {
-    const searchText = currentLanguage === 'kh' ? category.name : category.nameEn;
-    const descText = currentLanguage === 'kh' ? category.description : category.descriptionEn;
+    const name = currentLanguage === 'kh' ? category.name_kh : category.name_en;
+    const description = currentLanguage === 'kh' ? category.description_kh : category.description_en;
     
     const matchesSearch =
-      searchText.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      descText.toLowerCase().includes(searchTerm.toLowerCase());
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || category.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
+  console.log('Filtered Categories:', filteredCategories); // Debug
 
   const handleOpenModal = (mode, category = null) => {
     setModalMode(mode);
     setSelectedCategory(category);
     if (category) {
       setFormData({
-        name_kh: category.name,
-        name_en: category.nameEn,
-        description_kh: category.description,
-        description_en: category.descriptionEn,
-        status: category.status,
+        name_kh: category.name_kh || '',
+        name_en: category.name_en || '',
+        description_kh: category.description_kh || '',
+        description_en: category.description_en || '',
+        status: category.status || 'active',
         image: null,
       });
     } else {
@@ -199,10 +205,10 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
     setIsLoading(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name[kh]', formData.name_kh);
-      formDataToSend.append('name[en]', formData.name_en);
-      formDataToSend.append('description[kh]', formData.description_kh || '');
-      formDataToSend.append('description[en]', formData.description_en || '');
+      formDataToSend.append('name_kh', formData.name_kh);
+      formDataToSend.append('name_en', formData.name_en);
+      formDataToSend.append('description_kh', formData.description_kh);
+      formDataToSend.append('description_en', formData.description_en);
       formDataToSend.append('status', formData.status);
 
       if (formData.image) {
@@ -223,13 +229,13 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
             cat.id === selectedCategory.id
               ? {
                   ...cat,
-                  name: response.data.data.name.kh,
-                  nameEn: response.data.data.name.en,
-                  description: response.data.data.description.kh,
-                  descriptionEn: response.data.data.description.en,
+                  name_kh: response.data.data.name_kh,
+                  name_en: response.data.data.name_en,
+                  description_kh: response.data.data.description_kh,
+                  description_en: response.data.data.description_en,
                   status: response.data.data.status,
                   image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
+                  productCount: response.data.data.product_count || 0,
                 }
               : cat
           )
@@ -240,11 +246,11 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
         });
         const newCategory = {
           id: response.data.data.id,
-          name: response.data.data.name.kh,
-          nameEn: response.data.data.name.en,
-          description: response.data.data.description.kh,
-          descriptionEn: response.data.data.description.en,
-          productCount: response.data.data.productCount || 0,
+          name_kh: response.data.data.name_kh,
+          name_en: response.data.data.name_en,
+          description_kh: response.data.data.description_kh,
+          description_en: response.data.data.description_en,
+          productCount: response.data.data.product_count || 0,
           createdAt: response.data.data.created_at,
           status: response.data.data.status,
           image_url: response.data.data.image_url,
@@ -415,6 +421,7 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F5F5DC]">
+                {console.log('Rendering Table')} {/* Debug */}
                 {isLoading ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center text-[#8B4513]">
@@ -428,7 +435,7 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
                         {category.image_url ? (
                           <img
                             src={category.image_url || "/placeholder.svg"}
-                            alt={currentLanguage === 'kh' ? category.name : category.nameEn}
+                            alt={currentLanguage === 'kh' ? category.name_kh : category.name_en}
                             className="w-12 h-12 object-cover rounded"
                           />
                         ) : (
@@ -437,12 +444,12 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="font-medium text-[#333333]">
-                          {currentLanguage === 'kh' ? category.name : category.nameEn}
+                          {currentLanguage === 'kh' ? category.name_kh : category.name_en}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-[#8B4513] text-sm line-clamp-2 max-w-xs">
-                          {currentLanguage === 'kh' ? category.description : category.descriptionEn}
+                          {currentLanguage === 'kh' ? category.description_kh : category.description_en}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -603,7 +610,7 @@ const CategoryManagement = ({ currentLanguage = 'en' }) => {
                   {selectedCategory?.image_url && (
                     <img
                       src={selectedCategory.image_url || "/placeholder.svg"}
-                      alt={selectedCategory.name}
+                      alt={currentLanguage === 'kh' ? selectedCategory.name_kh : selectedCategory.name_en}
                       className="w-32 h-32 object-cover rounded mt-2"
                     />
                   )}
