@@ -507,6 +507,7 @@ function ProductSection() {
       ? product.farmer?.nameKh || product.farmer?.name || "Unknown"
       : product.farmer?.name || product.farmer?.nameKh || "Unknown";
   }
+  
 }
 
 export default ProductSection;
