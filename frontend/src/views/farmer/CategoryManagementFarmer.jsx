@@ -31,7 +31,7 @@ const CategoryManagement = () => {
     allCategories: 'ប្រភេទទាំងអស់',
     activeCategories: 'ប្រភេទសកម្ម',
     inactiveCategories: 'ប្រភេទមិនសកម្ម',
-    categoryName: 'ឈ្មោះប្រភេទ',
+    categoryName: 'ប្រភេទ',
     description: 'ការពិពណ៌នា',
     products: 'ផលិតផល',
     createdDate: 'កាលបរិច្ឆេទបង្កើត',
@@ -338,9 +338,6 @@ const CategoryManagement = () => {
               <thead className="bg-[#EAF8E7]">
                 <tr>
                   <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
-                    {texts.image}
-                  </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
                     {texts.categoryName}
                   </th>
                   <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
@@ -371,19 +368,19 @@ const CategoryManagement = () => {
                   categories.map((category) => ( // Changed from filteredCategories
                     <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
                       <td className="px-6 py-4">
-                        {category.image_url ? (
-                          <img
-                            src={category.image_url || "/placeholder.svg"}
-                            alt={category.name}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        ) : (
-                          <span className="text-[#8B4513] text-base">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-[#333333] text-base">
-                          {category.name}
+                        <div className="flex items-center gap-4">
+                          {category.image_url ? (
+                            <img
+                              src={category.image_url || "/placeholder.svg"}
+                              alt={category.name}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          ) : (
+                            <span className="text-[#8B4513] text-base">-</span>
+                          )}
+                          <div className="font-medium text-[#333333] text-base">
+                            {category.name}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -496,7 +493,7 @@ const CategoryManagement = () => {
                 </div>
                 <div>
                   <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.description} 
+                    {texts.description}
                   </label>
                   <textarea
                     value={formData.description}

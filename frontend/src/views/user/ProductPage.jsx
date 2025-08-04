@@ -980,8 +980,6 @@
 
 
 
-
-
 "use client"
 
 import { useState, useMemo, useEffect, useRef } from "react"
@@ -1186,8 +1184,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
   // Fetch filtered products
   const fetchFilteredProducts = async () => {
-    setIsLoading(true)
-    setFetchError(null)
+    setIsLoading(true);
+    setFetchError(null); // Clear error at the start
     const params = {
       province: selectedProvince !== "all" ? selectedProvince : undefined,
       category: selectedCategory !== "all" ? selectedCategory : undefined,
@@ -1197,10 +1195,11 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       radius: userLocation ? nearbyRadius : undefined,
       latitude: userLocation ? userLocation.latitude : undefined,
       longitude: userLocation ? userLocation.longitude : undefined,
-    }
+    };
 
     try {
-      const response = await axios.get(`${ITEMS_ENDPOINT}/filter`, { params })
+      const response = await axios.get(`${ITEMS_ENDPOINT}/filter`, { params });
+      console.log("API Response:", response.data);
       const mappedProducts = response.data.data.map((item) => ({
         id: item.id,
         name: item.title,
@@ -1220,15 +1219,16 @@ export default function ProductsPage({ currentLanguage = "en" }) {
             lng: item.farmer?.location?.longitude || 0,
           },
         },
-      }))
-      setProducts(mappedProducts)
+      }));
+      setProducts(mappedProducts);
+      console.log("Products set:", mappedProducts.length);
     } catch (error) {
-      console.error("Failed to fetch products:", error)
-      setFetchError("Unable to load products. Please try again.")
+      console.error("Failed to fetch products:", error);
+      setFetchError("Unable to load products. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Fetch on filter change
   useEffect(() => {
@@ -1434,7 +1434,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Location Status Bar */}
-      {(locationLoading || locationError || userLocation || fetchError) && (
+      {/* In the return statement, update the location status bar condition */}
+      {(locationLoading || locationError || userLocation) && (
         <div className="bg-green-700 text-white py-2 px-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -1742,182 +1743,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
           </div>
         </section>
       )}
-
-      {/* Filters Section */}
-      {/* <section ref={filtersRef} className="py-6 bg-white border-b sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex flex-col space-y-4">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="lg:hidden inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-50 to-green-100 text-green-700 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium text-sm shadow-sm"
-                      aria-label={currentTexts.filters}
-                    >
-                      <SlidersHorizontal className="w-4 h-4" />
-                      <span>{currentTexts.filters}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                    <div className="relative hidden lg:block">
-                      <select
-                        value={selectedProvince}
-                        onChange={(e) => setSelectedProvince(e.target.value)}
-                        className="min-w-[200px] px-4 py-2.5 pr-10 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none transition-all duration-300 shadow-sm hover:shadow-md hover:border-gray-300"
-                      >
-                        <option value="all">{currentTexts.allProvinces}</option>
-                        {provinces.map((province) => (
-                          <option key={province.id} value={province.id}>
-                            {province.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg">
-                      <span className="text-xs font-medium text-gray-600">
-                        {filteredAndSortedProducts.length} {currentTexts.of} {products.length}
-                      </span>
-                    </div>
-                    <div className="relative">
-                      <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        className="min-w-[140px] px-3 py-2 pr-8 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none transition-all duration-300 shadow-sm hover:shadow-md hover:border-gray-300"
-                      >
-                        {sortOptions.map((option) => (
-                          <option key={option.id} value={option.id}>
-                            {option.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
-                    <div className="flex bg-gray-100 rounded-xl p-1">
-                      <button
-                        onClick={() => setViewMode("grid")}
-                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
-                            ? "bg-white text-green-600 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                          }`}
-                        title="Grid View"
-                      >
-                        <Grid className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setViewMode("list")}
-                        className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
-                            ? "bg-white text-green-600 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                          }`}
-                        title="List View"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="hidden lg:flex items-center justify-between">
-                  <div className="flex gap-2 flex-wrap">
-                    {categories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
-                            : `${category.color} text-gray-700 hover:shadow-md hover:scale-105 border border-gray-200`
-                          }`}
-                      >
-                        {category.name}
-                      </button>
-                    ))}
-                  </div>
-                  {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
-                    <button
-                      onClick={clearFilters}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                    >
-                      <span>{currentTexts.clearFilters}</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div
-              className={`lg:hidden transition-all duration-300 ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
-            >
-              <div className="p-6 border-b border-gray-100 bg-gray-50">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
-                    <div className="relative">
-                      <select
-                        value={selectedProvince}
-                        onChange={(e) => setSelectedProvince(e.target.value)}
-                        className="w-full px-4 py-2.5 pr-10 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none"
-                      >
-                        <option value="all">{currentTexts.allProvinces}</option>
-                        {provinces.map((province) => (
-                          <option key={province.id} value={province.id}>
-                            {province.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {categories.map((category) => (
-                        <button
-                          key={category.id}
-                          onClick={() => setSelectedCategory(category.id)}
-                          className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
-                              ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-                              : `${category.color} text-gray-700 border border-gray-200`
-                            }`}
-                        >
-                          {category.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
-                    <button
-                      onClick={clearFilters}
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-300 border border-red-200"
-                    >
-                      <span>{currentTexts.clearFilters}</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-            {(selectedProvince !== "all" || selectedCategory !== "all" || searchQuery) && (
-              <div className="lg:hidden px-6 py-3 bg-blue-50 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-blue-700">
-                    {currentTexts.showingResults} {filteredAndSortedProducts.length} {currentTexts.products}
-                  </span>
-                  <span className="text-xs text-blue-600">Filters active</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section> */}
 
       {/* All Products Section */}
       <ProductSection />

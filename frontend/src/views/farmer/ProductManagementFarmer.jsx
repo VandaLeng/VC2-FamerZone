@@ -85,7 +85,6 @@ const ProductManagement = () => {
     previous: "មុន",
     next: "បន្ទាប់",
     nameRequired: "ឈ្មោះផលិតផលត្រូវតែបញ្ចូល",
-    nameEnRequired: "ឈ្មោះផលិតផលត្រូវតែមានអក្សរអង់គ្លេស",
   }
 
   const API_BASE_URL = "http://localhost:8000"
@@ -126,18 +125,18 @@ const ProductManagement = () => {
 
     const fetchItems = async () => {
       try {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/api/items`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
-        })
+        });
         if (response.data.success) {
           const productsData = response.data.data.map((item) => ({
             id: item.id,
-            name: item.name || item.name || "",
+            name: item.name || item.name_kh || "",
             category_id: item.category_id,
-            category: categories.find((cat) => cat.id === item.category_id) || { name: "" },
+            category: item.category ? { name: item.category.name || "" } : { name: "" }, // Use category from response
             price: item.price || 0,
             stock: item.stock || 0,
             unit: item.unit || "piece",
@@ -146,22 +145,22 @@ const ProductManagement = () => {
             status: item.status || "active",
             orders: item.orders || 0,
           }));
-          setProducts(productsData)
+          setProducts(productsData);
         } else {
-          setError(texts.error + "បរាជ័យក្នុងការទៅយកផលិតផល")
-          console.error("API Error:", response.data.message)
+          setError(texts.error + "បរាជ័យក្នុងការទៅយកផលិតផល");
+          console.error("API Error:", response.data.message);
         }
       } catch (err) {
-        setError(texts.error + (err.response?.data?.message || err.message))
-        console.error("Fetch Items Error:", err)
+        setError(texts.error + (err.response?.data?.message || err.message));
+        console.error("Fetch Items Error:", err);
       }
-    }
+    };
 
     fetchCategories()
     fetchItems()
   }, [texts.error, texts.piece])
 
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (actionsMenuRef.current && !actionsMenuRef.current.contains(event.target)) {
@@ -230,12 +229,6 @@ const ProductManagement = () => {
 
       if (!formData.name.trim()) {
         setError(texts.nameRequired)
-        return
-      }
-
-      const hasEnglish = /[a-zA-Z]/.test(formData.name)
-      if (!hasEnglish) {
-        setError(texts.nameEnRequired)
         return
       }
 
@@ -738,4 +731,4 @@ const ProductManagement = () => {
   )
 }
 
-export default ProductManagement
+export default ProductManagement;
