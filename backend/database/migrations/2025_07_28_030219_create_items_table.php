@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // 👈 User relationship
             $table->string('name');
             $table->decimal('price', 8, 2);
             $table->integer('stock');
@@ -21,6 +20,8 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->integer('orders')->default(0);
             $table->timestamps();
+
+            // only define each foreign key once
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
@@ -28,6 +29,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('items'); 
+        Schema::dropIfExists('items');
     }
 };
