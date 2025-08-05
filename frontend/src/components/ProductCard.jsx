@@ -13,7 +13,7 @@ function ProductCard({
   provinces,
   onShowDetail,
 }) {
-  console.log("Product Data:", product); // Debug the product object
+  console.log("Product Data:", product); 
   const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
   const productDescription =
     currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;

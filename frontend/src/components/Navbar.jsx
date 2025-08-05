@@ -1,7 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import "../styles/NavbarStyle.css" // Ensure this path is correct
+import "../styles/NavbarStyle.css" 
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -92,7 +92,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const userEmail = userData?.email || "user@example.com"
 
   // Mock cart item count - replace with your actual cart state
-  const cartItemCount = 3 // You can replace this with your actual cart count
+  const cartItemCount = 3 
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -216,26 +216,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       </div>
                     </div>
                     <div className="py-2">
-                      {/* <Link
-                        to="/dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
-                      >
-                        <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 5a2 2 0 012-2h2a2 2 0 012 2v6H8V5z"
-                          />
-                        </svg>
-                        {currentTexts.dashboard}
-                      </Link> */}
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"

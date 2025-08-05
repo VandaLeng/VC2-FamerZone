@@ -6,7 +6,6 @@ import BackToTopButton from '../components/BackToTop';
 import UserProfile from '../views/buyer/BuyerProfile';
 import UserOrders from '../views/buyer/BuyerOrder';
 import UserSettings from '../views/buyer/BuyerSetting';
-// import UserDashboard from '../views/buyer/BuyerDashboard';
 
 const PublicLayout = ({ 
   children, 
@@ -51,10 +50,6 @@ const PublicLayout = ({
                 path="/settings" 
                 element={<UserSettings userData={userData} currentLanguage={currentLanguage} />}
               />
-              {/* <Route 
-                path="/dashboard" 
-                element={<UserDashboard userData={userData} currentLanguage={currentLanguage} />}
-              /> */}
             </>
           )}
           {/* Render children routes passed from App.jsx */}

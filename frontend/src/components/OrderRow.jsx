@@ -14,7 +14,7 @@ const OrderRow = ({ order, onStatusUpdate }) => {
       await axios.put(`/api/orders/${order.id}/status`, {
         status: newStatus,
       });
-      onStatusUpdate(order.id, newStatus); // Update parent state
+      onStatusUpdate(order.id, newStatus); 
       setShowDropdown(false);
     } catch (error) {
       console.error('បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពស្ថានភាព:', error);
