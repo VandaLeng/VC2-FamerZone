@@ -7,6 +7,7 @@ import Products from "./views/user/ProductPage";
 import About from "./views/user/AboutPage";
 import LearningCenter from "./views/user/LearningCenterPage";
 import Contact from "./views/user/ContactPage";
+import BuyerCart from "./views/buyer/BuyerCart";
 // Auth
 import RegisterForm from "./views/auth/RegisterForm";
 import LoginForm from "./views/auth/LoginForm";
@@ -126,6 +127,7 @@ function App() {
         <Route path="/about" element={<About currentLanguage={currentLanguage} />} />
         <Route path="/learning-center" element={<LearningCenter currentLanguage={currentLanguage} />} />
         <Route path="/contact" element={<Contact currentLanguage={currentLanguage} />} />
+        <Route path="/cart" element={<BuyerCart currentLanguage={currentLanguage} />} />
         <Route
           path="/register"
           element={
