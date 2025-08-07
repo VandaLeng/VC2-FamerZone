@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProductCard from "./ProductCard";
 import useProduct from "../services/useProduct";
-import { 
-  MapPin, 
-  Star, 
-  Phone, 
-  Mail, 
-  SlidersHorizontal, 
-  ChevronDown, 
-  Grid, 
-  List 
-} from "lucide-react";
+import { MapPin, Star, Phone, Mail, SlidersHorizontal, ChevronDown, Grid, List } from "lucide-react";
+import { useCart } from "../services/cartContext";
 
-function ProductSection() {
+function ProductSection({ isLoggedIn }) {
   const { allProducts, loading, error } = useProduct();
   const [viewMode, setViewMode] = useState("grid");
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
@@ -22,6 +16,26 @@ function ProductSection() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [sortBy, setSortBy] = useState("default");
+  const { addToCart } = useCart();
+
+  // Language-specific texts (Khmer only)
+  const texts = {
+    outOfStock: "ផលិតផលនេះអស់ពីស្តុក ឬមិនមាន។",
+    addedToCart: "បានបន្ថែម {name} ទៅក្នុងរទេះរបស់អ្នកដោយជោគជ័យ!",
+    loginPrompt: "សូមចូលប្រើ ឬចុះឈ្មោះដើម្បីធ្វើការកម្ម៉ង់។",
+    inStock: "មាននៅក្នុងស្តុក",
+    outOfStockLabel: "អស់ពីស្តុក",
+    orderNow: "កម្ម៉ង់ឥឡូវ",
+    from: "មកពី",
+    orderPlaced: "បានកម្ម៉ង់",
+    filters: "តម្រង",
+    allProvinces: "គ្រប់ខេត្ត",
+    clearFilters: "លុបតម្រង",
+    showingResults: "បង្ហាញលទ្ធផល",
+    products: "ផលិតផល",
+    of: "នៃ",
+  };
+  const currentTexts = texts;
 
   // Derive provinces from allProducts
   const provinces = React.useMemo(() => {
@@ -35,7 +49,7 @@ function ProductSection() {
     });
     return Array.from(uniqueProvinces).map((id) => ({
       id,
-      name: allProducts.find((p) => 
+      name: allProducts.find((p) =>
         (typeof p.province === "object" && p.province?.id === id) || p.province === id
       )?.province?.name || id,
     }));
@@ -53,24 +67,14 @@ function ProductSection() {
     });
     return Array.from(uniqueCategories).map((id) => ({
       id,
-      name: allProducts.find((p) => 
+      name: allProducts.find((p) =>
         (typeof p.category === "object" && p.category?.id === id) || p.categoryId === id
       )?.category?.name || id,
-      color: `bg-${id === "cat1" ? "green" : id === "cat2" ? "yellow" : "blue"}-50`, // Optional: Assign colors based on ID
+      color: `bg-${id === "cat1" ? "green" : id === "cat2" ? "yellow" : "blue"}-50`,
     }));
   }, [allProducts]);
 
   useEffect(() => {
-    console.log("Provinces:", provinces);
-    console.log("Categories:", categories);
-    console.log("All Products with Provinces and Categories:", allProducts.map(p => ({
-      id: p.id,
-      province: p.province,
-      provinceType: typeof p.province,
-      category: p.category,
-      categoryId: p.categoryId,
-      categoryType: typeof p.category
-    })));
     let updatedProducts = [...allProducts];
 
     if (selectedProvince !== "all") {
@@ -95,9 +99,9 @@ function ProductSection() {
     }
 
     if (sortBy === "price-asc") {
-      updatedProducts.sort((a, b) => a.price - b.price);
+      updatedProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     } else if (sortBy === "price-desc") {
-      updatedProducts.sort((a, b) => b.price - a.price);
+      updatedProducts.sort((a, b) => parseFloat(b.price) - parseFloat(b.price));
     }
 
     setFilteredProducts(updatedProducts);
@@ -105,21 +109,43 @@ function ProductSection() {
 
   const closeDetail = () => setSelectedProduct(null);
 
-  const currentTexts = {
-    inStock: "In Stock",
-    outOfStock: "Out of Stock",
-    orderNow: "Order Now",
-    from: "From",
-    orderPlaced: "Order Placed",
-    filters: "Filters",
-    allProvinces: "All Provinces",
-    clearFilters: "Clear Filters",
-    showingResults: "Showing",
-    products: "Products",
-    of: "of",
+  const onOrder = (productId) => {
+    if (!isLoggedIn) {
+      toast.error(currentTexts.loginPrompt, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const product = allProducts.find((p) => p.id === productId);
+    if (product && product.stock > 0) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: parseFloat(product.price),
+        stock: product.stock,
+        unit: product.unit,
+        image: product.image || "/placeholder.svg",
+        weight: product.weight || product.unit,
+        farmer: product.farmer?.name || "Unknown Farmer",
+        originalPrice: product.originalPrice || product.price,
+        discount: product.discount || 0,
+        inStock: product.stock > 0,
+      });
+      toast.success(currentTexts.addedToCart.replace("{name}", product.name), {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      closeDetail();
+    } else {
+      toast.error(currentTexts.outOfStock, {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
   };
 
-  const onOrder = () => {};
   const orderingProducts = [];
   const orderedProducts = [];
 
@@ -131,17 +157,21 @@ function ProductSection() {
   };
 
   const sortOptions = [
-    { id: "default", name: "Default" },
-    { id: "price-asc", name: "Price: Low to High" },
-    { id: "price-desc", name: "Price: High to Low" },
+    { id: "default", name: "លំនាំដើម" },
+    { id: "price-asc", name: "តម្លៃ: ទាបទៅខ្ពស់" },
+    { id: "price-desc", name: "តម្លៃ: ខ្ពស់ទៅទាប" },
   ];
 
-  if (loading) return <div className="text-center py-16">Loading products...</div>;
-  if (error) return <div className="text-center py-16 text-red-500">Failed to load products. Please try again later.</div>;
+  if (loading) return <div className="text-center py-16">កំពុងផ្ទុកផលិតផល...</div>;
+  if (error) return <div className="text-center py-16 text-red-500">បរាជ័យក្នុងការផ្ទុកផលិតផល។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</div>;
 
   const getCategoryName = (product) => {
-    return product?.category?.name || "Unknown Category";
+    return product?.category?.name || "ប្រភេទមិនស្គាល់";
   };
+
+  function getFarmerName(product) {
+    return product.farmer?.nameKh || product.farmer?.name || "មិនស្គាល់";
+  }
 
   return (
     <div>
@@ -177,7 +207,7 @@ function ProductSection() {
                             </option>
                           ))
                         ) : (
-                          <option disabled>No provinces available</option>
+                          <option disabled>គ្មានខេត្តណាមួយទេ</option>
                         )}
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -209,8 +239,8 @@ function ProductSection() {
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
                           ? "bg-white text-green-600 shadow-sm"
                           : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                        }`}
-                        title="Grid View"
+                          }`}
+                        title="ទិដ្ឋភាពក្រឡាចត្រង្គ"
                       >
                         <Grid className="w-4 h-4" />
                       </button>
@@ -219,8 +249,8 @@ function ProductSection() {
                         className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
                           ? "bg-white text-green-600 shadow-sm"
                           : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                        }`}
-                        title="List View"
+                          }`}
+                        title="ទិដ្ឋភាពបញ្ជី"
                       >
                         <List className="w-4 h-4" />
                       </button>
@@ -236,7 +266,7 @@ function ProductSection() {
                         className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
                           ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25 transform scale-105"
                           : `${category.color} text-gray-700 hover:shadow-md hover:scale-105 border border-gray-200`
-                        }`}
+                          }`}
                       >
                         {category.name}
                       </button>
@@ -262,7 +292,7 @@ function ProductSection() {
               <div className="p-6 border-b border-gray-100 bg-gray-50">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ខេត្ត</label>
                     <div className="relative">
                       <select
                         value={selectedProvince}
@@ -277,14 +307,14 @@ function ProductSection() {
                             </option>
                           ))
                         ) : (
-                          <option disabled>No provinces available</option>
+                          <option disabled>គ្មានខេត្តណាមួយទេ</option>
                         )}
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ប្រភេទ</label>
                     <div className="grid grid-cols-2 gap-2">
                       {categories.map((category) => (
                         <button
@@ -293,7 +323,7 @@ function ProductSection() {
                           className={`px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${selectedCategory === category.id
                             ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                             : `${category.color} text-gray-700 border border-gray-200`
-                          }`}
+                            }`}
                         >
                           {category.name}
                         </button>
@@ -320,7 +350,7 @@ function ProductSection() {
                   <span className="text-sm font-medium text-blue-700">
                     {currentTexts.showingResults} {filteredProducts.length} {currentTexts.products}
                   </span>
-                  <span className="text-xs text-blue-600">Filters active</span>
+                  <span className="text-xs text-blue-600">តម្រងសកម្ម</span>
                 </div>
               </div>
             )}
@@ -331,7 +361,7 @@ function ProductSection() {
       <section className="py-16 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">All Products</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">ផលិតផលទាំងអស់</h2>
             <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
           </div>
 
@@ -341,9 +371,8 @@ function ProductSection() {
                 key={product.id}
                 product={product}
                 currentTexts={currentTexts}
-                currentLanguage="en"
                 isFavorite={false}
-                onToggleFavorite={() => {}}
+                onToggleFavorite={() => { }}
                 onOrder={onOrder}
                 orderingProducts={orderingProducts}
                 orderedProducts={orderedProducts}
@@ -356,8 +385,8 @@ function ProductSection() {
 
           {filteredProducts.length === 0 && !loading && (
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your search or filters.</p>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">រកមិនឃើញផលិតផល</h3>
+              <p className="text-gray-500 mb-4">សូមកែសម្រួលការស្វែងរក ឬតម្រងរបស់អ្នក។</p>
             </div>
           )}
 
@@ -366,7 +395,7 @@ function ProductSection() {
               <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <button onClick={closeDetail} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">&times;</button>
                 <div className="mb-8 border-b pb-6">
-                  <h3 className="text-2xl font-bold mb-4">Product Details</h3>
+                  <h3 className="text-2xl font-bold mb-4">ព័ត៌មានលម្អិតផលិតផល</h3>
                   <div className="mb-6">
                     <img
                       src={selectedProduct.image || "/placeholder.svg"}
@@ -375,28 +404,28 @@ function ProductSection() {
                     />
                   </div>
                   <h2 className="text-3xl font-extrabold text-gray-900 mb-3">{selectedProduct.name}</h2>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-4">{selectedProduct.description || "No description available."}</p>
+                  <p className="text-gray-700 text-lg leading-relaxed mb-4">{selectedProduct.description || "គ្មានការពិពណ៌នា។"}</p>
                   <div className="flex items-center gap-6 flex-wrap">
                     <div>
                       <p className="text-xl font-semibold text-green-700">
                         {selectedProduct.currency || "$"}{selectedProduct.price || 0}
-                        <span className="text-gray-600 text-base ml-1">/{selectedProduct.unit || "Kg"}</span>
+                        <span className="text-gray-600 text-base ml-1">/{selectedProduct.unit || "គីឡូក្រាម"}</span>
                       </p>
                     </div>
                     <span className="text-lg text-gray-700">
-                      Quantity: {selectedProduct.stock || "none"} {selectedProduct.unit || "items"}
+                      បរិមាណ: {selectedProduct.stock || "គ្មាន"} {selectedProduct.unit || "ឯកតា"}
                     </span>
                     <div className="flex items-center gap-3">
                       <MapPin className="w-6 h-6 text-green-600" />
                       <p className="text-lg text-gray-700">
                         {currentTexts.from}{" "}
-                        {provinces.find((p) => p.id === selectedProduct.province)?.name || selectedProduct.province || "Unknown Location"}
+                        {provinces.find((p) => p.id === selectedProduct.province)?.name || selectedProduct.province || "ទីតាំងមិនស្គាល់"}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="mb-8 border-b pb-6">
-                  <h3 className="text-2xl font-bold mb-4">Farmer Profile</h3>
+                  <h3 className="text-2xl font-bold mb-4">ប្រវត្តិកសិករ</h3>
                   <div className="flex items-start gap-6 mb-4">
                     <img
                       src={selectedProduct.farmer?.avatar || "/placeholder.svg"}
@@ -415,25 +444,25 @@ function ProductSection() {
                     <div className="flex items-center gap-3">
                       <MapPin className="w-6 h-6 text-green-600" />
                       <p className="text-lg text-gray-700">
-                        Address: {selectedProduct.farmer?.address || "No address available"}
+                        អាសយដ្ឋាន: {selectedProduct.farmer?.address || "គ្មានអាសយដ្ឋាន"}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <Phone className="w-6 h-6 text-green-600" />
                       <p className="text-lg text-gray-700">
-                        Phone: {selectedProduct.farmer?.phone || "No phone number available"}
+                        ទូរស័ព្ទ: {selectedProduct.farmer?.phone || "គ្មានលេខទូរស័ព្ទ"}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="w-6 h-6 text-green-600" />
                       <p className="text-lg text-gray-700">
-                        Email: {selectedProduct.farmer?.email || "No email available"}
+                        អ៊ីមែល: {selectedProduct.farmer?.email || "គ្មានអ៊ីមែល"}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-4">User Reviews</h3>
+                  <h3 className="text-2xl font-bold mb-4">ការវាយតម្លៃរបស់អ្នកប្រើប្រាស់</h3>
                   <div className="mb-4">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center">
@@ -445,7 +474,7 @@ function ProductSection() {
                         ))}
                       </div>
                       <span className="text-lg text-gray-700">
-                        {selectedProduct.rating || 0}/5 ({selectedProduct.reviews || 0} reviews)
+                        {selectedProduct.rating || 0}/5 ({selectedProduct.reviews || 0} ការវាយតម្លៃ)
                       </span>
                     </div>
                   </div>
@@ -453,8 +482,8 @@ function ProductSection() {
                     <div className="space-y-4">
                       {selectedProduct.reviewsData.map((review, index) => (
                         <div key={index} className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                          <p className="text-md font-medium text-gray-900">{review.user || "Anonymous"}:</p>
-                          <p className="text-gray-600 text-base">{review.comment || "No comment provided."}</p>
+                          <p className="text-md font-medium text-gray-900">{review.user || "អនាមិក"}:</p>
+                          <p className="text-gray-600 text-base">{review.comment || "គ្មានមតិយោបល់។"}</p>
                           <div className="flex items-center gap-1 mt-1">
                             {[...Array(5)].map((_, i) => (
                               <Star
@@ -468,7 +497,7 @@ function ProductSection() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-lg text-gray-600">No reviews yet. Be the first to review this product!</p>
+                    <p className="text-lg text-gray-600">នៅមិនទាន់មានការវាយតម្លៃ។ ក្លាយជាអ្នកដំបូងដែលវាយតម្លៃផលិតផលនេះ!</p>
                   )}
                 </div>
                 <div className="flex items-center gap-4">
@@ -476,22 +505,21 @@ function ProductSection() {
                     onClick={(e) => {
                       e.stopPropagation();
                       onOrder(selectedProduct.id);
-                      closeDetail();
                     }}
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50"
                     disabled={!selectedProduct.inStock || orderingProducts.includes(selectedProduct.id) || orderedProducts.includes(selectedProduct.id)}
                   >
                     {orderingProducts.includes(selectedProduct.id)
-                      ? "Ordering..."
+                      ? "កំពុងកម្ម៉ង់..."
                       : orderedProducts.includes(selectedProduct.id)
-                      ? currentTexts.orderPlaced
-                      : currentTexts.orderNow}
+                        ? currentTexts.orderPlaced
+                        : currentTexts.orderNow}
                   </button>
                   <button
                     onClick={closeDetail}
                     className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold text-lg transition-all duration-300"
                   >
-                    Close
+                    បិទ
                   </button>
                 </div>
               </div>
@@ -501,13 +529,6 @@ function ProductSection() {
       </section>
     </div>
   );
-
-  function getFarmerName(product) {
-    return "en" === "kh"
-      ? product.farmer?.nameKh || product.farmer?.name || "Unknown"
-      : product.farmer?.name || product.farmer?.nameKh || "Unknown";
-  }
-  
 }
 
 export default ProductSection;

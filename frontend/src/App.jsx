@@ -1,13 +1,15 @@
-"use client";
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // User Website
 import Home from "./views/user/HomePage";
 import Products from "./views/user/ProductPage";
 import About from "./views/user/AboutPage";
 import LearningCenter from "./views/user/LearningCenterPage";
 import Contact from "./views/user/ContactPage";
-import BuyerCart from "./views/buyer/BuyerCart";
+import CartPage from "./views/buyer/BuyerCart";
 // Auth
 import RegisterForm from "./views/auth/RegisterForm";
 import LoginForm from "./views/auth/LoginForm";
@@ -29,43 +31,71 @@ function App() {
   const [currentLanguage, setCurrentLanguage] = useState("kh");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
   const location = useLocation();
 
   // Check if current route is a farmer route
   const isFarmerRoute = location.pathname.startsWith('/farmer');
-  
-  // Check if user is a farmer (handles both userData.role and userData.role.name)
   const isFarmer = userData?.role === 'farmer' || userData?.role?.name === 'farmer';
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) setCurrentLanguage(savedLanguage);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("language", currentLanguage);
+  }, [currentLanguage]);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     const storedUserData = localStorage.getItem("user_data");
-    if (token && storedUserData) {
+    setIsLoading(true); // Start loading
+    if (token && storedUserData && !isLoggedIn) { // Only validate if not already logged in
       try {
         const parsedUserData = JSON.parse(storedUserData);
         setUserData(parsedUserData);
         setIsLoggedIn(true);
-        
-        console.log("User authenticated on app load:", parsedUserData);
-        console.log("User role:", parsedUserData.role);
-        
-        // Auto-redirect farmer to dashboard after login
-        const userRole = parsedUserData.role?.name || parsedUserData.role;
-        if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
-          navigate('/farmer/dashboard');
-        }
+
+        const validateToken = async () => {
+          try {
+            const response = await fetch('/api/validate-token', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Invalid token');
+            console.log("User authenticated on app load:", parsedUserData);
+            console.log("User role:", parsedUserData.role);
+
+            const userRole = parsedUserData.role?.name || parsedUserData.role;
+            if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
+              navigate('/farmer/dashboard');
+            }
+          } catch (error) {
+            console.error("Token validation failed:", error);
+            localStorage.removeItem("auth_token");
+            localStorage.removeItem("user_data");
+            setIsLoggedIn(false);
+            setUserData(null);
+            navigate('/login');
+          } finally {
+            setIsLoading(false); // End loading
+          }
+        };
+        validateToken();
       } catch (e) {
         console.error("Failed to parse user data from localStorage", e);
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user_data");
         setIsLoggedIn(false);
         setUserData(null);
+        setIsLoading(false); // End loading
       }
+    } else {
+      setIsLoading(false); // End loading if no token or already logged in
     }
-  }, [navigate, location.pathname]);
+  }, [navigate, isLoggedIn]); // Removed location.pathname from dependencies
 
-  // Redirect non-farmers away from farmer routes
   useEffect(() => {
     if (isFarmerRoute && isLoggedIn && !isFarmer) {
       navigate('/');
@@ -79,7 +109,7 @@ function App() {
       setUserData(null);
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user_data");
-      navigate("/");
+      navigate(location.pathname.startsWith('/farmer') ? '/login' : '/');
       alert("Logged out successfully!");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -87,7 +117,10 @@ function App() {
     }
   };
 
-  // Determine which layout to render based on conditions
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Loading state
+  }
+
   if (isFarmerRoute && isFarmer) {
     return (
       <FarmerLayout
@@ -123,11 +156,14 @@ function App() {
           path="/"
           element={<Home currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage} />}
         />
-        <Route path="/products" element={<Products currentLanguage={currentLanguage} />} />
+        <Route
+          path="/products"
+          element={<Products currentLanguage={currentLanguage} isLoggedIn={isLoggedIn} />}
+        />
         <Route path="/about" element={<About currentLanguage={currentLanguage} />} />
         <Route path="/learning-center" element={<LearningCenter currentLanguage={currentLanguage} />} />
         <Route path="/contact" element={<Contact currentLanguage={currentLanguage} />} />
-        <Route path="/cart" element={<BuyerCart currentLanguage={currentLanguage} />} />
+        <Route path="/cart" element={<CartPage currentLanguage={currentLanguage} />} />
         <Route
           path="/register"
           element={
@@ -148,7 +184,6 @@ function App() {
             />
           }
         />
-        {/* Access denied for farmer routes accessed by non-farmers */}
         {isFarmerRoute && !isFarmer && (
           <Route
             path="/farmer/*"
@@ -157,12 +192,19 @@ function App() {
                 <div className="text-center">
                   <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
                   <p className="text-gray-600">You don't have permission to access this page.</p>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    Go to Homepage
+                  </button>
                 </div>
               </div>
             }
           />
         )}
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </PublicLayout>
   );
 }

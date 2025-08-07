@@ -1,7 +1,8 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import "../styles/NavbarStyle.css" 
+import "../styles/NavbarStyle.css"
+import { useCart } from "../services/cartContext"; // Ensure this import is present
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -9,6 +10,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const profileRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const { cartItems } = useCart(); // Get cart state
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -24,20 +26,19 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
 
   const handleLogin = () => {
     navigate("/login")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
   }
 
   const handleRegister = () => {
     navigate("/register")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
   }
 
   const handleCart = () => {
     navigate("/cart")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
   }
 
-  // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -86,19 +87,17 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   }
   const currentTexts = texts[currentLanguage]
 
-  // Safely access userData properties with fallback values
   const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
 
-  // Mock cart item count - replace with your actual cart state
-  const cartItemCount = 3 
+  // Calculate cart item count based on number of unique items
+  const cartItemCount = cartItems.length;
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex items-center space-x-3">
             <div className="bg-green-600 p-2.5 rounded-full shadow-lg">
               <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -111,7 +110,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
             </span>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
@@ -145,11 +143,9 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
             </Link>
           </div>
 
-          {/* Right Side Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Shopping Cart */}
             <a
-              href="cart"
+              href="/cart"
               onClick={handleCart}
               className="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-600 hover:text-green-600 group"
               title={currentTexts.cart}
@@ -157,15 +153,12 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
               </svg>
-
-              {/* Cart Badge */}
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount > 99 ? '99+' : cartItemCount}
                 </span>
               )}
             </a>
-            {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
               className="flex items-center space-x-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium text-gray-600 hover:text-green-600"
@@ -181,7 +174,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               <span>{currentLanguage === "kh" ? "EN" : "ខ្មែរ"}</span>
             </button>
 
-            {/* User Profile or Login/Register Buttons */}
             {isLoggedIn && userData ? (
               <div className="relative" ref={profileRef}>
                 <button
@@ -306,9 +298,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
             )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
-            {/* Mobile Cart Icon */}
             <button
               onClick={handleCart}
               className="relative p-2 text-gray-600 hover:text-green-600 transition-colors duration-200"
@@ -329,7 +319,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               )}
             </button>
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={toggleMobileMenu}
               className="text-gray-600 hover:text-green-600 transition-colors duration-200 p-2"
@@ -347,7 +336,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100">
             <div className="px-2 pt-4 pb-3 space-y-1 bg-white">

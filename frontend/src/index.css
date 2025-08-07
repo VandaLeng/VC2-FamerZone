@@ -1,12 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;700&family=Hanuman:wght@400;700&family=Battambang:wght@400;700&family=Siemreap&display=swap');
+
 @layer base {
+
     html,
     body {
         @apply font-khmer;
     }
+
+    /* Increase specificity and force font-khmer on toasts */
+    div.Toastify__toast,
+    div.Toastify__toast-body {
+        @apply font-khmer !important;
+    }
+
+    
 }
 
 

@@ -5,7 +5,7 @@ const productData = [{
         description: "Fresh organic tomatoes grown without pesticides",
         descriptionKh: "ប៉េងប៉ោះធម្មជាតិដាំដុះដោយគ្មានថ្នាំសំលាប់សត្វល្អិត",
         price: 2.5,
-        currency: "$",
+        currency: "៛",
         image: "https://media.istockphoto.com/id/870915532/photo/man-holding-crate-ob-fresh-vegetables.jpg?s=612x612&w=0&k=20&c=k2dXOI-wxUy7lX77Pm90vU6TJXmAAv5VtK60ZZHIyCA=",
         category: "vegetables",
         province: "kandal",
@@ -310,4 +310,4 @@ const productData = [{
     },
 ]
 
-export default productData
+export default productData;

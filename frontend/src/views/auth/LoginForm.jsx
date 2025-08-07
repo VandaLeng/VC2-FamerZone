@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../../stores/api";
+import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 export default function LoginForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
@@ -12,6 +14,8 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
 
   const texts = {
     kh: {
@@ -92,7 +96,24 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
         localStorage.setItem("user_data", JSON.stringify(data.user));
         setIsLoggedIn(true);
         setUserData(data.user);
-        alert(currentTexts.loginSuccess);
+
+        Swal.fire({
+          title: 'ការបញ្ជាក់ការចូល',
+          text: 'ការចូលរបស់អ្នកបានបញ្ចប់ដោយជោគជ័យ។ អរគុណចំពោះការប្រើប្រាស់សេវាកម្មរបស់យើង។',
+          icon: 'success',
+          position: 'top',
+          showConfirmButton: true,
+          confirmButtonText: 'បញ្ជាក់',
+          backdrop: true,
+          toast: false,
+          customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            content: 'custom-swal-content',
+            confirmButton: 'custom-swal-confirm-button',
+          },
+        });
+
         console.log("Login successful. Token stored:", localStorage.getItem("auth_token"));
         console.log("User data stored:", localStorage.getItem("user_data"));
         // Redirect based on role
@@ -100,12 +121,11 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
           console.log("Navigating to /farmer/dashboard");
           navigate("/farmer/dashboard");
         } else {
-          console.log("Navigating to /");
+          console.log("Navigating to:", from);
           if (onClose) {
             onClose();
-          } else {
-            navigate("/");
           }
+          navigate(from, { replace: true });
         }
       } else {
         throw new Error("Login successful but no access token received.");
@@ -113,7 +133,21 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
     } catch (error) {
       const errorMsg = error.message || currentTexts.loginFailed;
       setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.loginFailed });
-      alert(errorMsg);
+      Swal.fire({
+        title: 'Error',
+        text: errorMsg,
+        icon: 'error',
+        position: 'top-right',
+        showConfirmButton: false, // No confirm button
+        timer: 3000, // Auto-close after 3000ms
+        toast: true, // Enable toast style
+        backdrop: false,
+        customClass: {
+          popup: 'custom-swal-toast',
+          title: 'custom-swal-toast-title',
+          content: 'custom-swal-toast-content',
+        },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -250,7 +284,7 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
                 <div className="flex items-center justify-center space-x-2">
                   <svg
                     className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="http://www.w3.org/200 φφ0/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                   >

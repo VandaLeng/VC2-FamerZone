@@ -1,0 +1,32 @@
+.custom-swal-popup {
+  width: 300px !important; /* Maintain width */
+  padding: 5px 10px; /* Reduced padding for smaller height */
+  min-height: 80px !important; /* Set a minimum height */
+  font-family: 'Noto Serif Khmer', sans-serif; /* Khmer font support */
+}
+
+.custom-swal-title {
+  font-size: 14px; /* Smaller title text */
+  margin-bottom: 2px; /* Reduced spacing */
+  line-height: 1; /* Tighten line height */
+}
+
+.custom-swal-content {
+  font-size: 14px; /* Smaller content text */
+  margin-bottom: 5px; /* Reduced spacing before button */
+  line-height: 1.2; /* Tighten line height */
+}
+
+.custom-swal-confirm-button {
+  background-color: #1e90ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 12px; /* Smaller button text */
+  font-family: 'Noto Serif Khmer', sans-serif; /* Khmer font support */
+}
+
+.custom-swal-confirm-button:hover {
+  background-color: #1c86ee;
+}
