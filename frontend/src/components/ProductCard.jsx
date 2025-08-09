@@ -1,42 +1,65 @@
-import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from "lucide-react";
+// File: ProductCard.js
+import React from 'react';
+import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from 'lucide-react';
 
 function ProductCard({
   product,
   currentTexts,
-  currentLanguage,
-  isFavorite,
+  currentLanguage = "en",
+  isFavorite = false,
   onToggleFavorite,
   onOrder,
-  orderingProducts,
-  orderedProducts,
+  orderingProducts = [],
+  orderedProducts = [],
   viewMode = "grid",
-  provinces,
+  provinces = [],
   onShowDetail,
+  showDistance = false,
 }) {
-  console.log("Product Data:", product); 
+  // Ensure product exists
+  if (!product) {
+    return null;
+  }
+
+  console.log("ProductCard - Product Data:", product);
+
   const productName = currentLanguage === "kh" ? product.nameKh || product.name : product.name;
-  const productDescription =
-    currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
+  const productDescription = currentLanguage === "kh" ? product.descriptionKh || product.description : product.description;
   const farmerName = currentLanguage === "kh"
     ? product.farmer?.nameKh || product.farmer?.name || "Unknown"
     : product.farmer?.name || product.farmer?.nameKh || "Unknown";
 
-  const provinceName = provinces.find((p) => p.id === product.province)?.name || product.province;
+  // Find province name - handle both string and object province data
+  let provinceName = "Unknown";
+  if (product.province) {
+    if (typeof product.province === 'object') {
+      provinceName = product.province.province_name || product.province.name || "Unknown";
+    } else {
+      const province = provinces.find((p) => p.id === product.province);
+      provinceName = province ? province.province_name : product.province;
+    }
+  }
 
   // Determine inStock based on quantity
   const isInStock = product.stock > 0;
+
+  // Default image if none provided
+  const productImage = product.image || "/placeholder.svg?height=300&width=300";
+
+  // Default farmer avatar
+  const farmerAvatar = product.farmer?.avatar || "/placeholder.svg?height=100&width=100";
 
   if (viewMode === "list") {
     return (
       <div
         className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-stone-200 cursor-pointer"
-        onClick={() => onShowDetail(product)}
+        onClick={() => onShowDetail && onShowDetail(product)}
       >
         <div className="flex flex-col md:flex-row">
           {/* Product Image */}
           <div className="relative md:w-64 h-48 md:h-auto overflow-hidden">
             <img
-              src={product.image || "/placeholder.svg"}
+              src={productImage || "/placeholder.svg"}
               alt={productName}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -55,12 +78,17 @@ function ProductCard({
               >
                 {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
               </span>
+              {showDistance && product.distance && (
+                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                  {product.distance.toFixed(1)} km
+                </span>
+              )}
             </div>
             {/* Favorite Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleFavorite(product.id);
+                onToggleFavorite && onToggleFavorite(product.id);
               }}
               className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
             >
@@ -73,8 +101,8 @@ function ProductCard({
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{productName}</h3>
-                <p className="text-gray-600 text-sm mb-3">{productDescription}</p>
-
+                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{productDescription}</p>
+                
                 {/* Province */}
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-green-600" />
@@ -82,7 +110,7 @@ function ProductCard({
                     {currentTexts.from} {provinceName}
                   </span>
                 </div>
-
+                
                 {/* Rating */}
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex items-center">
@@ -90,24 +118,28 @@ function ProductCard({
                       <Star
                         key={i}
                         className={`w-4 h-4 ${
-                          i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                          i < Math.floor(product.rating || 4.5) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
                         }`}
                       />
                     ))}
                   </div>
                   <span className="text-sm text-gray-600">
-                    {product.rating} ({product.reviews} reviews)
+                    {product.rating || 4.5} ({product.reviews || 0} reviews)
                   </span>
                 </div>
               </div>
-
+              
               {/* Price */}
               <div className="text-right">
                 <div className="text-2xl font-bold text-green-700">
-                  {product.currency}
-                  {product.price}
+                  ${product.price}
                   <span className="text-gray-500 text-sm">/{product.unit}</span>
                 </div>
+                {showDistance && product.distance && (
+                  <div className="text-sm text-blue-600 font-medium">
+                    {product.distance.toFixed(1)} km away
+                  </div>
+                )}
               </div>
             </div>
 
@@ -115,23 +147,22 @@ function ProductCard({
             <div className="flex items-center justify-between pt-4 border-t border-stone-200">
               <div className="flex items-center gap-3">
                 <img
-                  src={product.farmer.avatar || "/placeholder.svg"}
+                  src={farmerAvatar || "/placeholder.svg"}
                   alt={farmerName}
                   className="w-10 h-10 rounded-full object-cover border-2 border-stone-200"
                 />
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{farmerName}</p>
-                  {/* Contact Info */}
                   <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <span>{product.farmer.phone || "N/A"}</span>
+                    <span>{product.farmer?.phone || "N/A"}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="text-xs text-gray-600">{product.farmer.rating}</span>
+                    <span className="text-xs text-gray-600">{product.farmer?.rating || 4.5}</span>
                   </div>
                 </div>
               </div>
-
+              
               <div className="flex gap-2">
                 <button className="text-green-700 hover:text-green-800 p-2 rounded-lg hover:bg-green-50 transition-colors">
                   <Phone className="w-4 h-4" />
@@ -142,7 +173,7 @@ function ProductCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onOrder(product.id);
+                    onOrder && onOrder(product.id);
                   }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 mr-2"
                   disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
@@ -165,11 +196,11 @@ function ProductCard({
   return (
     <div
       className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-stone-200 product-card cursor-pointer"
-      onClick={() => onShowDetail(product)}
+      onClick={() => onShowDetail && onShowDetail(product)}
     >
       <div className="relative h-48 overflow-hidden">
         <img
-          src={product.image || "/placeholder.svg"}
+          src={productImage || "/placeholder.svg"}
           alt={productName}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 product-image"
         />
@@ -187,59 +218,77 @@ function ProductCard({
           >
             {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
           </span>
+          {showDistance && product.distance && (
+            <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
+              {product.distance.toFixed(1)} km
+            </span>
+          )}
         </div>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onToggleFavorite(product.id);
+            onToggleFavorite && onToggleFavorite(product.id);
           }}
           className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg favorite-btn"
         >
           <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500 favorite-active" : "text-gray-600"}`} />
         </button>
       </div>
+
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-bold text-gray-800 flex-1 pr-2">{productName}</h3>
+          <h3 className="text-lg font-bold text-gray-800 flex-1 pr-2 line-clamp-1">{productName}</h3>
           <div className="flex items-center gap-1 flex-shrink-0">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 star" />
-            <span className="text-sm font-semibold text-gray-700">{product.rating}</span>
+            <span className="text-sm font-semibold text-gray-700">{product.rating || 4.5}</span>
           </div>
         </div>
+        
         <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{productDescription}</p>
+        
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1">
+            <MapPin className="w-3 h-3 text-green-600" />
             <span className="text-sm text-gray-600">{currentTexts.from}</span>
             <span className="text-sm font-medium text-green-700">{provinceName}</span>
           </div>
           <div className="text-right price-display">
             <span className="text-lg font-bold text-green-700">
-              {product.currency}{product.price}
+              ${product.price}
             </span>
             <span className="text-gray-500 text-sm">/{product.unit}</span>
           </div>
         </div>
+
+        {/* Distance Display */}
+        {showDistance && product.distance && (
+          <div className="text-center mb-3">
+            <span className="text-sm font-medium text-blue-600">
+              {product.distance.toFixed(1)} km away
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 farmer-avatar">
             <img
-              src={product.farmer.avatar || "/placeholder.svg"}
+              src={farmerAvatar || "/placeholder.svg"}
               alt={farmerName}
               className="w-8 h-8 rounded-full object-cover border border-stone-200"
             />
-            <div>
-              <span className="text-sm font-medium text-gray-700 truncate">{farmerName}</span>
-              {/* Contact Info */}
+            <div className="min-w-0 flex-1">
+              <span className="text-sm font-medium text-gray-700 truncate block">{farmerName}</span>
               <div className="flex items-center gap-1 text-xs text-gray-500">
-                <span>{product.farmer.phone || "N/A"}</span>
+                <span className="truncate">{product.farmer?.phone || "N/A"}</span>
               </div>
             </div>
           </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onOrder(product.id);
+              onOrder && onOrder(product.id);
             }}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn"
+            className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn disabled:opacity-50 flex-shrink-0"
             disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
           >
             {orderingProducts.includes(product.id)

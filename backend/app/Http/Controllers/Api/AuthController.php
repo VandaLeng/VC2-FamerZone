@@ -17,7 +17,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
+            'province_id' => 'required|exists:provinces,id',
             'role' => 'required|string|in:buyer,farmer',
         ]);
 
@@ -28,7 +28,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
             'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
+            'province_id' => $validated['province_id'],
             'role_id' => $role->id,
         ]);
 
@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => $user->load('role', 'roles'),
+            'user' => $user->load('province', 'role', 'roles'),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 201);
@@ -51,7 +51,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $credentials['email'])->with('role', 'roles')->first();
+        $user = User::where('email', $credentials['email'])->with('province', 'role', 'roles')->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json(['error' => 'Invalid credentials'], 401);

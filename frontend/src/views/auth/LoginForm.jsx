@@ -91,12 +91,18 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
         localStorage.setItem("auth_token", data.access_token);
         localStorage.setItem("user_data", JSON.stringify(data.user));
         setIsLoggedIn(true);
-        setUserData(data.user);
+        setUserData({
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          role: data.user.role,
+          phone: data.user.phone,
+          province: data.user.province,
+        });
         alert(currentTexts.loginSuccess);
         console.log("Login successful. Token stored:", localStorage.getItem("auth_token"));
         console.log("User data stored:", localStorage.getItem("user_data"));
-        // Redirect based on role
-        if (data.user.role?.name === "farmer") {
+        if (data.user.role === "farmer") {
           console.log("Navigating to /farmer/dashboard");
           navigate("/farmer/dashboard");
         } else {

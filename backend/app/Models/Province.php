@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Item; // ✅ Import Item model
 
-class Category extends Model
+class Province extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'image', 'status'];
+    protected $fillable = ['province_name', 'latitude', 'longitude', 'city', 'country'];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'province_id');
+    }
 
     public function items()
     {
