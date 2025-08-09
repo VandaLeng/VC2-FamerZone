@@ -29,6 +29,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user()->load('roles');
+// });
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -76,6 +80,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
     Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
     Route::post('/users/{id}/upload-image', [UserController::class, 'uploadImage']);
+
+    // Route::middleware('auth:sanctum')->post('/profile/update', [UserController::class, 'updateProfile']);
 });
 
 Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
@@ -107,3 +113,15 @@ Route::apiResource('orders', OrderController::class);
 
 
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/profile/update', [UserController::class, 'updateProfile']);
+    Route::post('/profile/image', [UserController::class, 'updateImage']);
+});
+
+Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
+    Route::get('/farmer/products', [FarmerController::class, 'index']);
+    Route::post('/farmer/products', [FarmerController::class, 'store']);
+    Route::get('/farmer/products/{id}', [FarmerController::class, 'show']);
+    Route::put('/farmer/products/{id}', [FarmerController::class, 'update']);
+    Route::delete('/farmer/products/{id}', [FarmerController::class, 'destroy']);
+});
