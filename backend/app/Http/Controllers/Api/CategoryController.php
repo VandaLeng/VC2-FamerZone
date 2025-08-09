@@ -28,10 +28,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name.en' => 'required|string|max:255',
-            'name.kh' => 'required|string|max:255',
-            'description.en' => 'nullable|string',
-            'description.kh' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'required|in:active,inactive',
         ]);
@@ -41,8 +39,8 @@ class CategoryController extends Controller
         }
 
         $category = Category::create([
-            'name' => ['en' => $validated['name']['en'], 'kh' => $validated['name']['kh']],
-            'description' => ['en' => $validated['description']['en'] ?? '', 'kh' => $validated['description']['kh'] ?? ''],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? '',
             'image' => $validated['image'] ?? null,
             'status' => $validated['status'],
         ]);
@@ -56,6 +54,7 @@ class CategoryController extends Controller
             'data' => $category
         ], 201);
     }
+
 
     public function show($id)
     {
@@ -74,14 +73,13 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $validated = $request->validate([
-            'name.en' => 'required|string|max:255',
-            'name.kh' => 'required|string|max:255',
-            'description.en' => 'nullable|string',
-            'description.kh' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'required|in:active,inactive',
         ]);
 
+        // Handle new image upload
         if ($request->hasFile('image')) {
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
@@ -89,9 +87,10 @@ class CategoryController extends Controller
             $validated['image'] = $request->file('image')->store('category_images', 'public');
         }
 
+        // Update category
         $category->update([
-            'name' => ['en' => $validated['name']['en'], 'kh' => $validated['name']['kh']],
-            'description' => ['en' => $validated['description']['en'] ?? '', 'kh' => $validated['description']['kh'] ?? ''],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? '',
             'image' => $validated['image'] ?? $category->image,
             'status' => $validated['status'],
         ]);
@@ -105,6 +104,7 @@ class CategoryController extends Controller
             'data' => $category,
         ]);
     }
+
 
     public function destroy($id)
     {
@@ -127,8 +127,11 @@ class CategoryController extends Controller
         $query = Category::withCount('items');
 
         if ($request->has('name')) {
-            $query->where('name->en', 'like', '%' . $request->name . '%')
-                  ->orWhere('name->kh', 'like', '%' . $request->name . '%');
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->has('status') && in_array($request->status, ['active', 'inactive'])) {
+            $query->where('status', $request->status);
         }
 
         $categories = $query->get();

@@ -502,9 +502,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 {nearbyProducts.slice(0, 4).map((product, index) => (
                   <div
                     key={product.id}
-                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${
-                      index === 0 ? "col-span-2" : ""
-                    } hero-card`}
+                    className={`bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 ${index === 0 ? "col-span-2" : ""
+                      } hero-card`}
                   >
                     <div className="relative overflow-hidden rounded-lg mb-3">
                       <img
