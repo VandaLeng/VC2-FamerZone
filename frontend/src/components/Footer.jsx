@@ -112,8 +112,6 @@ export default function Footer({ currentLanguage }) {
                 { text: currentTexts.about, href: "/about" },
                 { text: currentTexts.learningCenter, href: "/learning-center" },
                 { text: currentTexts.contact, href: "/contact" },
-                // { text: currentTexts.farmers, href: "/farmers" },
-                // { text: currentTexts.news, href: "/news" },
               ].map((item) => (
                 <li key={item.text}>
                   <a

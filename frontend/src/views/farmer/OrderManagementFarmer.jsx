@@ -7,8 +7,8 @@ import OrderRow from "../../components/OrderRow"
 import { fetchOrders, updateOrderStatus } from "../../services/orderService"
 
 const currentTexts = {
-  searchPlaceholder: "Search orders...",
-  filterLabel: "Filter by status:",
+  searchPlaceholder: "ស្វែងរកការបញ្ជាទិញ...",
+  filterLabel: "តម្រៀបតាមស្ថានភាព៖",
 }
 
 const OrderManagementFarmer = () => {
@@ -90,7 +90,7 @@ const OrderManagementFarmer = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading orders...</p>
+          <p className="mt-4 text-gray-600">កំពុងផ្ទុកការបញ្ជាទិញ...</p>
         </div>
       </div>
     )
@@ -123,8 +123,8 @@ const OrderManagementFarmer = () => {
                   <tr>
                     <td colSpan="8" className="px-6 py-8 text-center text-gray-500">
                       {searchTerm || filterStatus !== "all"
-                        ? "No orders found matching your criteria."
-                        : "No orders available."}
+                        ? "រកមិនឃើញការបញ្ជាទិញដែលត្រូវនឹងលក្ខណៈណែនាំរបស់អ្នកទេ។"
+                        : "មិនមានការបញ្ជាទិញនៅឡើយទេ។"}
                     </td>
                   </tr>
                 )}

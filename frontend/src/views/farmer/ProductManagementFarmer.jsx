@@ -85,74 +85,81 @@ const ProductManagement = () => {
     previous: "មុន",
     next: "បន្ទាប់",
     nameRequired: "ឈ្មោះផលិតផលត្រូវតែបញ្ចូល",
-    nameEnRequired: "ឈ្មោះផលិតផលត្រូវតែមានអក្សរអង់គ្លេស",
   }
 
   const API_BASE_URL = "http://localhost:8000"
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setError(null); // Clear previous errors
       try {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
+        const params = {};
+        if (searchTerm.trim()) params.name = searchTerm.trim();
+        if (filterStatus && filterStatus !== "") params.status = filterStatus;
+
         const response = await axios.get(`${API_BASE_URL}/api/categories`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
-        })
+          params,
+        });
         if (response.data.success) {
-          const categoriesData = response.data.data.map((category) => ({
+          const transformedCategories = response.data.data.map((category) => ({
             id: category.id,
-            name: category.name.kh || "",
+            name: category.name || "",
             image_url: category.image_url || null,
             productCount: category.productCount || 0,
-          }))
-          setCategories(categoriesData)
+          }));
+          setCategories(transformedCategories);
         } else {
-          setError(texts.error + "បរាជ័យក្នុងការទៅយកប្រភេទ")
-          console.error("API Error:", response.data.message)
+          setError(texts.error + "បរាជ័យក្នុងការទៅយកប្រភេទ");
+          console.error("API Error:", response.data.message);
         }
       } catch (err) {
-        setError(texts.error + (err.response?.data?.message || err.message))
-        console.error("Fetch Categories Error:", err)
+        const errorMessage = err.response?.data?.message || "បរាជ័យក្នុងការទៅយកប្រភេទ";
+        setError(texts.error + errorMessage);
+        console.error("Fetch Categories Error:", err);
       }
-    }
+    };
 
     const fetchItems = async () => {
       try {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/api/items`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
-        })
+        });
         if (response.data.success) {
           const productsData = response.data.data.map((item) => ({
             id: item.id,
-            name: item.name_kh || item.name || "",
+            name: item.name || item.name_kh || "",
             category_id: item.category_id,
-            category: categories.find((cat) => cat.id === item.category_id) || { name: "" },
+            category: item.category ? { name: item.category.name || "" } : { name: "" }, // Use category from response
             price: item.price || 0,
             stock: item.stock || 0,
             unit: item.unit || "piece",
             unit_kh: item.unit_kh || texts.piece,
-            image: item.image || "",
+            image: item.image ? `${API_BASE_URL}/storage/${item.image}` : "",
             status: item.status || "active",
             orders: item.orders || 0,
-          }))
-          setProducts(productsData)
+          }));
+          setProducts(productsData);
         } else {
-          setError(texts.error + "បរាជ័យក្នុងការទៅយកផលិតផល")
-          console.error("API Error:", response.data.message)
+          setError(texts.error + "បរាជ័យក្នុងការទៅយកផលិតផល");
+          console.error("API Error:", response.data.message);
         }
       } catch (err) {
-        setError(texts.error + (err.response?.data?.message || err.message))
-        console.error("Fetch Items Error:", err)
+        setError(texts.error + (err.response?.data?.message || err.message));
+        console.error("Fetch Items Error:", err);
       }
-    }
+    };
 
     fetchCategories()
     fetchItems()
   }, [texts.error, texts.piece])
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -222,12 +229,6 @@ const ProductManagement = () => {
 
       if (!formData.name.trim()) {
         setError(texts.nameRequired)
-        return
-      }
-
-      const hasEnglish = /[a-zA-Z]/.test(formData.name)
-      if (!hasEnglish) {
-        setError(texts.nameEnRequired)
         return
       }
 
@@ -333,9 +334,8 @@ const ProductManagement = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors font-khmer text-base ${
-                  validationErrors.name || error ? "border-red-500" : "border-[#F5F5DC]"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors font-khmer text-base ${validationErrors.name || error ? "border-red-500" : "border-[#F5F5DC]"
+                  }`}
                 placeholder="បញ្ចូលប្រភេទ"
                 required
               />
@@ -346,9 +346,8 @@ const ProductManagement = () => {
               <select
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${
-                  validationErrors.category_id ? "border-red-500" : "border-[#F5F5DC]"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${validationErrors.category_id ? "border-red-500" : "border-[#F5F5DC]"
+                  }`}
                 required
               >
                 <option value="">{texts.selectCategory}</option>
@@ -368,9 +367,8 @@ const ProductManagement = () => {
                   step="0.01"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${
-                    validationErrors.price ? "border-red-500" : "border-[#F5F5DC]"
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${validationErrors.price ? "border-red-500" : "border-[#F5F5DC]"
+                    }`}
                   required
                 />
               </div>
@@ -381,9 +379,8 @@ const ProductManagement = () => {
                   type="number"
                   value={formData.stock}
                   onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${
-                    validationErrors.stock ? "border-red-500" : "border-[#F5F5DC]"
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${validationErrors.stock ? "border-red-500" : "border-[#F5F5DC]"
+                    }`}
                   required
                 />
               </div>
@@ -399,9 +396,8 @@ const ProductManagement = () => {
                       unit_kh: e.target.value === "piece" ? texts.piece : texts[e.target.value],
                     })
                   }
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${
-                    validationErrors.unit ? "border-red-500" : "border-[#F5F5DC]"
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors text-base ${validationErrors.unit ? "border-red-500" : "border-[#F5F5DC]"
+                    }`}
                 >
                   <option value="kg">{texts.kg}</option>
                   <option value="lb">{texts.lb}</option>
@@ -415,9 +411,8 @@ const ProductManagement = () => {
             <div>
               <label className="block text-base font-semibold text-[#333333] mb-2">{texts.productImage}</label>
               <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-[#228B22] transition-colors ${
-                  validationErrors.image ? "border-red-500" : "border-[#F5F5DC]"
-                }`}
+                className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-[#228B22] transition-colors ${validationErrors.image ? "border-red-500" : "border-[#F5F5DC]"
+                  }`}
               >
                 <Upload className="mx-auto h-12 w-12 text-[#8B4513] mb-4" />
                 <p className="text-base text-[#8B4513] mb-2">{texts.uploadImage}</p>
@@ -616,20 +611,18 @@ const ProductManagement = () => {
                       </td>
                       <td className="py-4 px-6">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-                            product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {product.stock} {product.unit_kh}
                         </span>
                       </td>
                       <td className="py-4 px-6">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-                            product.status === "active"
-                              ? "bg-[#228B22] bg-opacity-10 text-[#228B22]"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${product.status === "active"
+                            ? "bg-[#228B22] bg-opacity-10 text-[#228B22]"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {product.status === "active" ? texts.active : texts.outOfStock}
                         </span>
@@ -738,4 +731,4 @@ const ProductManagement = () => {
   )
 }
 
-export default ProductManagement
+export default ProductManagement;

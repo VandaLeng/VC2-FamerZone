@@ -3,7 +3,7 @@ import { MapPin, Navigation, Phone, Star, Package, Truck } from 'lucide-react';
 
 const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 11.5564, lng: 104.9282 }); // Default to Phnom Penh
+  const [mapCenter, setMapCenter] = useState({ lat: 11.5564, lng: 104.9282 }); 
 
   useEffect(() => {
     if (userLocation) {
@@ -108,9 +108,8 @@ const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius }) => 
             {nearbyProducts.map((product, index) => {
               if (!product.farmer.location) return null;
               
-              // Calculate relative position based on distance and direction
-              const angle = (index * 45) % 360; // Distribute around circle
-              const distance = Math.min(product.distance * 2, 80); // Scale for display
+              const angle = (index * 45) % 360; 
+              const distance = Math.min(product.distance * 2, 80); 
               const x = 50 + (distance * Math.cos(angle * Math.PI / 180)) / 2;
               const y = 50 + (distance * Math.sin(angle * Math.PI / 180)) / 2;
 

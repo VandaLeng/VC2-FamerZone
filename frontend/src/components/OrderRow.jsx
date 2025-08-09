@@ -14,10 +14,10 @@ const OrderRow = ({ order, onStatusUpdate }) => {
       await axios.put(`/api/orders/${order.id}/status`, {
         status: newStatus,
       });
-      onStatusUpdate(order.id, newStatus); // Update parent state
+      onStatusUpdate(order.id, newStatus); 
       setShowDropdown(false);
     } catch (error) {
-      console.error('Failed to update status:', error);
+      console.error('បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពស្ថានភាព:', error);
     } finally {
       setLoading(false);
     }
@@ -25,14 +25,21 @@ const OrderRow = ({ order, onStatusUpdate }) => {
 
   return (
     <tr className="border-b border-gray-200">
-      <td className="p-2">{order.id}</td>
-      <td className="p-2">{order.user?.name || 'N/A'}</td>
-      <td className="p-2">{order.address}</td>
-      <td className="p-2">{order.total_price}</td>
-      <td className="p-2">{order.quantity}</td>
-      <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
-      <td className="p-2 capitalize">{order.status}</td>
-      <td className="p-2 relative">
+      <td className="px-6 py-3 text-sm text-gray-800">{order.id}</td>
+      <td className="px-6 py-3 text-sm text-gray-800">{order.user?.name || 'មិនមាន'}</td>
+      <td className="px-6 py-3 text-sm text-gray-800">{order.address}</td>
+      <td className="px-6 py-3 text-sm text-[#2D5016] font-semibold">{order.total_price}</td>
+      <td className="px-6 py-3 text-sm text-[#2D5016]">{order.quantity}</td>
+      <td className="px-6 py-3 text-sm text-gray-800">{new Date(order.created_at).toLocaleString()}</td>
+      <td className="px-6 py-3 text-sm capitalize text-gray-800">
+        {{
+          pending: "កំពុងរង់ចាំ",
+          confirmed: "បានបញ្ជាក់",
+          delivered: "បានដឹកជញ្ជូន",
+          cancelled: "បានបោះបង់"
+        }[order.status] || order.status}
+      </td>
+      <td className="px-6 py-3 relative text-sm text-gray-800">
         <button
           onClick={toggleDropdown}
           className="text-gray-600 hover:text-black"
@@ -49,7 +56,7 @@ const OrderRow = ({ order, onStatusUpdate }) => {
               disabled={loading}
             >
               <Clock size={14} className="inline mr-2" />
-              Set to Pending
+              កំណត់ជា​កំពុងរង់ចាំ
             </button>
             <button
               className="w-full text-left px-4 py-2 hover:bg-green-100"
@@ -57,7 +64,7 @@ const OrderRow = ({ order, onStatusUpdate }) => {
               disabled={loading}
             >
               <CheckCircle size={14} className="inline mr-2" />
-              Set to Confirmed
+              កំណត់ជា​បានបញ្ជាក់
             </button>
             <button
               className="w-full text-left px-4 py-2 hover:bg-green-100"
@@ -65,7 +72,7 @@ const OrderRow = ({ order, onStatusUpdate }) => {
               disabled={loading}
             >
               <Truck size={14} className="inline mr-2" />
-              Set to Delivered
+              កំណត់ជា​បានដឹកជញ្ជូន
             </button>
             <button
               className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-700"
@@ -73,7 +80,7 @@ const OrderRow = ({ order, onStatusUpdate }) => {
               disabled={loading}
             >
               <XCircle size={14} className="inline mr-2" />
-              Set to Cancelled
+              កំណត់ជា​បានបោះបង់
             </button>
           </div>
         )}

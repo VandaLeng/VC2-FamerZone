@@ -1,7 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import "../styles/NavbarStyle.css" // Ensure this path is correct
+import "../styles/NavbarStyle.css" 
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -32,6 +32,11 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
     setIsMobileMenuOpen(false) // Close mobile menu on navigation
   }
 
+  const handleCart = () => {
+    navigate("/cart")
+    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+  }
+
   // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -54,13 +59,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
       contact: "ទំនាក់ទំនង",
       login: "ចូលប្រើ",
       register: "ចុះឈ្មោះ",
-      phone: "+855 (0) 12 345 678",
       profile: "ប្រវត្តិរូប",
       settings: "ការកំណត់",
       orders: "ការបញ្ជាទិញ",
       logout: "ចាកចេញ",
       dashboard: "ផ្ទាំងគ្រប់គ្រង",
       switchLang: "ប្តូរទៅភាសាអង់គ្លេស",
+      cart: "រទេះទិញឥវ៉ាន់",
     },
     en: {
       home: "Home",
@@ -70,13 +75,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
       contact: "Contact",
       login: "Login",
       register: "Register",
-      phone: "+855 (0) 12 345 678",
       profile: "Profile",
       settings: "Settings",
       orders: "Orders",
       logout: "Logout",
       dashboard: "Dashboard",
       switchLang: "Switch to Khmer",
+      cart: "Cart",
     },
   }
   const currentTexts = texts[currentLanguage]
@@ -85,6 +90,9 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
+
+  // Mock cart item count - replace with your actual cart state
+  const cartItemCount = 3 
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -98,7 +106,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               </svg>
             </div>
             <span className="text-xl font-bold text-gray-800">
-              <span className="text-green-600">Framer</span>
+              <span className="text-green-600">Farmer</span>
               <span className="text-gray-700">Zone</span>
             </span>
           </div>
@@ -139,6 +147,24 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
 
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Shopping Cart */}
+            <a
+              href="cart"
+              onClick={handleCart}
+              className="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-600 hover:text-green-600 group"
+              title={currentTexts.cart}
+            >
+              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+
+              {/* Cart Badge */}
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount > 99 ? '99+' : cartItemCount}
+                </span>
+              )}
+            </a>
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
@@ -167,9 +193,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                   </div>
                   <span className="text-gray-700 font-medium text-sm hidden lg:block">{userName}</span>
                   <svg
-                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                      isProfileOpen ? "rotate-180" : ""
-                    }`}
+                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileOpen ? "rotate-180" : ""
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -191,26 +216,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       </div>
                     </div>
                     <div className="py-2">
-                      {/* <Link
-                        to="/dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
-                      >
-                        <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 5a2 2 0 012-2h2a2 2 0 012 2v6H8V5z"
-                          />
-                        </svg>
-                        {currentTexts.dashboard}
-                      </Link> */}
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
@@ -302,7 +307,29 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Cart Icon */}
+            <button
+              onClick={handleCart}
+              className="relative p-2 text-gray-600 hover:text-green-600 transition-colors duration-200"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.034-.864 2.034-1.929 0-.66-.45-1.25-.965-1.56L13.5 7.78c-.72-.3-1.5-.3-2.22 0L5.06 10.89c-.515.31-.965.9-.965 1.56 0 1.065.913 1.929 2.034 1.929z"
+                />
+                <circle cx="8.25" cy="20.25" r="0.75" fill="currentColor" />
+                <circle cx="18.75" cy="20.25" r="0.75" fill="currentColor" />
+              </svg>
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount > 99 ? '99+' : cartItemCount}
+                </span>
+              )}
+            </button>
+
+            {/* Mobile Menu Toggle */}
             <button
               onClick={toggleMobileMenu}
               className="text-gray-600 hover:text-green-600 transition-colors duration-200 p-2"
@@ -431,17 +458,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                   </svg>
                   <span>{currentLanguage === "kh" ? "Switch to English" : "ប្តូរទៅភាសាខ្មែរ"}</span>
                 </button>
-                <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <span>{currentTexts.phone}</span>
-                </div>
                 {isLoggedIn && (
                   <button
                     onClick={() => {

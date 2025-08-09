@@ -17,10 +17,11 @@ const CategoryManagement = () => {
   const actionsMenuRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
-    description_kh: '',
+    description: '', // Changed from description_kh
     status: 'active',
     image: null,
   });
+
 
   const texts = {
     categoryManagement: 'ការគ្រប់គ្រងប្រភេទ',
@@ -30,7 +31,7 @@ const CategoryManagement = () => {
     allCategories: 'ប្រភេទទាំងអស់',
     activeCategories: 'ប្រភេទសកម្ម',
     inactiveCategories: 'ប្រភេទមិនសកម្ម',
-    categoryName: 'ឈ្មោះប្រភេទ',
+    categoryName: 'ប្រភេទ',
     description: 'ការពិពណ៌នា',
     products: 'ផលិតផល',
     createdDate: 'កាលបរិច្ឆេទបង្កើត',
@@ -64,56 +65,39 @@ const CategoryManagement = () => {
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
+  const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 
-// Remove trailing '/api' from API base URL for image use
-const BASE_IMAGE_URL = API_BASE_URL.replace('/api', '');
-
-useEffect(() => {
-  const fetchCategories = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(CATEGORIES_ENDPOINT);
-
-      const transformedCategories = response.data.data.map((category) => {
-        // Normalize the image URL
-        let imageUrl = category.image_url || '';
-        
-        // If it's a relative path (e.g. "uploads/image.jpg"), prefix it with server origin
-        if (imageUrl && !imageUrl.startsWith('http')) {
-          imageUrl = `${BASE_IMAGE_URL}/category_image/${imageUrl}`;
-        }
-
-
-        return {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(CATEGORIES_ENDPOINT);
+        const transformedCategories = response.data.data.map((category) => ({
           id: category.id,
-          name: category.name.kh || '',
-          description: category.description.kh || '',
+          name: category.name, // Use as string
+          description: category.description || '', // Use as string
           productCount: category.productCount || 0,
           createdAt: category.created_at,
           status: category.status,
-          image_url: imageUrl,
-        };
-      });
+          image_url: category.image_url,
+        }));
+        setCategories(transformedCategories);
+        setError(null);
+      } catch (err) {
+        const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
+        setError(errorMessage);
+        console.error('AxiosError Details:', {
+          message: err.message,
+          code: err.code,
+          response: err.response,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      setCategories(transformedCategories);
-      setError(null);
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
-      setError(errorMessage);
-      console.error('AxiosError Details:', {
-        message: err.message,
-        code: err.code,
-        response: err.response,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  fetchCategories();
-}, []);
+    fetchCategories();
+  }, []);
 
   const filteredCategories = categories.filter((category) => {
     const matchesSearch =
@@ -129,20 +113,21 @@ useEffect(() => {
     if (category) {
       setFormData({
         name: category.name,
-        description_kh: category.description,
+        description: category.description,
         status: category.status,
         image: null,
       });
     } else {
       setFormData({
         name: '',
-        description_kh: '',
+        description: '',
         status: 'active',
         image: null,
       });
     }
     setShowModal(true);
     setDropdownOpen(null);
+    setError(null); // Clear error
   };
 
   const handleCloseModal = () => {
@@ -150,10 +135,11 @@ useEffect(() => {
     setSelectedCategory(null);
     setFormData({
       name: '',
-      description_kh: '',
+      description: '',
       status: 'active',
       image: null,
     });
+    setError(null); // Clear error
   };
 
   const handleSave = async () => {
@@ -162,19 +148,11 @@ useEffect(() => {
       return;
     }
 
-    // Basic check for English (Latin) characters
-    const hasEnglish = /[a-zA-Z]/.test(formData.name);
-    if (!hasEnglish) {
-      setError(texts.nameEnRequired);
-      return;
-    }
-
     setIsLoading(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name[kh]', formData.name);
-      formDataToSend.append('name[en]', formData.name);
-      formDataToSend.append('description[kh]', formData.description_kh || '');
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('description', formData.description || '');
       formDataToSend.append('status', formData.status);
 
       if (formData.image) {
@@ -194,13 +172,13 @@ useEffect(() => {
           categories.map((cat) =>
             cat.id === selectedCategory.id
               ? {
-                  ...cat,
-                  name: response.data.data.name.kh,
-                  description: response.data.data.description.kh,
-                  status: response.data.data.status,
-                  image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
-                }
+                ...cat,
+                name: response.data.data.name,
+                description: response.data.data.description,
+                status: response.data.data.status,
+                image_url: response.data.data.image_url,
+                productCount: response.data.data.productCount,
+              }
               : cat
           )
         );
@@ -210,8 +188,8 @@ useEffect(() => {
         });
         const newCategory = {
           id: response.data.data.id,
-          name: response.data.data.name.kh,
-          description: response.data.data.description.kh,
+          name: response.data.data.name,
+          description: response.data.data.description,
           productCount: response.data.data.productCount || 0,
           createdAt: response.data.data.created_at,
           status: response.data.data.status,
@@ -249,7 +227,7 @@ useEffect(() => {
       setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
       setShowDeleteConfirm(false);
       setCategoryToDelete(null);
-      setError(null);
+      setError(null); // Clear error
       alert(texts.categoryDeleted);
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការលុបប្រភេទ';
@@ -360,9 +338,6 @@ useEffect(() => {
               <thead className="bg-[#EAF8E7]">
                 <tr>
                   <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
-                    {texts.image}
-                  </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
                     {texts.categoryName}
                   </th>
                   <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
@@ -389,23 +364,23 @@ useEffect(() => {
                       {texts.loading}
                     </td>
                   </tr>
-                ) : filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => (
+                ) : categories.length > 0 ? ( // Changed from filteredCategories
+                  categories.map((category) => ( // Changed from filteredCategories
                     <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
                       <td className="px-6 py-4">
-                        {category.image_url ? (
-                          <img
-                            src={category.image_url || "/placeholder.svg"}
-                            alt={category.name}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        ) : (
-                          <span className="text-[#8B4513] text-base">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-[#333333] text-base">
-                          {category.name}
+                        <div className="flex items-center gap-4">
+                          {category.image_url ? (
+                            <img
+                              src={category.image_url || "/placeholder.svg"}
+                              alt={category.name}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          ) : (
+                            <span className="text-[#8B4513] text-base">-</span>
+                          )}
+                          <div className="font-medium text-[#333333] text-base">
+                            {category.name}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -423,11 +398,10 @@ useEffect(() => {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-                            category.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${category.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}
                         >
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>
@@ -483,7 +457,6 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -492,8 +465,8 @@ useEffect(() => {
                 {modalMode === 'add'
                   ? texts.addCategory
                   : modalMode === 'edit'
-                  ? texts.editCategory
-                  : texts.viewCategory}
+                    ? texts.editCategory
+                    : texts.viewCategory}
               </h2>
               <button
                 onClick={handleCloseModal}
@@ -506,7 +479,7 @@ useEffect(() => {
               <div className="space-y-6">
                 <div>
                   <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.categoryNameKh}
+                    {texts.categoryName}
                   </label>
                   <input
                     type="text"
@@ -514,16 +487,16 @@ useEffect(() => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     disabled={modalMode === 'view'}
                     className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] font-khmer text-base"
-                    placeholder="បញ្ចូលប្រភេទ"
+                    placeholder="បញ្ចូលឈ្មោះប្រភេទ"
                   />
                 </div>
                 <div>
                   <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.descriptionKh}
+                    {texts.description}
                   </label>
                   <textarea
-                    value={formData.description_kh}
-                    onChange={(e) => setFormData({ ...formData, description_kh: e.target.value })}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     disabled={modalMode === 'view'}
                     rows={4}
                     className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] resize-none font-khmer text-base"
@@ -587,7 +560,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
