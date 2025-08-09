@@ -12,29 +12,73 @@ use Illuminate\Support\Facades\Log;
 class ItemController extends Controller
 {
     // GET /api/items
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $items = Item::with(['category', 'user', 'province'])
-                ->where('status', 'active')
-                ->orderBy('created_at', 'desc')
+            // Load items with their relationships
+            $items = Item::with([
+                'user',
+                'category',
+                'province'
+            ])
+                ->active()
                 ->get();
-            
-            Log::info('Items fetched successfully', ['count' => $items->count()]);
-            
+
+            // Transform the data to include all necessary fields
+            $transformedItems = $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'description' => $item->description,
+                    'price' => (float) $item->price,
+                    'stock' => (int) $item->stock,
+                    'unit' => $item->unit,
+                    'image' => $item->image,
+                    'image_url' => $item->image ? url('storage/' . $item->image) : null,
+                    'status' => $item->status,
+                    'orders' => (int) $item->orders,
+                    'rating' => (float) $item->rating,
+                    'category_id' => $item->category_id,
+                    'user_id' => $item->user_id,
+                    'province_id' => $item->province_id,
+                    'is_popular' => $item->orders > 10 || $item->rating > 4.0,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+
+                    // Include relationship data
+                    'user' => $item->user ? [
+                        'id' => $item->user->id,
+                        'name' => $item->user->name,
+                        'phone' => $item->user->phone ?? 'N/A',
+                        'avatar' => $item->user->avatar ? url('storage/' . $item->user->avatar) : null,
+                        'rating' => (float) ($item->user->rating ?? 0),
+                    ] : null,
+
+                    'category' => $item->category ? [
+                        'id' => $item->category->id,
+                        'name' => $item->category->name,
+                    ] : null,
+
+                    'province' => $item->province ? [
+                        'id' => $item->province->id,
+                        'province_name' => $item->province->province_name,
+                        'latitude' => (float) $item->province->latitude,
+                        'longitude' => (float) $item->province->longitude,
+                        'city' => $item->province->city,
+                        'country' => $item->province->country,
+                    ] : null,
+                ];
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $items->map(function ($item) {
-                    return $this->formatItem($item);
-                }),
+                'data' => $transformedItems,
                 'message' => 'Items retrieved successfully'
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching items: ' . $e->getMessage());
-            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch items: ' . $e->getMessage(),
+                'message' => 'Failed to retrieve items: ' . $e->getMessage(),
                 'data' => []
             ], 500);
         }
@@ -45,7 +89,7 @@ class ItemController extends Controller
     {
         try {
             Log::info('Store item request received', $request->all());
-            
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
@@ -70,7 +114,7 @@ class ItemController extends Controller
             }
 
             $data = $validator->validated();
-            
+
             // Ensure status defaults to active if not provided
             $data['status'] = $data['status'] ?? 'active';
             $data['orders'] = $data['orders'] ?? 0;
@@ -105,25 +149,61 @@ class ItemController extends Controller
     public function show($id)
     {
         try {
-            $item = Item::with(['category', 'user', 'province'])->find($id);
-            
-            if (!$item) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Item not found'
-                ], 404);
-            }
+            $item = Item::with(['user', 'category', 'province'])->findOrFail($id);
+
+            $transformedItem = [
+                'id' => $item->id,
+                'name' => $item->name,
+                'description' => $item->description,
+                'price' => (float) $item->price,
+                'stock' => (int) $item->stock,
+                'unit' => $item->unit,
+                'image' => $item->image,
+                'image_url' => $item->image ? url('storage/' . $item->image) : null,
+                'status' => $item->status,
+                'orders' => (int) $item->orders,
+                'rating' => (float) $item->rating,
+                'category_id' => $item->category_id,
+                'user_id' => $item->user_id,
+                'province_id' => $item->province_id,
+                'is_popular' => $item->orders > 10 || $item->rating > 4.0,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+
+                'user' => $item->user ? [
+                    'id' => $item->user->id,
+                    'name' => $item->user->name,
+                    'phone' => $item->user->phone ?? 'N/A',
+                    'avatar' => $item->user->avatar ? url('storage/' . $item->user->avatar) : null,
+                    'rating' => (float) ($item->user->rating ?? 0),
+                ] : null,
+
+                'category' => $item->category ? [
+                    'id' => $item->category->id,
+                    'name' => $item->category->name,
+                ] : null,
+
+                'province' => $item->province ? [
+                    'id' => $item->province->id,
+                    'province_name' => $item->province->province_name,
+                    'latitude' => (float) $item->province->latitude,
+                    'longitude' => (float) $item->province->longitude,
+                    'city' => $item->province->city,
+                    'country' => $item->province->country,
+                ] : null,
+            ];
 
             return response()->json([
                 'success' => true,
-                'data' => $this->formatItem($item)
+                'data' => $transformedItem,
+                'message' => 'Item retrieved successfully'
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching item: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch item: ' . $e->getMessage(),
-            ], 500);
+                'message' => 'Item not found: ' . $e->getMessage(),
+                'data' => null
+            ], 404);
         }
     }
 
@@ -132,7 +212,7 @@ class ItemController extends Controller
     {
         try {
             $item = Item::with(['category', 'user', 'province'])->find($id);
-            
+
             if (!$item) {
                 return response()->json([
                     'success' => false,
@@ -194,7 +274,7 @@ class ItemController extends Controller
     {
         try {
             $item = Item::find($id);
-            
+
             if (!$item) {
                 return response()->json([
                     'success' => false,
@@ -226,7 +306,7 @@ class ItemController extends Controller
     {
         try {
             Log::info('Filter request received', $request->all());
-            
+
             $query = Item::query()->with(['category', 'user', 'province']);
 
             // Province filter
@@ -244,9 +324,9 @@ class ItemController extends Controller
             // Search filter
             if ($request->has('search') && !empty($request->search)) {
                 $searchTerm = $request->search;
-                $query->where(function($q) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'like', '%' . $searchTerm . '%')
-                      ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%');
                 });
                 Log::info('Applied search filter', ['search' => $searchTerm]);
             }
@@ -281,13 +361,13 @@ class ItemController extends Controller
 
             // Get items with ordering
             $items = $query->orderBy('created_at', 'desc')->get();
-            
+
             Log::info('Items filtered successfully', ['count' => $items->count()]);
 
             // Calculate distances and format items
             $formattedItems = $items->map(function ($item) use ($latitude, $longitude) {
                 $formatted = $this->formatItem($item);
-                
+
                 // Calculate distance if user location is provided
                 if ($latitude && $longitude && $item->province) {
                     $distance = $this->calculateDistance(
@@ -298,7 +378,7 @@ class ItemController extends Controller
                     );
                     $formatted['distance'] = round($distance, 2);
                 }
-                
+
                 return $formatted;
             });
 
@@ -321,75 +401,13 @@ class ItemController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error filtering items: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch products: ' . $e->getMessage(),
                 'data' => []
             ], 500);
         }
-    }
-
-    // Helper method to calculate distance between two points
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
-    {
-        $earthRadius = 6371; // Earth's radius in kilometers
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLon = deg2rad($lon2 - $lon1);
-        $a = sin($dLat/2) * sin($dLat/2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon/2) * sin($dLon/2);
-        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
-        return $earthRadius * $c;
-    }
-
-    // Helper method to format item response to match frontend expectations
-    private function formatItem($item)
-    {
-        // Generate consistent rating and reviews based on item ID
-        $rating = 3.5 + (($item->id % 15) / 10); // 3.5 to 5.0
-        $reviews = 5 + ($item->id % 95); // 5 to 100
-        $isPopular = $item->orders > 10 || ($item->id % 3 === 0); // Popular if many orders or every 3rd item
-
-        return [
-            'id' => $item->id,
-            'title' => $item->name,
-            'titleKh' => $item->name,
-            'name' => $item->name,
-            'nameKh' => $item->name,
-            'price' => (float) $item->price,
-            'currency' => '$',
-            'stock' => $item->stock,
-            'unit' => $item->unit,
-            'image' => $item->image ? asset('storage/' . $item->image) : null,
-            'description' => $item->description ?? 'Fresh agricultural product',
-            'descriptionKh' => $item->description ?? 'ផលិតផលកសិកម្មស្រស់',
-            'status' => $item->status,
-            'orders' => $item->orders ?? 0,
-            'rating' => round($rating, 1),
-            'reviews' => $reviews,
-            'isPopular' => $isPopular,
-            'createdAt' => $item->created_at->toISOString(),
-            'category' => $item->category ? [
-                'id' => $item->category->id,
-                'name' => $item->category->name
-            ] : null,
-            'farmer' => $item->user ? [
-                'id' => $item->user->id,
-                'name' => $item->user->name,
-                'nameKh' => $item->user->name,
-                'avatar' => null,
-                'phone' => $item->user->phone ?? '+855 12 345 678',
-                'rating' => round(4.0 + (($item->user->id % 10) / 10), 1),
-            ] : null,
-            'province' => $item->province ? [
-                'id' => $item->province->id,
-                'province_name' => $item->province->province_name,
-                'nameKh' => $item->province->nameKh ?? $item->province->province_name,
-                'latitude' => (float) $item->province->latitude,
-                'longitude' => (float) $item->province->longitude,
-                'city' => $item->province->city,
-                'country' => $item->province->country,
-            ] : null,
-        ];
     }
 
     // GET /api/items/nearby - Get nearby products
@@ -452,5 +470,67 @@ class ItemController extends Controller
                 return $this->formatItem($item);
             })
         ]);
+    }
+
+    // Helper method to calculate distance between two points
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // Earth's radius in kilometers
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        return $earthRadius * $c;
+    }
+
+    // Helper method to format item response to match frontend expectations
+    private function formatItem($item)
+    {
+        // Generate consistent rating and reviews based on item ID
+        $rating = 3.5 + (($item->id % 15) / 10); // 3.5 to 5.0
+        $reviews = 5 + ($item->id % 95); // 5 to 100
+        $isPopular = $item->orders > 10 || ($item->id % 3 === 0); // Popular if many orders or every 3rd item
+
+        return [
+            'id' => $item->id,
+            'title' => $item->name,
+            'titleKh' => $item->name,
+            'name' => $item->name,
+            'nameKh' => $item->name,
+            'price' => (float) $item->price,
+            'currency' => '$',
+            'stock' => $item->stock,
+            'unit' => $item->unit,
+            'image' => $item->image ? asset('storage/' . $item->image) : null,
+            'description' => $item->description ?? 'Fresh agricultural product',
+            'descriptionKh' => $item->description ?? 'ផលិតផលកសិកម្មស្រស់',
+            'status' => $item->status,
+            'orders' => $item->orders ?? 0,
+            'rating' => round($rating, 1),
+            'reviews' => $reviews,
+            'isPopular' => $isPopular,
+            'createdAt' => $item->created_at->toISOString(),
+            'category' => $item->category ? [
+                'id' => $item->category->id,
+                'name' => $item->category->name
+            ] : null,
+            'farmer' => $item->user ? [
+                'id' => $item->user->id,
+                'name' => $item->user->name,
+                'nameKh' => $item->user->name,
+                'avatar' => null,
+                'phone' => $item->user->phone ?? '+855 12 345 678',
+                'rating' => round(4.0 + (($item->user->id % 10) / 10), 1),
+            ] : null,
+            'province' => $item->province ? [
+                'id' => $item->province->id,
+                'province_name' => $item->province->province_name,
+                'nameKh' => $item->province->nameKh ?? $item->province->province_name,
+                'latitude' => (float) $item->province->latitude,
+                'longitude' => (float) $item->province->longitude,
+                'city' => $item->province->city,
+                'country' => $item->province->country,
+            ] : null,
+        ];
     }
 }

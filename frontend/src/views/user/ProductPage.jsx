@@ -79,7 +79,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       sortPriceHigh: "តម្លៃខ្ពស់",
       sortRating: "ការវាយតម្លៃ",
       sortNewest: "ថ្មីបំផុត",
-      sortDistance: "ចម្ងាយ"
+      sortDistance: "ចម្ងាយ",
+      category: "ប្រភេទ",
+      status: "ស្ថានភាព",
+      orders: "បញ្ជាទិញ",
+      reviews: "ការវាយតម្លៃ",
+      active: "សកម្ម",
+      inactive: "មិនសកម្ម"
     },
     en: {
       heroTitle: "Digital Agricultural Marketplace",
@@ -126,7 +132,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       sortPriceHigh: "Price: High to Low",
       sortRating: "Rating",
       sortNewest: "Newest",
-      sortDistance: "Distance"
+      sortDistance: "Distance",
+      category: "Category",
+      status: "Status",
+      orders: "Orders",
+      reviews: "Reviews",
+      active: "Active",
+      inactive: "Inactive"
     },
   };
 
@@ -253,18 +265,33 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     return R * c;
   };
 
-  // File: ProductsPage.js
-  // [Full code remains the same as provided, with the following key updates]
-
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products];
 
     if (selectedProvince !== "all") {
-      filtered = filtered.filter(product => product.province_id === selectedProvince);
+      filtered = filtered.filter(product => {
+        // Check both direct province_id and nested province object
+        if (product.province_id === selectedProvince) {
+          return true;
+        }
+        if (product.province && product.province.id === selectedProvince) {
+          return true;
+        }
+        return false;
+      });
     }
 
     if (selectedCategory !== "all") {
-      filtered = filtered.filter(product => product.category_id === selectedCategory);
+      filtered = filtered.filter(product => {
+        // Check both direct category_id and nested category object
+        if (product.category_id === selectedCategory) {
+          return true;
+        }
+        if (product.category && product.category.id === selectedCategory) {
+          return true;
+        }
+        return false;
+      });
     }
 
     if (searchQuery) {
@@ -280,14 +307,33 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
     if (userLocation && nearbyRadius < 500) {
       filtered = filtered.filter(product => {
-        if (!product.latitude || !product.longitude) return true;
+        // Get coordinates from product's province
+        let productLat, productLon;
+        
+        if (product.province && product.province.latitude && product.province.longitude) {
+          productLat = product.province.latitude;
+          productLon = product.province.longitude;
+        } else if (product.latitude && product.longitude) {
+          productLat = product.latitude;
+          productLon = product.longitude;
+        } else {
+          // Find province from provinces array
+          const province = provinces.find(p => p.id === product.province_id);
+          if (province) {
+            productLat = province.latitude;
+            productLon = province.longitude;
+          }
+        }
+
+        if (!productLat || !productLon) return true;
+
         const distance = calculateDistance(
           userLocation.latitude,
           userLocation.longitude,
-          product.latitude,
-          product.longitude
+          productLat,
+          productLon
         );
-        product.distance = distance; // Add distance to product for display
+        product.distance = distance;
         return distance <= nearbyRadius;
       });
     }
@@ -306,13 +352,13 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
         break;
       case "distance":
-        filtered.sort((a, b) => {
-          if (!a.latitude || !a.longitude) return 1;
-          if (!b.latitude || !b.longitude) return -1;
-          const distA = calculateDistance(userLocation.latitude, userLocation.longitude, a.latitude, a.longitude);
-          const distB = calculateDistance(userLocation.latitude, userLocation.longitude, b.latitude, b.longitude);
-          return distA - distB;
-        });
+        if (userLocation) {
+          filtered.sort((a, b) => {
+            const distA = a.distance || 0;
+            const distB = b.distance || 0;
+            return distA - distB;
+          });
+        }
         break;
       case "popular":
       default:
@@ -325,12 +371,31 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
   const popularProducts = filteredAndSortedProducts.filter((product) => product.is_popular);
   const nearbyProducts = filteredAndSortedProducts.filter((product) => {
-    if (!userLocation || !product.latitude || !product.longitude) return false;
+    if (!userLocation) return false;
+    
+    let productLat, productLon;
+    
+    if (product.province && product.province.latitude && product.province.longitude) {
+      productLat = product.province.latitude;
+      productLon = product.province.longitude;
+    } else if (product.latitude && product.longitude) {
+      productLat = product.latitude;
+      productLon = product.longitude;
+    } else {
+      const province = provinces.find(p => p.id === product.province_id);
+      if (province) {
+        productLat = province.latitude;
+        productLon = province.longitude;
+      }
+    }
+
+    if (!productLat || !productLon) return false;
+
     const distance = calculateDistance(
       userLocation.latitude,
       userLocation.longitude,
-      product.latitude,
-      product.longitude
+      productLat,
+      productLon
     );
     return distance <= nearbyRadius;
   });
@@ -776,6 +841,8 @@ export default function ProductsPage({ currentLanguage = "en" }) {
               nearbyRadius={nearbyRadius}
               selectedProvince={selectedProvince}
               onShowDetail={handleShowDetail}
+              currentLanguage={currentLanguage}
+              categories={defaultCategories}
             />
           )}
         </div>
@@ -811,7 +878,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                   orderedProducts={orderedProducts}
                   viewMode={viewMode}
                   provinces={provinces}
-                  categories={defaultCategories} // Pass categories here
+                  categories={defaultCategories}
                   showDistance={true}
                   onShowDetail={handleShowDetail}
                 />
@@ -850,7 +917,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                   orderedProducts={orderedProducts}
                   viewMode={viewMode}
                   provinces={provinces}
-                  categories={defaultCategories} // Pass categories here
+                  categories={defaultCategories}
                   showDistance={userLocation}
                   onShowDetail={handleShowDetail}
                 />
@@ -875,6 +942,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       onShowDetail={handleShowDetail}
       isLoading={isLoading}
       error={fetchError}
+      categories={defaultCategories}
     />
 
       {showProductDetail && selectedProduct && (

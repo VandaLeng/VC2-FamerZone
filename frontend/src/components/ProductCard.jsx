@@ -30,24 +30,34 @@ function ProductCard({
     ? farmer.nameKh || farmer.name || "Unknown Farmer"
     : farmer.name || farmer.nameKh || "Unknown Farmer";
 
+  // Get province name with better fallback logic
   let provinceName = "Unknown";
-  if (product.province_id) {
+  if (product.province && typeof product.province === 'object') {
+    // Product has province object attached
+    provinceName = currentLanguage === "kh" ? product.province.nameKh || product.province.province_name : product.province.province_name;
+  } else if (product.province_id && provinces.length > 0) {
+    // Find province by ID from provinces array
     const province = provinces.find((p) => p.id === product.province_id);
-    provinceName = province ? (currentLanguage === "kh" ? province.nameKh : province.province_name) : "Unknown";
-  } else if (product.province && typeof product.province === 'object') {
-    provinceName = currentLanguage === "kh" ? product.province.nameKh : product.province.province_name;
+    if (province) {
+      provinceName = currentLanguage === "kh" ? province.nameKh || province.province_name : province.province_name;
+    }
   }
 
+  // Get category name with better fallback logic
   let categoryName = "Unknown";
-  if (product.category_id && categories.length > 0) {
-    const category = categories.find((c) => c.id === product.category_id);
-    categoryName = category ? (currentLanguage === "kh" ? category.nameKh || category.name : category.name) : "Unknown";
-  } else if (product.category && typeof product.category === 'object') {
+  if (product.category && typeof product.category === 'object') {
+    // Product has category object attached
     categoryName = currentLanguage === "kh" ? product.category.nameKh || product.category.name : product.category.name;
+  } else if (product.category_id && categories.length > 0) {
+    // Find category by ID from categories array
+    const category = categories.find((c) => c.id === product.category_id || c.id === product.category_id.toString());
+    if (category) {
+      categoryName = currentLanguage === "kh" ? category.nameKh || category.name : category.name;
+    }
   }
 
   const statusColor = product.status === "active" ? "bg-green-500" : "bg-gray-400";
-  const statusText = product.status === "active" ? currentTexts.active : currentTexts.inactive;
+  const statusText = product.status === "active" ? (currentTexts.active || "Active") : (currentTexts.inactive || "Inactive");
 
   const isInStock = product.stock > 0;
 
@@ -65,7 +75,7 @@ function ProductCard({
     return `http://localhost:8000/storage/${cleanPath}`;
   };
 
-  const productImage = getImageUrl(product.image);
+  const productImage = product.image_url || getImageUrl(product.image);
   const farmerAvatar = farmer.avatar ? getImageUrl(farmer.avatar) : "/placeholder.svg?height=100&width=100";
 
   if (viewMode === "list") {
@@ -97,7 +107,7 @@ function ProductCard({
                   isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
                 }`}
               >
-                {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
+                {isInStock ? (currentTexts.inStock || "In Stock") : (currentTexts.outOfStock || "Out of Stock")}
               </span>
               {showDistance && product.distance && (
                 <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
@@ -123,14 +133,14 @@ function ProductCard({
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">{productDescription}</p>
 
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-indigo-600">{currentTexts.category}:</span>
+                  <span className="text-sm font-medium text-indigo-600">{currentTexts.category || "Category"}:</span>
                   <span className="text-sm text-gray-700">{categoryName}</span>
                 </div>
 
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-green-600" />
                   <span className="text-sm font-medium text-green-700">
-                    {currentTexts.from} {provinceName}
+                    {currentTexts.from || "From"} {provinceName}
                   </span>
                 </div>
 
@@ -139,7 +149,7 @@ function ProductCard({
                 </span>
 
                 <div className="mb-3 text-sm text-gray-600">
-                  {currentTexts.orders}: {product.orders || 0}
+                  {currentTexts.orders || "Orders"}: {product.orders || 0}
                 </div>
 
                 <div className="flex items-center gap-2 mb-4">
@@ -154,7 +164,7 @@ function ProductCard({
                     ))}
                   </div>
                   <span className="text-sm text-gray-600">
-                    {product.rating || 0} ({product.reviews || 0} {currentTexts.reviews})
+                    {product.rating || 0} ({product.reviews || 0} {currentTexts.reviews || "reviews"})
                   </span>
                 </div>
               </div>
@@ -213,8 +223,8 @@ function ProductCard({
                   {orderingProducts.includes(product.id)
                     ? "Ordering..."
                     : orderedProducts.includes(product.id)
-                    ? currentTexts.orderPlaced
-                    : currentTexts.orderNow}
+                    ? (currentTexts.orderPlaced || "Order Placed")
+                    : (currentTexts.orderNow || "Order Now")}
                 </button>
               </div>
             </div>
@@ -251,7 +261,7 @@ function ProductCard({
               isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
             } stock-badge`}
           >
-            {isInStock ? currentTexts.inStock : currentTexts.outOfStock}
+            {isInStock ? (currentTexts.inStock || "In Stock") : (currentTexts.outOfStock || "Out of Stock")}
           </span>
           {showDistance && product.distance && (
             <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
@@ -282,24 +292,24 @@ function ProductCard({
         <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{productDescription}</p>
 
         <div className="text-sm text-gray-600 mb-1">
-          <strong>{currentTexts.category}:</strong> {categoryName}
+          <strong>{currentTexts.category || "Category"}:</strong> {categoryName}
         </div>
 
         <div className="text-sm text-gray-600 mb-1">
-          <strong>{currentTexts.status}:</strong>{" "}
+          <strong>{currentTexts.status || "Status"}:</strong>{" "}
           <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold text-white ${statusColor}`}>
             {statusText}
           </span>
         </div>
 
         <div className="text-sm text-gray-600 mb-3">
-          <strong>{currentTexts.orders}:</strong> {product.orders || 0}
+          <strong>{currentTexts.orders || "Orders"}:</strong> {product.orders || 0}
         </div>
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1">
             <MapPin className="w-3 h-3 text-green-600" />
-            <span className="text-sm text-gray-600">{currentTexts.from}</span>
+            <span className="text-sm text-gray-600">{currentTexts.from || "From"}</span>
             <span className="text-sm font-medium text-green-700">{provinceName}</span>
           </div>
           <div className="text-right price-display">
@@ -348,7 +358,7 @@ function ProductCard({
               ? "..."
               : orderedProducts.includes(product.id)
               ? "✓"
-              : currentTexts.orderNow}
+              : (currentTexts.orderNow || "Order Now")}
           </button>
         </div>
       </div>

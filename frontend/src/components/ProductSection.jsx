@@ -17,7 +17,7 @@ function ProductSection({
   onShowDetail,
   isLoading = false,
   error = null,
-  categories = [] // Added categories prop
+  categories = []
 }) {
   const [products, setProducts] = useState(propProducts || []);
   const [localLoading, setLocalLoading] = useState(!propProducts && !isLoading);
@@ -35,7 +35,13 @@ function ProductSection({
     loadingProducts: "Loading products...",
     errorLoadingProducts: "Error loading products",
     tryAgain: "Try Again",
-    refreshProducts: "Refresh Products"
+    refreshProducts: "Refresh Products",
+    category: "Category",
+    status: "Status",
+    orders: "Orders",
+    reviews: "Reviews",
+    active: "Active",
+    inactive: "Inactive"
   };
 
   const texts = { ...defaultTexts, ...currentTexts };
@@ -61,8 +67,12 @@ function ProductSection({
       
       console.log('Fetching products from API...');
       const response = await fetch('http://localhost:8000/api/items');
-      const data = await response.json();
       
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
       console.log('API Response:', data);
       
       if (data.success && data.data) {
@@ -178,7 +188,7 @@ function ProductSection({
                 orderedProducts={orderedProducts}
                 viewMode={viewMode}
                 provinces={provinces}
-                categories={categories} // Pass categories here
+                categories={categories}
                 onShowDetail={handleShowDetail}
               />
             ))}
