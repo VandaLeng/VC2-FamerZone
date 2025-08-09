@@ -197,6 +197,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
             image: item.image || "",
             status: item.status || "active",
             orders: item.orders || 0,
+            province: item.province || "",
           }))
           setProducts(productsData)
         } else {
@@ -276,6 +277,7 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
       unit: product?.unit || "piece",
       unit_kh: product?.unit_kh || currentTexts.piece,
       image: null,
+      province: product?.province || "",
     })
 
     const handleSubmit = async (e) => {
@@ -292,6 +294,9 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
       form.append("stock", formData.stock)
       form.append("unit", formData.unit)
       form.append("unit_kh", formData.unit_kh)
+      if (formData.province) {
+        form.append("province", formData.province)
+      }
 
       if (formData.image) {
         form.append("image", formData.image)
@@ -332,8 +337,13 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
             image: item.image || "",
             status: item.status || "active",
             orders: item.orders || 0,
+            province: item.province || "",
           }))
           setProducts(productsData)
+          // Notify public site to refresh
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('productAdded'))
+          }
           onSave()
           alert(product ? currentTexts.productUpdated : currentTexts.productAdded)
         } else {
@@ -380,6 +390,17 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                 )}
               </div>
             )}
+
+            <div>
+              <label className="block text-sm font-semibold text-[#333333] mb-2">Province</label>
+              <input
+                type="text"
+                value={formData.province}
+                onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-[#228B22] transition-colors"
+                placeholder="e.g., kandal, phnom-penh"
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-semibold text-[#333333] mb-2">{currentTexts.productNameKh}</label>
@@ -499,26 +520,25 @@ const ProductManagement = ({ currentLanguage = "en" }) => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.files?.[0] || null })}
                   className="hidden"
                   id="image-upload"
                 />
                 <label
                   htmlFor="image-upload"
-                  className="cursor-pointer bg-[#228B22] text-white px-4 py-2 rounded-lg hover:bg-[#2D5016] transition-colors"
+                  className="cursor-pointer bg-[#228B22] text-white px-6 py-3 rounded-lg hover:bg-[#1b6e1b] transition-colors inline-block"
                 >
-                  {currentTexts.selectFile}
+                  {currentTexts.uploadImage}
                 </label>
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-3 pt-2 border-t">
               <button
                 type="submit"
-                className="flex-1 bg-[#228B22] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#2D5016] transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-[#228B22] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#1b6e1b] transition-colors flex items-center justify-center gap-2"
               >
-                <Save size={20} />
-                {currentTexts.save}
+                <Save size={20} /> {currentTexts.save}
               </button>
               <button
                 type="button"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Navigation, Phone, Star, Package, Truck } from 'lucide-react';
 
-const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius }) => {
+const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius, selectedProvince = 'all' }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [mapCenter, setMapCenter] = useState({ lat: 11.5564, lng: 104.9282 }); // Default to Phnom Penh
 
@@ -14,8 +14,13 @@ const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius }) => 
     }
   }, [userLocation]);
 
-  // Filter products within radius
-  const nearbyProducts = products.filter(product => 
+  // Province filter first (items use slug in item.province)
+  const provinceFiltered = Array.isArray(products)
+    ? products.filter((p) => selectedProvince === 'all' || p.province === selectedProvince)
+    : [];
+
+  // Then filter products within radius (requires distance provided by API/frontend)
+  const nearbyProducts = provinceFiltered.filter(product => 
     product.distance && product.distance <= nearbyRadius
   );
 
@@ -107,7 +112,6 @@ const LocationMap = ({ userLocation, products, currentTexts, nearbyRadius }) => 
             {/* Farmer Location Markers */}
             {nearbyProducts.map((product, index) => {
               if (!product.farmer.location) return null;
-              
               // Calculate relative position based on distance and direction
               const angle = (index * 45) % 360; // Distribute around circle
               const distance = Math.min(product.distance * 2, 80); // Scale for display

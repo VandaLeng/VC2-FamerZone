@@ -20,27 +20,15 @@ function ProductCard({
     ? farmer.nameKh || farmer.name || "Unknown"
     : farmer.name || farmer.nameKh || "Unknown";
 
-  // ✅ FIX: Province handling
+  // Province handling: province is a slug string like 'kandal'
   const provinceId = typeof product.province === 'object' ? product.province?.id : product.province;
-  const provinceName = provinces.find((p) => p.id === Number(provinceId))?.name || "Unknown";
+  const provinceName = provinces.find((p) => p.id === provinceId)?.name || "Unknown";
 
-  const isOutOfStock = !product.inStock || product.quantity === 0;
+  const isOutOfStock = !product.stock || product.stock === 0;
   const isOrdering = orderingProducts.includes(product.id);
   const isOrdered = orderedProducts.includes(product.id);
 
-  // ✅ LOGGING for debug
-  console.log("Product ID:", product.id);
-  console.log("Product Province ID:", product.province);
-  console.log("Resolved Province Name:", provinceName);
-  console.log("Order Conditions:", {
-    isOutOfStock,
-    isOrdering,
-    isOrdered,
-    canOrder: !isOutOfStock && !isOrdering && !isOrdered,
-  });
-
   const handleOrderClick = () => {
-    console.log("Clicked Order Now:", product.id);
     onOrder(product.id);
   };
 
