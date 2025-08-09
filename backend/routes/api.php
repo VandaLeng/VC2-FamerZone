@@ -24,14 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-<<<<<<< HEAD
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user()->load('roles');
 // });
 
-=======
-// Auth routes
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -112,7 +108,6 @@ Route::prefix('provinces')->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->load('roles');
 });
-<<<<<<< HEAD
 
 // Route::middleware(['auth:sanctum', 'permission:manage users'])->group(function () {
 //     Route::get('/admin/users', [AdminController::class, 'getUsers']);
@@ -137,5 +132,3 @@ Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
     Route::put('/farmer/products/{id}', [FarmerController::class, 'update']);
     Route::delete('/farmer/products/{id}', [FarmerController::class, 'destroy']);
 });
-=======
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f

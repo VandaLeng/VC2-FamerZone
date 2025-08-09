@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X, Upload, Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
-<<<<<<< HEAD
-const BASE_IMAGE_URL = "https://yourwebsite.com/images/";
-
-=======
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -84,39 +79,6 @@ const CategoryManagement = () => {
 
   // Check if user is logged in
   useEffect(() => {
-<<<<<<< HEAD
-    const fetchCategories = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(CATEGORIES_ENDPOINT);
-        const transformedCategories = response.data.data.map((category) => {
-          let imageUrl = category.image_url || '';
-          if (imageUrl && !imageUrl.startsWith('http')) {
-            imageUrl = `${BASE_IMAGE_URL}/category_image/${imageUrl}`;
-          }
-          return {
-            id: category.id,
-            name: category.name,
-            description: category.description || '',
-            productCount: category.productCount || 0,
-            createdAt: category.created_at,
-            status: category.status,
-            image_url: imageUrl,
-          };
-        });
-        setCategories(transformedCategories);
-        setError(null);
-      } catch (err) {
-        const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
-        setError(errorMessage);
-        console.error('AxiosError Details:', {
-          message: err.message,
-          code: err.code,
-          response: err.response,
-        });
-      } finally {
-        setIsLoading(false);
-=======
     const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
     const userId = localStorage.getItem("user_id");
     const userName = localStorage.getItem("user_name");
@@ -130,7 +92,6 @@ const CategoryManagement = () => {
         } catch (e) {
           console.error("Failed to parse user data:", e);
         }
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
       }
       
       setCurrentUser({
@@ -307,11 +268,7 @@ const CategoryManagement = () => {
       setShowDeleteConfirm(false);
       setCategoryToDelete(null);
       setError(null);
-<<<<<<< HEAD
-      alert(texts.categoryDeleted);
-=======
       toast.success(texts.categoryDeleted);
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Failed to delete category';
       setError(errorMessage);
@@ -547,15 +504,9 @@ const CategoryManagement = () => {
                       </div>
                     </td>
                   </tr>
-<<<<<<< HEAD
-                ) : categories.length > 0 ? (
-                  categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
-=======
                 ) : filteredCategories.length > 0 ? (
                   filteredCategories.map((category) => (
                     <tr key={category.id} className="hover:bg-gray-50 transition-colors">
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           {category.image_url ? (
@@ -589,11 +540,7 @@ const CategoryManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span
-<<<<<<< HEAD
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-=======
                           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
->>>>>>> 7565c3eec2a21710a6f60b59f9661a513eafa38f
                             category.status === 'active'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
