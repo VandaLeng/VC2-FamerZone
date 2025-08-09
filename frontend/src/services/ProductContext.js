@@ -1,106 +1,121 @@
-import { createContext, useState, useCallback } from 'react';
+import { createContext, useState, useCallback, useEffect } from 'react';
 
 export const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
-    const [products, setProducts] = useState([{
-        id: '1',
-        name: 'Sample Product',
-        category_id: '1',
-        province_id: 'phnom-penh',
-        price: 10.00,
-        stock: 100,
-        unit: 'kg',
-        description: 'A sample product for testing.',
-        image_url: '/placeholder.svg?height=300&width=300',
-        user_id: '1',
-        user: {
-            name: 'Sample Farmer',
-            phone: '123456789',
-            avatar: '/placeholder.svg?height=100&width=100',
-            rating: 4.5
-        },
-        latitude: 11.5564,
-        longitude: 104.9282,
-        rating: 4.5,
-        is_popular: true,
-        created_at: new Date().toISOString()
-    }]);
+    const [products, setProducts] = useState([]);
 
-    const addProduct = useCallback((product) => {
-        setProducts((prev) => {
-            const newList = [];
-            for (let i = 0; i < prev.length; i++) {
-                newList.push(prev[i]);
+    const fetchProducts = useCallback(async() => {
+        try {
+            const response = await fetch('http://localhost:8000/api/items');
+            const data = await response.json();
+            if (data.success) {
+                setProducts(data.data);
+            } else {
+                console.error('Failed to fetch products:', data.message);
             }
-
-            const newProduct = {
-                id: String(Date.now()),
-                name: product.name,
-                category_id: product.category_id,
-                province_id: product.province_id,
-                price: product.price,
-                stock: product.stock,
-                unit: product.unit,
-                description: product.description,
-                image_url: product.image_url,
-                user_id: product.user_id,
-                latitude: product.latitude,
-                longitude: product.longitude,
-                rating: product.rating ? product.rating : 4.5,
-                is_popular: product.is_popular ? product.is_popular : false,
-                created_at: new Date().toISOString(),
-                user: {
-                    name: product.user && product.user.name ? product.user.name : 'Unknown Farmer',
-                    phone: product.user && product.user.phone ? product.user.phone : 'N/A',
-                    avatar: product.user && product.user.avatar ? product.user.avatar : '/placeholder.svg',
-                    rating: product.user && product.user.rating ? product.user.rating : 4.5
-                }
-            };
-
-            newList.push(newProduct);
-            return newList;
-        });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
     }, []);
 
-    const updateProduct = useCallback((productId, updatedProduct) => {
-        setProducts((prev) => {
-            const updatedList = [];
-            for (let i = 0; i < prev.length; i++) {
-                if (prev[i].id === productId) {
-                    const updatedItem = {};
-                    for (const key in prev[i]) {
-                        updatedItem[key] = prev[i][key];
-                    }
-                    for (const key in updatedProduct) {
-                        updatedItem[key] = updatedProduct[key];
-                    }
-                    updatedItem.updated_at = new Date().toISOString();
-                    updatedList.push(updatedItem);
-                } else {
-                    updatedList.push(prev[i]);
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    const addProduct = useCallback(async(product) => {
+        try {
+            const formData = new FormData();
+            for (const key in product) {
+                if (key === 'user') {
+                    formData.append('user_id', product.user_id);
+                    formData.append('user_name', product.user.name);
+                    formData.append('user_phone', product.user.phone);
+                    formData.append('user_avatar', product.user.avatar);
+                    formData.append('user_rating', product.user.rating);
+                } else if (key !== 'image_url') {
+                    formData.append(key, product[key]);
                 }
             }
-            return updatedList;
-        });
+            if (product.image) {
+                formData.append('image', product.image);
+            }
+
+            const response = await fetch('http://localhost:8000/api/items', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            if (data.success) {
+                setProducts((prev) => [...prev, data.data]);
+                window.dispatchEvent(new CustomEvent('productUpdated', { detail: { action: 'created', product: data.data } }));
+            } else {
+                throw new Error(data.message || 'Failed to add product');
+            }
+        } catch (error) {
+            console.error('Error adding product:', error);
+            throw error;
+        }
     }, []);
 
-    const deleteProduct = useCallback((productId) => {
-        setProducts((prev) => {
-            const filteredList = [];
-            for (let i = 0; i < prev.length; i++) {
-                if (prev[i].id !== productId) {
-                    filteredList.push(prev[i]);
+    const updateProduct = useCallback(async(productId, updatedProduct) => {
+        try {
+            const formData = new FormData();
+            for (const key in updatedProduct) {
+                if (key === 'user') {
+                    formData.append('user_id', updatedProduct.user_id);
+                    formData.append('user_name', updatedProduct.user.name);
+                    formData.append('user_phone', updatedProduct.user.phone);
+                    formData.append('user_avatar', updatedProduct.user.avatar);
+                    formData.append('user_rating', updatedProduct.user.rating);
+                } else if (key !== 'image_url') {
+                    formData.append(key, updatedProduct[key]);
                 }
             }
-            return filteredList;
-        });
+            if (updatedProduct.image) {
+                formData.append('image', updatedProduct.image);
+            }
+
+            const response = await fetch(`http://localhost:8000/api/items/${productId}`, {
+                method: 'PUT',
+                body: formData,
+            });
+            const data = await response.json();
+            if (data.success) {
+                setProducts((prev) =>
+                    prev.map((p) => (p.id === productId ? data.data : p))
+                );
+                window.dispatchEvent(new CustomEvent('productUpdated', { detail: { action: 'updated', product: data.data } }));
+            } else {
+                throw new Error(data.message || 'Failed to update product');
+            }
+        } catch (error) {
+            console.error('Error updating product:', error);
+            throw error;
+        }
+    }, []);
+
+    const deleteProduct = useCallback(async(productId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/items/${productId}`, {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            if (data.success) {
+                setProducts((prev) => prev.filter((p) => p.id !== productId));
+                window.dispatchEvent(new CustomEvent('productUpdated', { detail: { action: 'deleted', productId } }));
+            } else {
+                throw new Error(data.message || 'Failed to delete product');
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            throw error;
+        }
     }, []);
 
     return ( <
         ProductContext.Provider value = {
-            { products, addProduct, updateProduct, deleteProduct }
-        } > { children } <
+            { products, addProduct, updateProduct, deleteProduct, fetchProducts } } > { children } <
         /ProductContext.Provider>
     );
 };
