@@ -64,39 +64,56 @@ const CategoryManagement = () => {
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-  const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
+const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(CATEGORIES_ENDPOINT);
-        const transformedCategories = response.data.data.map((category) => ({
+// Remove trailing '/api' from API base URL for image use
+const BASE_IMAGE_URL = API_BASE_URL.replace('/api', '');
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(CATEGORIES_ENDPOINT);
+
+      const transformedCategories = response.data.data.map((category) => {
+        // Normalize the image URL
+        let imageUrl = category.image_url || '';
+        
+        // If it's a relative path (e.g. "uploads/image.jpg"), prefix it with server origin
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          imageUrl = `${BASE_IMAGE_URL}/category_image/${imageUrl}`;
+        }
+
+
+        return {
           id: category.id,
           name: category.name.kh || '',
           description: category.description.kh || '',
           productCount: category.productCount || 0,
           createdAt: category.created_at,
           status: category.status,
-          image_url: category.image_url,
-        }));
-        setCategories(transformedCategories);
-        setError(null);
-      } catch (err) {
-        const errorMessage = err.response?.data?.message || err.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
-        setError(errorMessage);
-        console.error('AxiosError Details:', {
-          message: err.message,
-          code: err.code,
-          response: err.response,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+          image_url: imageUrl,
+        };
+      });
 
-    fetchCategories();
-  }, []);
+      setCategories(transformedCategories);
+      setError(null);
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || err.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
+      setError(errorMessage);
+      console.error('AxiosError Details:', {
+        message: err.message,
+        code: err.code,
+        response: err.response,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchCategories();
+}, []);
 
   const filteredCategories = categories.filter((category) => {
     const matchesSearch =
