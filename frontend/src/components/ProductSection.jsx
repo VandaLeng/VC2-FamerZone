@@ -16,7 +16,8 @@ function ProductSection({
   provinces = [],
   onShowDetail,
   isLoading = false,
-  error = null
+  error = null,
+  categories = [] // Added categories prop
 }) {
   const [products, setProducts] = useState(propProducts || []);
   const [localLoading, setLocalLoading] = useState(!propProducts && !isLoading);
@@ -177,6 +178,7 @@ function ProductSection({
                 orderedProducts={orderedProducts}
                 viewMode={viewMode}
                 provinces={provinces}
+                categories={categories} // Pass categories here
                 onShowDetail={handleShowDetail}
               />
             ))}

@@ -253,6 +253,9 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     return R * c;
   };
 
+  // File: ProductsPage.js
+  // [Full code remains the same as provided, with the following key updates]
+
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products];
 
@@ -267,7 +270,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -284,22 +287,23 @@ export default function ProductsPage({ currentLanguage = "en" }) {
           product.latitude,
           product.longitude
         );
+        product.distance = distance; // Add distance to product for display
         return distance <= nearbyRadius;
       });
     }
 
     switch (sortBy) {
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
         break;
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
         break;
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case "newest":
-        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
         break;
       case "distance":
         filtered.sort((a, b) => {
@@ -777,99 +781,101 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         </div>
       </section>
 
-      {nearbyProducts.length > 0 && userLocation && (
-        <section className="py-16 bg-white" ref={productsRef}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-                {currentTexts.nearbyFarmers} ({nearbyRadius}km)
-              </h2>
-              <div className="w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
-            </div>
-
-            {isLoading ? (
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-                <p className="mt-2 text-gray-600">Loading products...</p>
-              </div>
-            ) : (
-              <div className={`grid gap-8 ${viewMode === "list" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
-                {nearbyProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    currentTexts={currentTexts}
-                    currentLanguage={currentLanguage}
-                    isFavorite={favorites.includes(product.id)}
-                    onToggleFavorite={toggleFavorite}
-                    onOrder={handleOrder}
-                    orderingProducts={orderingProducts}
-                    orderedProducts={orderedProducts}
-                    viewMode={viewMode}
-                    provinces={provinces}
-                    showDistance={true}
-                    onShowDetail={handleShowDetail}
-                  />
-                ))}
-              </div>
-            )}
+    {nearbyProducts.length > 0 && userLocation && (
+      <section className="py-16 bg-white" ref={productsRef}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              {currentTexts.nearbyFarmers} ({nearbyRadius}km)
+            </h2>
+            <div className="w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
           </div>
-        </section>
-      )}
 
-      {popularProducts.length > 0 && (
-        <section className="py-16 bg-stone-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.popularProducts}</h2>
-              <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
+          {isLoading ? (
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
+              <p className="mt-2 text-gray-600">Loading products...</p>
             </div>
+          ) : (
+            <div className={`grid gap-8 ${viewMode === "list" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
+              {nearbyProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  currentTexts={currentTexts}
+                  currentLanguage={currentLanguage}
+                  isFavorite={favorites.includes(product.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onOrder={handleOrder}
+                  orderingProducts={orderingProducts}
+                  orderedProducts={orderedProducts}
+                  viewMode={viewMode}
+                  provinces={provinces}
+                  categories={defaultCategories} // Pass categories here
+                  showDistance={true}
+                  onShowDetail={handleShowDetail}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )}
 
-            {isLoading ? (
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-                <p className="mt-2 text-gray-600">Loading products...</p>
-              </div>
-            ) : (
-              <div className={`grid gap-8 ${viewMode === "list" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
-                {popularProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    currentTexts={currentTexts}
-                    currentLanguage={currentLanguage}
-                    isFavorite={favorites.includes(product.id)}
-                    onToggleFavorite={toggleFavorite}
-                    onOrder={handleOrder}
-                    orderingProducts={orderingProducts}
-                    orderedProducts={orderedProducts}
-                    viewMode={viewMode}
-                    provinces={provinces}
-                    showDistance={userLocation}
-                    onShowDetail={handleShowDetail}
-                  />
-                ))}
-              </div>
-            )}
+    {popularProducts.length > 0 && (
+      <section className="py-16 bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">{currentTexts.popularProducts}</h2>
+            <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full"></div>
           </div>
-        </section>
-      )}
 
-      <ProductSection
-        products={filteredAndSortedProducts}
-        currentTexts={currentTexts}
-        currentLanguage={currentLanguage}
-        favorites={favorites}
-        onToggleFavorite={toggleFavorite}
-        onOrder={handleOrder}
-        orderingProducts={orderingProducts}
-        orderedProducts={orderedProducts}
-        viewMode={viewMode}
-        provinces={provinces}
-        onShowDetail={handleShowDetail}
-        isLoading={isLoading}
-        error={fetchError}
-      />
+          {isLoading ? (
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
+              <p className="mt-2 text-gray-600">Loading products...</p>
+            </div>
+          ) : (
+            <div className={`grid gap-8 ${viewMode === "list" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
+              {popularProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  currentTexts={currentTexts}
+                  currentLanguage={currentLanguage}
+                  isFavorite={favorites.includes(product.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onOrder={handleOrder}
+                  orderingProducts={orderingProducts}
+                  orderedProducts={orderedProducts}
+                  viewMode={viewMode}
+                  provinces={provinces}
+                  categories={defaultCategories} // Pass categories here
+                  showDistance={userLocation}
+                  onShowDetail={handleShowDetail}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )}
+
+    <ProductSection
+      products={filteredAndSortedProducts}
+      currentTexts={currentTexts}
+      currentLanguage={currentLanguage}
+      favorites={favorites}
+      onToggleFavorite={toggleFavorite}
+      onOrder={handleOrder}
+      orderingProducts={orderingProducts}
+      orderedProducts={orderedProducts}
+      viewMode={viewMode}
+      provinces={provinces}
+      onShowDetail={handleShowDetail}
+      isLoading={isLoading}
+      error={fetchError}
+    />
 
       {showProductDetail && selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

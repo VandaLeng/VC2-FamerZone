@@ -1,21 +1,15 @@
 "use client";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import { MoreVertical, Search, Edit, Trash2, Eye, Package, DollarSign, X, Upload, Save, AlertCircle, Plus, Star, MapPin, Loader2, RefreshCw, ExternalLink, CheckCircle } from 'lucide-react';
 import provinces from "../../services/provinces";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ProductContext } from "../../services/ProductContext";
+import { itemsAPI } from "../../stores/api";
 
 const ProductManagement = () => {
-  const { products, addProduct, updateProduct, deleteProduct } = useContext(ProductContext);
-  const [categories, setCategories] = useState([
-    { id: "1", name: "Vegetables" },
-    { id: "2", name: "Fruits" },
-    { id: "3", name: "Grains" },
-    { id: "4", name: "Livestock" },
-    { id: "5", name: "Beverages" },
-    { id: "6", name: "Seafood" },
-  ]);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [provincesList, setProvincesList] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -31,7 +25,6 @@ const ProductManagement = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const actionsMenuRef = useRef(null);
-  const productsSectionRef = useRef(null);
 
   const texts = {
     en: {
@@ -108,21 +101,102 @@ const ProductManagement = () => {
       farmerInfo: "Farmer Information",
       createdAt: "Created At",
       lastUpdated: "Last Updated",
+      imageLoadError: "Failed to load image",
     },
   };
 
-  const scrollToProducts = () => {
-    if (productsSectionRef.current) {
-      productsSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+  const API_BASE_URL = "http://localhost:8000";
+
+  useEffect(() => {
+    const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+    const userId = localStorage.getItem("user_id");
+    const userName = localStorage.getItem("user_name");
+    const userData = localStorage.getItem("user_data");
+    
+    if (token && (userId || userData)) {
+      let user = null;
+      if (userData) {
+        try {
+          user = JSON.parse(userData);
+        } catch (e) {
+          console.error("Failed to parse user data:", e);
+        }
+      }
+      
+      setCurrentUser({
+        id: userId || user?.id,
+        name: userName || user?.name || "User",
+        token: token
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchCategories();
+      fetchItems();
+      fetchProvinces();
+    }
+  }, [refreshTrigger, currentUser]);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+      const response = await axios.get(`${API_BASE_URL}/api/categories`, {
+        headers: { Authorization: token ? `Bearer ${token}` : undefined },
+      });
+      if (response.data.success) {
+        setCategories(response.data.data);
+      }
+    } catch (err) {
+      console.error("Fetch Categories Error:", err);
+      toast.error(texts.en.error + (err.response?.data?.message || err.message));
     }
   };
 
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id") || "1";
-    const userName = localStorage.getItem("user_name") || "User";
-    setCurrentUser({ id: userId, name: userName });
+  const fetchProvinces = () => {
     setProvincesList(provinces);
-  }, []);
+  };
+
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+      const response = await axios.get(`${API_BASE_URL}/api/items`, {
+        headers: { Authorization: token ? `Bearer ${token}` : undefined },
+      });
+      if (response.data.success) {
+        // Process products to ensure proper image URLs
+        const processedProducts = response.data.data.map(product => {
+          // Fix image URL construction
+          let imageUrl = null;
+          if (product.image) {
+            // Check if image already contains full URL
+            if (product.image.startsWith('http')) {
+              imageUrl = product.image;
+            } else {
+              // Remove any leading slash or 'storage/' from the path
+              const cleanPath = product.image.replace(/^\/?(storage\/)?/, '');
+              imageUrl = `${API_BASE_URL}/storage/${cleanPath}`;
+            }
+          }
+          
+          return {
+            ...product,
+            image: imageUrl
+          };
+        });
+        
+        console.log('Processed products with image URLs:', processedProducts);
+        setProducts(processedProducts);
+      }
+    } catch (err) {
+      console.error("Fetch Items Error:", err);
+      toast.error(texts.en.error + (err.response?.data?.message || err.message));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -137,7 +211,7 @@ const ProductManagement = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "" || product.category_id?.toString() === filterCategory;
+    const matchesCategory = filterCategory === "" || product.category?.id.toString() === filterCategory;
     const matchesStatus = filterStatus === "" || product.status === filterStatus;
     const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
     return matchesSearch && matchesCategory && matchesStatus && matchesProvince;
@@ -152,14 +226,21 @@ const ProductManagement = () => {
     setShowActionsMenu(showActionsMenu === productId ? null : productId);
   };
 
-  const handleDelete = (productId) => {
+  const handleDelete = async (productId) => {
     if (window.confirm(texts.en.deleteConfirm)) {
       setIsLoading(true);
-      deleteProduct(productId);
-      toast.success(texts.en.productDeleted);
-      setShowActionsMenu(null);
-      window.dispatchEvent(new CustomEvent('productUpdated', { detail: { action: 'deleted' } }));
-      setIsLoading(false);
+      try {
+        await itemsAPI.delete(productId);
+        setProducts(products.filter((p) => p.id !== productId));
+        setShowActionsMenu(null);
+        toast.success(texts.en.productDeleted);
+        setRefreshTrigger(prev => prev + 1);
+        window.dispatchEvent(new Event('productAdded'));
+      } catch (err) {
+        toast.error(texts.en.error + (err.response?.data?.message || err.message));
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -172,10 +253,16 @@ const ProductManagement = () => {
     window.location.href = '/login';
   };
 
+  // Handle image load error
+  const handleImageError = (e, productName) => {
+    console.error(`Failed to load image for product: ${productName}`);
+    e.target.src = "/placeholder.svg?height=40&width=40";
+  };
+
   const ProductForm = ({ product, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
       name: product?.name || "",
-      category_id: product?.category_id ? String(product.category_id) : "",
+      category_id: product?.category?.id ? String(product.category.id) : "",
       province_id: product?.province_id || "",
       price: product?.price || "",
       stock: product?.stock || "",
@@ -184,7 +271,7 @@ const ProductManagement = () => {
       description: product?.description || "",
     });
 
-    const [imagePreview, setImagePreview] = useState(product?.image_url || null);
+    const [imagePreview, setImagePreview] = useState(product?.image || null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleImageChange = (e) => {
@@ -241,7 +328,7 @@ const ProductManagement = () => {
       return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       
       if (!validateForm()) {
@@ -249,7 +336,21 @@ const ProductManagement = () => {
         return;
       }
 
-      if (!currentUser) {
+      const userId = localStorage.getItem("user_id");
+      const userData = localStorage.getItem("user_data");
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+
+      let finalUserId = userId;
+      if (!finalUserId && userData) {
+        try {
+          const parsedUserData = JSON.parse(userData);
+          finalUserId = parsedUserData.id;
+        } catch (e) {
+          console.error("Failed to parse user data:", e);
+        }
+      }
+
+      if (!finalUserId || !token) {
         toast.error(texts.en.authRequired);
         return;
       }
@@ -257,48 +358,45 @@ const ProductManagement = () => {
       setIsSubmitting(true);
       setError(null);
 
-      const newProduct = {
-        name: formData.name.trim(),
-        category_id: formData.category_id,
-        province_id: formData.province_id,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        unit: formData.unit,
-        description: formData.description.trim() || "",
-        user_id: currentUser.id,
-        user: {
-          name: currentUser.name,
-          phone: "123456789",
-          avatar: "/placeholder.svg",
-          rating: 4.5,
-        },
-        image_url: imagePreview || "/placeholder.svg",
-        latitude: provinces.find(p => p.id === formData.province_id)?.latitude || 11.5564,
-        longitude: provinces.find(p => p.id === formData.province_id)?.longitude || 104.9282,
-        status: "active",
-      };
+      const form = new FormData();
+      form.append("name", formData.name.trim());
+      form.append("category_id", formData.category_id);
+      form.append("province_id", formData.province_id);
+      form.append("price", parseFloat(formData.price));
+      form.append("stock", parseInt(formData.stock));
+      form.append("unit", formData.unit);
+      form.append("description", formData.description.trim() || "");
+      form.append("user_id", finalUserId);
+      form.append("status", "active");
+
+      if (formData.image) {
+        form.append("image", formData.image);
+      }
 
       try {
         if (product) {
-          updateProduct(product.id, newProduct);
+          await itemsAPI.update(product.id, form);
           toast.success(texts.en.productUpdated);
         } else {
-          addProduct(newProduct);
+          await itemsAPI.create(form);
           toast.success(texts.en.productAdded);
         }
-        
-        window.dispatchEvent(new CustomEvent('productUpdated', {
-          detail: { 
-            product: newProduct,
-            action: product ? 'updated' : 'created' 
-          }
-        }));
-        
+        // Fetch items immediately after save to ensure latest image URLs
+        await fetchItems();
         onSave();
+        setRefreshTrigger(prev => prev + 1);
+        window.dispatchEvent(new Event('productAdded'));
       } catch (err) {
         console.error("Product Submit Error:", err);
-        toast.error(texts.en.error + err.message);
-        setError(err.message);
+        if (err.response?.status === 422) {
+          const errors = err.response.data.errors || {};
+          setValidationErrors(errors);
+          toast.error(texts.en.validationError);
+        } else {
+          const message = err.response?.data?.message || err.message;
+          toast.error(texts.en.error + message);
+          setError(message);
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -498,9 +596,13 @@ const ProductManagement = () => {
                     {imagePreview ? (
                       <div className="space-y-4">
                         <img
-                          src={imagePreview || "/placeholder.svg"}
+                          src={imagePreview}
                           alt="Product preview"
                           className="mx-auto h-40 w-40 object-cover rounded border"
+                          onError={(e) => {
+                            console.error('Failed to load image preview');
+                            e.target.src = "/placeholder.svg?height=160&width=160";
+                          }}
                         />
                         <p className="text-sm text-gray-600">
                           {product ? texts.en.currentImage : texts.en.imageUploaded}
@@ -563,18 +665,6 @@ const ProductManagement = () => {
       </div>
     );
   };
-
-  useEffect(() => {
-    const handleProductUpdated = (event) => {
-      setRefreshTrigger(prev => prev + 1);
-      if (event.detail.action === 'created') {
-        scrollToProducts();
-      }
-    };
-
-    window.addEventListener('productUpdated', handleProductUpdated);
-    return () => window.removeEventListener('productUpdated', handleProductUpdated);
-  }, []);
 
   if (!currentUser) {
     return (
@@ -685,7 +775,7 @@ const ProductManagement = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6" ref={productsSectionRef}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -779,9 +869,10 @@ const ProductManagement = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <img
-                            src={product.image_url || "/placeholder.svg?height=40&width=40"}
+                            src={product.image || "/placeholder.svg?height=40&width=40"}
                             alt={product.name}
                             className="h-10 w-10 rounded object-cover mr-3"
+                            onError={(e) => handleImageError(e, product.name)}
                           />
                           <div>
                             <p className="text-sm font-medium text-gray-900">{product.name}</p>
@@ -790,7 +881,7 @@ const ProductManagement = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {categories.find(cat => cat.id === product.category_id)?.name || "N/A"}
+                        {product.category?.name || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {provincesList.find(p => p.id === product.province_id)?.province_name || "N/A"}
