@@ -26,6 +26,8 @@ class ItemController extends Controller
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
+                // Optional province field passthrough if exists
+                'province' => $item->province ?? null,
             ];
         });
 
@@ -46,6 +48,7 @@ class ItemController extends Controller
             'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
             'unit_kh' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'province' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -56,7 +59,7 @@ class ItemController extends Controller
         }
 
         $data = $request->only([
-            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh', 'province'
         ]);
 
         if ($request->hasFile('image')) {
@@ -80,6 +83,7 @@ class ItemController extends Controller
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
+                'province' => $item->province ?? null,
             ]
         ], 201);
     }
@@ -97,6 +101,7 @@ class ItemController extends Controller
             'unit' => 'required|string|in:kg,lb,piece,dozen,liter',
             'unit_kh' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'province' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -107,7 +112,7 @@ class ItemController extends Controller
         }
 
         $data = $request->only([
-            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh'
+            'name', 'name_kh', 'category_id', 'price', 'stock', 'unit', 'unit_kh', 'province'
         ]);
 
         if ($request->hasFile('image')) {
@@ -135,6 +140,7 @@ class ItemController extends Controller
                 'image' => $item->image ? asset('storage/' . $item->image) : null,
                 'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
                 'orders' => $item->orders ?? 0,
+                'province' => $item->province ?? null,
             ]
         ]);
     }
@@ -156,32 +162,67 @@ class ItemController extends Controller
     }
 
     public function filter(Request $request)
-{
-    $query = Item::query();
+    {
+        $query = Item::query();
 
-    if ($request->has('province') && $request->province !== 'all') {
-        $query->where('province', $request->province);
+        // Province comes as slug string (e.g., 'kandal') stored in items.province
+        $province = $request->query('province') ?? $request->query('province_id');
+        if ($province && $province !== 'all') {
+            $query->where('province', $province);
+        }
+
+        // Category can be provided as 'category' or 'category_id'
+        $category = $request->query('category') ?? $request->query('category_id');
+        if ($category && $category !== 'all') {
+            $query->where('category_id', $category);
+        }
+
+        // Search in name and name_kh
+        $search = $request->query('search');
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('name_kh', 'like', "%{$search}%");
+            });
+        }
+
+        // Price range
+        $minPrice = $request->query('min_price');
+        $maxPrice = $request->query('max_price');
+        if ($minPrice !== null && $maxPrice !== null) {
+            $query->whereBetween('price', [$minPrice, $maxPrice]);
+        }
+
+        // Optional: location radius filter if you later store lat/lng per province elsewhere
+        // For now, just ignore geo filter on backend; frontend already computes distance if present
+
+        $items = $query->with('category')->orderByDesc('id')->get();
+
+        $mapped = $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'name_kh' => $item->name_kh,
+                'category_id' => $item->category_id,
+                'category' => $item->category ? [
+                    'id' => $item->category->id,
+                    'name' => $item->category->name,
+                ] : null,
+                'price' => $item->price,
+                'stock' => $item->stock,
+                'unit' => $item->unit,
+                'unit_kh' => $item->unit_kh,
+                'image' => $item->image ? asset('storage/' . $item->image) : null,
+                'status' => $item->stock > 0 ? 'active' : 'out_of_stock',
+                'orders' => $item->orders ?? 0,
+                'province' => $item->province ?? null,
+                // No distance computed here
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $mapped,
+        ]);
     }
-
-    if ($request->has('category') && $request->category !== 'all') {
-        $query->where('category_id', $request->category);
-    }
-
-    if ($request->has('search') && $request->search !== '') {
-        $query->where('title', 'like', '%' . $request->search . '%');
-    }
-
-    // Example: filter price between min and max
-    if ($request->has('min_price') && $request->has('max_price')) {
-        $query->whereBetween('price', [$request->min_price, $request->max_price]);
-    }
-
-    $items = $query->with('category')->get();
-
-    return response()->json([
-        'success' => true,
-        'data' => $items
-    ]);
-}
-
 }

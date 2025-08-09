@@ -102,6 +102,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::apiResource('items', ItemController::class);
+
+// Add filter endpoint for items
+Route::get('items/filter', [ItemController::class, 'filter']);
+
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('orders', OrderController::class);
 
