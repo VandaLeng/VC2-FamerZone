@@ -285,7 +285,6 @@
 // export default FarmerProfileSettings;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { Camera, User, Save, Edit } from 'lucide-react';
 import axios from 'axios';
@@ -311,11 +310,13 @@ const FarmerProfileSettings = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authorization token found');
 
-      const response = await axios.get('/api/profile', {
+      const response = await axios.get('/api/profile', { // Changed to /api/profile
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const userData = response.data.data;
+      console.log('API Response:', response.data); // Debug: Inspect response
+
+      const userData = response.data.data; // Changed to response.data.data to match getProfile
       setProfileData({
         name: userData.name || '',
         email: userData.email || '',
@@ -325,7 +326,12 @@ const FarmerProfileSettings = () => {
       });
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load profile data');
+      console.error('Error fetching profile:', err); // Debug: Log full error
+      setError(
+        err.response?.status === 401
+          ? 'Unauthorized: Please log in again'
+          : err.response?.data?.message || 'Failed to load profile data'
+      );
     }
   };
 
@@ -343,20 +349,23 @@ const FarmerProfileSettings = () => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await axios.put('/api/profile', formData, {
+      const response = await axios.post('/api/profile/image', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      console.log('Image Upload Response:', response.data); // Debug: Inspect response
+
       setProfileData((prev) => ({
         ...prev,
-        profilePhoto: response.data.user.image ? `/storage/users/${response.data.user.image}` : null,
+        profilePhoto: response.data.user?.image ? `/storage/users/${response.data.user.image}` : null,
       }));
       setSuccess('Image uploaded successfully');
       setError(null);
     } catch (err) {
+      console.error('Error uploading image:', err); // Debug: Log full error
       setError(err.response?.data?.message || 'Failed to upload image');
     }
   };
@@ -366,7 +375,7 @@ const FarmerProfileSettings = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authorization token found');
 
-      await axios.put(
+      const response = await axios.put(
         '/api/profile',
         {
           name: profileData.name,
@@ -377,11 +386,14 @@ const FarmerProfileSettings = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      console.log('Profile Update Response:', response.data); // Debug: Inspect response
+
       setSuccess('Profile updated successfully');
       setIsEditing(false);
       setError(null);
       fetchProfileData();
     } catch (err) {
+      console.error('Error updating profile:', err); // Debug: Log full error
       setError(err.response?.data?.message || 'Failed to update profile');
     }
   };
