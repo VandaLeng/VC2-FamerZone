@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X, Upload, Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -14,90 +16,126 @@ const CategoryManagement = () => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const actionsMenuRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: '',
-    description: '', // Changed from description_kh
+    description: '',
     status: 'active',
     image: null,
   });
 
-
   const texts = {
-    categoryManagement: 'ការគ្រប់គ្រងប្រភេទ',
-    searchCategories: 'ស្វែងរកប្រភេទ...',
-    addNewCategory: 'បន្ថែមប្រភេទថ្មី',
-    filterByStatus: 'តម្រងតាមស្ថានភាព',
-    allCategories: 'ប្រភេទទាំងអស់',
-    activeCategories: 'ប្រភេទសកម្ម',
-    inactiveCategories: 'ប្រភេទមិនសកម្ម',
-    categoryName: 'ប្រភេទ',
-    description: 'ការពិពណ៌នា',
-    products: 'ផលិតផល',
-    createdDate: 'កាលបរិច្ឆេទបង្កើត',
-    status: 'ស្ថានភាព',
-    actions: 'សកម្មភាព',
-    active: 'សកម្ម',
-    inactive: 'មិនសកម្ម',
-    view: 'មើល',
-    edit: 'កែប្រែ',
-    delete: 'លុប',
-    addCategory: 'បន្ថែមប្រភេទ',
-    editCategory: 'កែប្រែប្រភេទ',
-    viewCategory: 'មើលប្រភេទ',
-    categoryNameKh: 'ឈ្មោះប្រភេទ',
-    descriptionKh: 'ការពិពណ៌នា',
-    save: 'រក្សាទុក',
-    cancel: 'បោះបង់',
-    close: 'បិទ',
-    confirmDelete: 'បញ្ជាក់ការលុប',
-    deleteConfirmText: 'តើអ្នកប្រាកដថាចង់លុបប្រភេទនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។',
-    confirmDeleteBtn: 'បាទ, លុប',
-    cancelDelete: 'បោះបង់',
-    noCategories: 'រកមិនឃើញប្រភេទ',
-    categoryDeleted: 'ប្រភេទត្រូវបានលុបដោយជោគជ័យ',
-    categorySaved: 'ប្រភេទត្រូវបានរក្សាទុកដោយជោគជ័យ',
-    image: 'រូបភាព',
-    uploadImage: 'ផ្ទុករូបភាព',
-    loading: 'កំពុងផ្ទុក...',
-    nameRequired: 'ឈ្មោះប្រភេទត្រូវតែបញ្ចូល',
-    nameEnRequired: 'ឈ្មោះប្រភេទត្រូវតែមានអក្សរអង់គ្លេស',
+    categoryManagement: 'Category Management',
+    searchCategories: 'Search categories...',
+    addNewCategory: 'Add New Category',
+    filterByStatus: 'Filter by Status',
+    allCategories: 'All Categories',
+    activeCategories: 'Active Categories',
+    inactiveCategories: 'Inactive Categories',
+    categoryName: 'Category',
+    description: 'Description',
+    products: 'Products',
+    createdDate: 'Created Date',
+    status: 'Status',
+    actions: 'Actions',
+    active: 'Active',
+    inactive: 'Inactive',
+    view: 'View',
+    edit: 'Edit',
+    delete: 'Delete',
+    addCategory: 'Add Category',
+    editCategory: 'Edit Category',
+    viewCategory: 'View Category',
+    categoryNameEn: 'Category Name',
+    descriptionEn: 'Description',
+    save: 'Save',
+    cancel: 'Cancel',
+    close: 'Close',
+    confirmDelete: 'Confirm Delete',
+    deleteConfirmText: 'Are you sure you want to delete this category? This action cannot be undone.',
+    confirmDeleteBtn: 'Yes, Delete',
+    cancelDelete: 'Cancel',
+    noCategories: 'No categories found',
+    categoryDeleted: 'Category deleted successfully',
+    categorySaved: 'Category saved successfully',
+    image: 'Image',
+    uploadImage: 'Upload Image',
+    loading: 'Loading...',
+    nameRequired: 'Category name is required',
+    loginFirst: 'Please log in first',
+    loginPrompt: 'You need to be logged in to manage categories',
+    loginButton: 'Go to Login',
+    manageCategories: 'Manage your product categories',
+    totalCategories: 'Total Categories',
+    activeCount: 'Active',
+    inactiveCount: 'Inactive',
+    refresh: 'Refresh',
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
   const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 
+  // Check if user is logged in
   useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(CATEGORIES_ENDPOINT);
-        const transformedCategories = response.data.data.map((category) => ({
-          id: category.id,
-          name: category.name, // Use as string
-          description: category.description || '', // Use as string
-          productCount: category.productCount || 0,
-          createdAt: category.created_at,
-          status: category.status,
-          image_url: category.image_url,
-        }));
-        setCategories(transformedCategories);
-        setError(null);
-      } catch (err) {
-        const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
-        setError(errorMessage);
-        console.error('AxiosError Details:', {
-          message: err.message,
-          code: err.code,
-          response: err.response,
-        });
-      } finally {
-        setIsLoading(false);
+    const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+    const userId = localStorage.getItem("user_id");
+    const userName = localStorage.getItem("user_name");
+    const userData = localStorage.getItem("user_data");
+    
+    if (token && (userId || userData)) {
+      let user = null;
+      if (userData) {
+        try {
+          user = JSON.parse(userData);
+        } catch (e) {
+          console.error("Failed to parse user data:", e);
+        }
       }
-    };
-
-    fetchCategories();
+      
+      setCurrentUser({
+        id: userId || user?.id,
+        name: userName || user?.name || "User",
+        token: token
+      });
+    }
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchCategories();
+    }
+  }, [currentUser]);
+
+  const fetchCategories = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(CATEGORIES_ENDPOINT);
+      const transformedCategories = response.data.data.map((category) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description || '',
+        productCount: category.productCount || 0,
+        createdAt: category.created_at,
+        status: category.status,
+        image_url: category.image_url,
+      }));
+      setCategories(transformedCategories);
+      setError(null);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error('AxiosError Details:', {
+        message: err.message,
+        code: err.code,
+        response: err.response,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredCategories = categories.filter((category) => {
     const matchesSearch =
@@ -127,7 +165,7 @@ const CategoryManagement = () => {
     }
     setShowModal(true);
     setDropdownOpen(null);
-    setError(null); // Clear error
+    setError(null);
   };
 
   const handleCloseModal = () => {
@@ -139,12 +177,13 @@ const CategoryManagement = () => {
       status: 'active',
       image: null,
     });
-    setError(null); // Clear error
+    setError(null);
   };
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
       setError(texts.nameRequired);
+      toast.error(texts.nameRequired);
       return;
     }
 
@@ -172,13 +211,13 @@ const CategoryManagement = () => {
           categories.map((cat) =>
             cat.id === selectedCategory.id
               ? {
-                ...cat,
-                name: response.data.data.name,
-                description: response.data.data.description,
-                status: response.data.data.status,
-                image_url: response.data.data.image_url,
-                productCount: response.data.data.productCount,
-              }
+                  ...cat,
+                  name: response.data.data.name,
+                  description: response.data.data.description,
+                  status: response.data.data.status,
+                  image_url: response.data.data.image_url,
+                  productCount: response.data.data.productCount,
+                }
               : cat
           )
         );
@@ -200,10 +239,11 @@ const CategoryManagement = () => {
 
       handleCloseModal();
       setError(null);
-      alert(texts.categorySaved);
+      toast.success(texts.categorySaved);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការរក្សាទុកប្រភេទ';
+      const errorMessage = err.response?.data?.message || 'Failed to save category';
       setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Save Category Error:', {
         message: err.message,
         code: err.code,
@@ -227,11 +267,12 @@ const CategoryManagement = () => {
       setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
       setShowDeleteConfirm(false);
       setCategoryToDelete(null);
-      setError(null); // Clear error
-      alert(texts.categoryDeleted);
+      setError(null);
+      toast.success(texts.categoryDeleted);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការលុបប្រភេទ';
+      const errorMessage = err.response?.data?.message || 'Failed to delete category';
       setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Delete Category Error:', {
         message: err.message,
         code: err.code,
@@ -245,12 +286,34 @@ const CategoryManagement = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image size should be less than 2MB");
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select a valid image file");
+        return;
+      }
+
       setFormData({ ...formData, image: file });
+      toast.success("Image selected successfully");
     }
   };
 
   const toggleDropdown = (categoryId) => {
     setDropdownOpen(dropdownOpen === categoryId ? null : categoryId);
+  };
+
+  const handleLogin = () => {
+    window.location.href = '/login';
+  };
+
+  const handleRefresh = () => {
+    fetchCategories();
+    toast.info("Refreshing categories...");
   };
 
   useEffect(() => {
@@ -263,47 +326,120 @@ const CategoryManagement = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // If user is not logged in, show login prompt
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">{texts.loginFirst}</h2>
+          <p className="text-gray-600 mb-6">{texts.loginPrompt}</p>
+          <button
+            onClick={handleLogin}
+            className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors w-full"
+          >
+            {texts.loginButton}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const totalCategories = categories.length;
+  const activeCategories = categories.filter(cat => cat.status === 'active').length;
+  const inactiveCategories = categories.filter(cat => cat.status === 'inactive').length;
+
   return (
-    <div className="min-h-screen bg-white p-4 font-khmer">
+    <div className="min-h-screen bg-gray-50 p-4">
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       <div className="max-w-7xl mx-auto">
         {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded flex items-center gap-2 text-lg">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
+          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-6 h-6" />
             {error}
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-sm border border-[#F5F5DC] p-8 mb-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-[#333333] mb-2">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 {texts.categoryManagement}
               </h1>
-              <p className="text-[#8B4513] text-base">
-                {texts.categoryManagement}
+              <p className="text-gray-600">
+                {texts.manageCategories}
               </p>
+              {currentUser && (
+                <p className="text-sm text-green-600 mt-1">Welcome back, {currentUser.name}!</p>
+              )}
             </div>
-            <button
-              onClick={() => handleOpenModal('add')}
-              className="flex items-center gap-2 px-6 py-3 bg-[#228B22] text-white rounded-lg hover:bg-[#2D5016] transition-colors font-medium text-lg"
-            >
-              <Plus size={20} />
-              {texts.addNewCategory}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleRefresh}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Filter size={20} />}
+                {texts.refresh}
+              </button>
+              <button
+                onClick={() => handleOpenModal('add')}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <Plus size={20} />
+                {texts.addNewCategory}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-[#F5F5DC] p-8 mb-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 font-medium mb-1">{texts.totalCategories}</p>
+                <p className="text-2xl font-bold text-gray-800">{totalCategories}</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-full">
+                <Filter className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 font-medium mb-1">{texts.activeCount}</p>
+                <p className="text-2xl font-bold text-gray-800">{activeCategories}</p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-full">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 font-medium mb-1">{texts.inactiveCount}</p>
+                <p className="text-2xl font-bold text-gray-800">{inactiveCategories}</p>
+              </div>
+              <div className="bg-red-100 p-3 rounded-full">
+                <AlertCircle className="h-6 w-6 text-red-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8B4513]"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 size={20}
               />
               <input
@@ -311,97 +447,104 @@ const CategoryManagement = () => {
                 placeholder={texts.searchCategories}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none text-base"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               />
             </div>
             <div className="relative">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="appearance-none bg-white border border-[#F5F5DC] rounded-lg px-6 py-3 pr-10 focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none text-base"
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-6 py-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 <option value="all">{texts.allCategories}</option>
                 <option value="active">{texts.activeCategories}</option>
                 <option value="inactive">{texts.inactiveCategories}</option>
               </select>
               <Filter
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8B4513] pointer-events-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
                 size={18}
               />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-[#F5F5DC] overflow-hidden">
+        {/* Categories Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#EAF8E7]">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.categoryName}
                   </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.description}
                   </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.products}
                   </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.createdDate}
                   </th>
-                  <th className="px-6 py-4 text-left text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.status}
                   </th>
-                  <th className="px-6 py-4 text-center text-base font-semibold text-[#333333]">
+                  <th className="px-6 py-4 text-center font-semibold text-gray-800">
                     {texts.actions}
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F5F5DC]">
+              <tbody className="divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-[#8B4513] text-lg">
-                      {texts.loading}
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex justify-center items-center">
+                        <Loader2 className="animate-spin h-8 w-8 text-green-600" />
+                        <span className="ml-2 text-gray-600">{texts.loading}</span>
+                      </div>
                     </td>
                   </tr>
-                ) : categories.length > 0 ? ( // Changed from filteredCategories
-                  categories.map((category) => ( // Changed from filteredCategories
-                    <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
+                ) : filteredCategories.length > 0 ? (
+                  filteredCategories.map((category) => (
+                    <tr key={category.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           {category.image_url ? (
                             <img
                               src={category.image_url || "/placeholder.svg"}
                               alt={category.name}
-                              className="w-16 h-16 object-cover rounded"
+                              className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                             />
                           ) : (
-                            <span className="text-[#8B4513] text-base">-</span>
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <Filter className="w-6 h-6 text-gray-400" />
+                            </div>
                           )}
-                          <div className="font-medium text-[#333333] text-base">
+                          <div className="font-medium text-gray-800">
                             {category.name}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-[#8B4513] text-base line-clamp-2 max-w-xs">
-                          {category.description}
+                        <div className="text-gray-600 line-clamp-2 max-w-xs">
+                          {category.description || 'No description'}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-[#FFD700] text-[#333333]">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                           {category.productCount} {texts.products}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-[#8B4513] text-base">
+                      <td className="px-6 py-4 text-gray-600">
                         {new Date(category.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${category.status === 'active'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                            }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            category.status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
                         >
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>
@@ -409,9 +552,9 @@ const CategoryManagement = () => {
                       <td className="px-6 py-4 text-center relative">
                         <button
                           onClick={() => toggleDropdown(category.id)}
-                          className="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#F5F5DC] transition-colors"
+                          className="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
                         >
-                          <MoreVertical size={18} className="text-[#333333]" />
+                          <MoreVertical size={18} className="text-gray-600" />
                         </button>
                         {dropdownOpen === category.id && (
                           <div
@@ -420,21 +563,21 @@ const CategoryManagement = () => {
                           >
                             <button
                               onClick={() => handleOpenModal('view', category)}
-                              className="flex items-center gap-2 w-full px-4 py-3 text-base text-[#228B22] hover:bg-[#228B22] hover:bg-opacity-10 transition-colors rounded-t-lg"
+                              className="flex items-center gap-2 w-full px-4 py-3 text-green-600 hover:bg-green-50 transition-colors rounded-t-lg"
                             >
                               <Eye size={16} />
                               {texts.view}
                             </button>
                             <button
                               onClick={() => handleOpenModal('edit', category)}
-                              className="flex items-center gap-2 w-full px-4 py-3 text-base text-[#FFD700] hover:bg-[#FFD700] hover:bg-opacity-20 transition-colors"
+                              className="flex items-center gap-2 w-full px-4 py-3 text-blue-600 hover:bg-blue-50 transition-colors"
                             >
                               <Edit size={16} />
                               {texts.edit}
                             </button>
                             <button
                               onClick={() => handleDelete(category)}
-                              className="flex items-center gap-2 w-full px-4 py-3 text-base text-red-500 hover:bg-red-50 transition-colors rounded-b-lg"
+                              className="flex items-center gap-2 w-full px-4 py-3 text-red-500 hover:bg-red-50 transition-colors rounded-b-lg"
                             >
                               <Trash2 size={16} />
                               {texts.delete}
@@ -446,8 +589,9 @@ const CategoryManagement = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-[#8B4513] text-lg">
-                      {texts.noCategories}
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 text-lg">{texts.noCategories}</p>
                     </td>
                   </tr>
                 )}
@@ -457,12 +601,11 @@ const CategoryManagement = () => {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-8 border-b border-[#F5F5DC]">
-              <h2 className="text-2xl font-bold text-[#333333]">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-800">
                 {modalMode === 'add'
                   ? texts.addCategory
                   : modalMode === 'edit'
@@ -471,68 +614,82 @@ const CategoryManagement = () => {
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="text-[#8B4513] hover:text-[#333333] transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <X size={28} />
               </button>
             </div>
-            <div className="p-8">
+            <div className="p-6">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.categoryName}
+                  <label className="block font-medium text-gray-800 mb-2">
+                    {texts.categoryNameEn}
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     disabled={modalMode === 'view'}
-                    className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] font-khmer text-base"
-                    placeholder="បញ្ចូលឈ្មោះប្រភេទ"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                    placeholder="Enter category name"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-base font-medium text-[#333333] mb-2">
-                    {texts.description}
+                  <label className="block font-medium text-gray-800 mb-2">
+                    {texts.descriptionEn}
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     disabled={modalMode === 'view'}
                     rows={4}
-                    className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] resize-none font-khmer text-base"
-                    placeholder="បញ្ចូលការពិពណ៌នាជាភាសាខ្មែរ"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none disabled:bg-gray-100 resize-none"
+                    placeholder="Enter category description"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-base font-medium text-[#333333] mb-2">
+                  <label className="block font-medium text-gray-800 mb-2">
                     {texts.image}
                   </label>
                   {modalMode !== 'view' && (
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none text-base"
-                    />
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
+                      <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <p className="text-gray-600 mb-2">{texts.uploadImage}</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        className="cursor-pointer bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors inline-block"
+                      >
+                        Select File
+                      </label>
+                    </div>
                   )}
                   {selectedCategory?.image_url && (
                     <img
                       src={selectedCategory.image_url || "/placeholder.svg"}
                       alt={selectedCategory.name}
-                      className="w-40 h-40 object-cover rounded mt-2"
+                      className="w-40 h-40 object-cover rounded-lg mt-2 border border-gray-200"
                     />
                   )}
                 </div>
+
                 <div>
-                  <label className="block text-base font-medium text-[#333333] mb-2">
+                  <label className="block font-medium text-gray-800 mb-2">
                     {texts.status}
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     disabled={modalMode === 'view'}
-                    className="w-full px-4 py-3 border border-[#F5F5DC] rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent outline-none disabled:bg-[#FAF0E6] text-base"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none disabled:bg-gray-100"
                   >
                     <option value="active">{texts.active}</option>
                     <option value="inactive">{texts.inactive}</option>
@@ -540,20 +697,30 @@ const CategoryManagement = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-4 p-8 border-t border-[#F5F5DC]">
+            <div className="flex justify-end gap-4 p-6 border-t border-gray-200">
               <button
                 onClick={handleCloseModal}
-                className="px-6 py-3 text-[#8B4513] border border-[#8B4513] rounded-lg hover:bg-[#FAF0E6] transition-colors text-base"
+                className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 {modalMode === 'view' ? texts.close : texts.cancel}
               </button>
               {modalMode !== 'view' && (
                 <button
                   onClick={handleSave}
-                  className="px-6 py-3 bg-[#228B22] text-white rounded-lg hover:bg-[#2D5016] transition-colors text-base"
+                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
                   disabled={isLoading}
                 >
-                  {isLoading ? texts.loading : texts.save}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {texts.loading}
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} />
+                      {texts.save}
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -561,28 +728,37 @@ const CategoryManagement = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="p-8">
-              <h3 className="text-xl font-semibold text-[#333333] mb-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 {texts.confirmDelete}
               </h3>
-              <p className="text-[#8B4513] mb-6 text-base">{texts.deleteConfirmText}</p>
+              <p className="text-gray-600 mb-6">{texts.deleteConfirmText}</p>
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-6 py-3 text-[#8B4513] border border-[#8B4513] rounded-lg hover:bg-[#FAF0E6] transition-colors text-base"
+                  className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   {texts.cancelDelete}
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-base"
+                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
                   disabled={isLoading}
                 >
-                  {isLoading ? texts.loading : texts.confirmDeleteBtn}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {texts.loading}
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={16} />
+                      {texts.confirmDeleteBtn}
+                    </>
+                  )}
                 </button>
               </div>
             </div>
