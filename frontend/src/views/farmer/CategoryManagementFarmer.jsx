@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X } from 'lucide-react';
 import axios from 'axios';
-const BASE_IMAGE_URL = "https://yourwebsite.com/images/";
-
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -74,25 +72,19 @@ const CategoryManagement = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(CATEGORIES_ENDPOINT);
-        const transformedCategories = response.data.data.map((category) => {
-          let imageUrl = category.image_url || '';
-          if (imageUrl && !imageUrl.startsWith('http')) {
-            imageUrl = `${BASE_IMAGE_URL}/category_image/${imageUrl}`;
-          }
-          return {
-            id: category.id,
-            name: category.name,
-            description: category.description || '',
-            productCount: category.productCount || 0,
-            createdAt: category.created_at,
-            status: category.status,
-            image_url: imageUrl,
-          };
-        });
+        const transformedCategories = response.data.data.map((category) => ({
+          id: category.id,
+          name: category.name, // Use as string
+          description: category.description || '', // Use as string
+          productCount: category.productCount || 0,
+          createdAt: category.created_at,
+          status: category.status,
+          image_url: category.image_url,
+        }));
         setCategories(transformedCategories);
         setError(null);
       } catch (err) {
-        const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការទៅយកប្រភេទ';
+        const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
         setError(errorMessage);
         console.error('AxiosError Details:', {
           message: err.message,
@@ -135,7 +127,7 @@ const CategoryManagement = () => {
     }
     setShowModal(true);
     setDropdownOpen(null);
-    setError(null);
+    setError(null); // Clear error
   };
 
   const handleCloseModal = () => {
@@ -147,7 +139,7 @@ const CategoryManagement = () => {
       status: 'active',
       image: null,
     });
-    setError(null);
+    setError(null); // Clear error
   };
 
   const handleSave = async () => {
@@ -180,13 +172,13 @@ const CategoryManagement = () => {
           categories.map((cat) =>
             cat.id === selectedCategory.id
               ? {
-                  ...cat,
-                  name: response.data.data.name,
-                  description: response.data.data.description,
-                  status: response.data.data.status,
-                  image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
-                }
+                ...cat,
+                name: response.data.data.name,
+                description: response.data.data.description,
+                status: response.data.data.status,
+                image_url: response.data.data.image_url,
+                productCount: response.data.data.productCount,
+              }
               : cat
           )
         );
@@ -235,7 +227,7 @@ const CategoryManagement = () => {
       setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
       setShowDeleteConfirm(false);
       setCategoryToDelete(null);
-      setError(null);
+      setError(null); // Clear error
       alert(texts.categoryDeleted);
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'បរាជ័យក្នុងការលុបប្រភេទ';
@@ -372,8 +364,8 @@ const CategoryManagement = () => {
                       {texts.loading}
                     </td>
                   </tr>
-                ) : categories.length > 0 ? (
-                  categories.map((category) => (
+                ) : categories.length > 0 ? ( // Changed from filteredCategories
+                  categories.map((category) => ( // Changed from filteredCategories
                     <tr key={category.id} className="hover:bg-[#F5F5DC] transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
@@ -406,11 +398,10 @@ const CategoryManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
-                            category.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${category.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}
                         >
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>
@@ -466,6 +457,7 @@ const CategoryManagement = () => {
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -569,6 +561,7 @@ const CategoryManagement = () => {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
