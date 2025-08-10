@@ -15,37 +15,22 @@ const LocationMap = ({
   categories = [],
   onShowDetail
 }) => {
-  // Default center to Phnom Penh
   const defaultCenter = [11.5564, 104.9282];
   const center = userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter;
 
-  // Group products by location and filter by selected province
   const groupedProducts = useMemo(() => {
     const groups = {};
-    
     products.forEach(product => {
       let province;
-      
-      // Try to get province from product.province object first
       if (product.province && product.province.id) {
         province = product.province;
       } else if (product.province_id) {
-        // Fallback to finding province by ID
         province = provinces.find(p => p.id === product.province_id);
       }
-      
-      if (!province) {
-        console.warn(`No province found for product: ${product.name}`, product);
-        return;
-      }
-      
-      // Filter by selected province if not "all"
-      if (selectedProvince !== 'all' && province.id !== selectedProvince) {
-        return;
-      }
-      
+      if (!province) return;
+      if (selectedProvince !== 'all' && province.id !== selectedProvince) return;
+
       const locationKey = `${province.latitude}-${province.longitude}`;
-      
       if (!groups[locationKey]) {
         groups[locationKey] = {
           latitude: parseFloat(province.latitude),
@@ -54,13 +39,11 @@ const LocationMap = ({
           products: [],
         };
       }
-      
       groups[locationKey].products.push({
         ...product,
-        province: province // Ensure province is attached to product
+        province: province
       });
     });
-    
     return groups;
   }, [products, selectedProvince]);
 
@@ -68,29 +51,24 @@ const LocationMap = ({
 
   const bounds = useMemo(() => {
     if (filteredGroups.length === 0) return [center];
-    
-    const bounds = filteredGroups.map(group => [
-      group.latitude,
-      group.longitude
-    ]);
-    
-    // Add user location to bounds if available
+    const bounds = filteredGroups.map(group => [group.latitude, group.longitude]);
     if (userLocation) {
       bounds.push([userLocation.latitude, userLocation.longitude]);
     }
-    
     return bounds;
   }, [filteredGroups, center, userLocation]);
 
-  const customIcon = new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+  // Red icon for products
+  const productIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   });
 
+  // Blue icon for user location
   const userIcon = new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
     iconSize: [30, 48],
     iconAnchor: [15, 48],
     popupAnchor: [1, -40],
@@ -115,7 +93,7 @@ const LocationMap = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        
+
         {userLocation && (
           <>
             <Marker position={[userLocation.latitude, userLocation.longitude]} icon={userIcon}>
@@ -138,7 +116,7 @@ const LocationMap = ({
           <Marker
             key={index}
             position={[group.latitude, group.longitude]}
-            icon={customIcon}
+            icon={productIcon}
           >
             <Popup maxWidth={300}>
               <div className="space-y-2 max-w-xs">
@@ -148,7 +126,6 @@ const LocationMap = ({
                 <p className="text-sm text-gray-600">
                   {group.province.city}, {group.province.country}
                 </p>
-                
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   <p className="font-semibold text-sm">
                     {currentTexts.products || 'Products'} ({group.products.length}):
