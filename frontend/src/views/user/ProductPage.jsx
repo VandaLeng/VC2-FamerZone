@@ -535,7 +535,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden hero-section">
         <div className="absolute inset-0">
           <img
-            src="/placeholder.svg?height=1080&width=1920"
+            src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
             alt="Agricultural background"
             className="w-full h-full object-cover"
           />
