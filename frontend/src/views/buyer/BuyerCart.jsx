@@ -161,7 +161,7 @@ const CartPage = () => {
                 )}
               </div>
             </div>
-            {cartItems.length > 0 && (
+            {/* {cartItems.length > 0 && (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-xl border border-gray-100 flex items-center space-x-3">
                   <div className="bg-green-100 p-2 rounded-lg">
@@ -191,7 +191,7 @@ const CartPage = () => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
           {cartItems.length > 0 && (
             <div className="lg:col-span-1">
@@ -222,14 +222,14 @@ const CartPage = () => {
                       <span className="text-xl font-bold text-green-600">{total.toLocaleString()} ៛</span>
                     </div>
                   </div>
-                  {subtotal < 50000 && (
+                  {/* {subtotal < 50000 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <p className="text-sm text-blue-800">
                         បន្ថែមទំនិញ <span className="font-semibold">{(50000 - subtotal).toLocaleString()} ៛</span> ទៀត
                         ដើម្បីបានដឹកជញ្ជូនឥតគិតថ្លៃ!
                       </p>
                     </div>
-                  )}
+                  )} */}
                   <button className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-all transform hover:scale-[1.02]">
                     បន្តទៅបង់ប្រាក់
                   </button>
@@ -237,7 +237,7 @@ const CartPage = () => {
                     បន្តទិញទំនិញ
                   </button>
                 </div>
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                {/* <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                   <div className="flex space-x-2">
                     <input
                       type="text"
@@ -248,7 +248,7 @@ const CartPage = () => {
                       ប្រើ
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           )}
