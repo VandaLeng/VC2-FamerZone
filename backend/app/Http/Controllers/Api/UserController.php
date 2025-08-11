@@ -35,11 +35,13 @@ class UserController extends Controller
             'role' => 'required|string|exists:roles,name',
         ]);
 
+        $role = Role::where('name', $request->role)->firstOrFail();
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'image' => 'default.jpg'
+            'image' => 'default.jpg',
+            'role_id' => $role->id, // Add the role_id here
         ]);
 
         $user->assignRole($request->role);
@@ -169,7 +171,7 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        if (! Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => 'Current password is incorrect'], 403);
         }
 
