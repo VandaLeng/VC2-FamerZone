@@ -46,7 +46,7 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        return response()->json(['message' => 'User created successfully', 'user' => $user]);
+        return response()->json(['message' => 'User created successfully', 'user' => $user->load('roles')]);
     }
 
     public function update(Request $request, $id)
@@ -73,14 +73,14 @@ class UserController extends Controller
             $user->syncRoles([$request->role]);
         }
 
-        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+        return response()->json(['message' => 'User updated successfully', 'user' => $user->load('roles')]);
     }
 
     public function destroy($id)
     {
         $user = User::findOrFail($id);
 
-        if ($user->image && $user->image !== 'default.jpg') {
+        if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
             Storage::delete('public/users/' . $user->image);
         }
 
@@ -92,7 +92,7 @@ class UserController extends Controller
     public function assignRole(Request $request, $id)
     {
         $request->validate([
-            'role' => 'required|string'
+            'role' => 'required|string|exists:roles,name',
         ]);
 
         $user = User::findOrFail($id);
@@ -107,7 +107,7 @@ class UserController extends Controller
     public function removeRole(Request $request, $id)
     {
         $request->validate([
-            'role' => 'required|string'
+            'role' => 'required|string|exists:roles,name',
         ]);
 
         $user = User::findOrFail($id);
@@ -144,7 +144,7 @@ class UserController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-            if ($user->image && $user->image !== 'default.jpg') {
+            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
                 Storage::delete('public/users/' . $user->image);
             }
 
@@ -198,6 +198,10 @@ class UserController extends Controller
             $user->name = $request->name;
         }
 
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
         if ($request->has('address')) {
             $user->address = $request->address;
         }
@@ -207,24 +211,69 @@ class UserController extends Controller
         }
 
         if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+            $user->password = Hash::make($request->password);
         }
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            if ($user->image && $user->image !== 'default.jpg') {
+
+            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
                 Storage::delete('public/users/' . $user->image);
             }
+
             $image->storeAs('public/users', $imageName);
             $user->image = $imageName;
         }
 
         $user->save();
 
+        $user->load('roles', 'permissions');
+
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user,
+        ]);
+    }
+
+    public function updateImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
+                Storage::delete('public/users/' . $user->image);
+            }
+
+            $image->storeAs('public/users', $imageName);
+
+            $user->image = $imageName;
+            $user->save();
+
+            return response()->json([
+                'message' => 'Image updated successfully',
+                'image_url' => url('storage/users/' . $imageName),
+                'user' => $user,
+            ]);
+        }
+
+        return response()->json(['message' => 'No image uploaded'], 400);
+    }
+
+    // New method to fetch authenticated user's profile
+    public function getProfile(Request $request)
+    {
+        $user = $request->user();
+        $user->load('roles');
+        return response()->json([
+            'data' => $user
         ]);
     }
 }
