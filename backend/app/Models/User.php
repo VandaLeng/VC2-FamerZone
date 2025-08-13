@@ -18,7 +18,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'address',
+        'province_id',
         'role_id',
     ];
 
@@ -32,6 +32,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);
@@ -42,8 +47,8 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function item(){
-        
+    public function item()
+    {
         return $this->hasMany(Item::class);
     }
 }

@@ -1,6 +1,6 @@
-"use client";
 import { useState, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, BrowserRouter as Router } from "react-router-dom";
+import 'leaflet/dist/leaflet.css';
 // User Website
 import Home from "./views/user/HomePage";
 import Products from "./views/user/ProductPage";
@@ -25,6 +25,10 @@ import FarmerSettings from "./views/farmer/FarmerSetting";
 // Api
 import { logoutUser } from "./stores/api";
 
+import { ProductProvider } from './services/ProductContext';
+import ProductsPage from '../src/views/user/ProductPage';
+import ProductManagement from '../src/views/farmer/ProductManagementFarmer';
+
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState("kh");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,10 +36,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if current route is a farmer route
   const isFarmerRoute = location.pathname.startsWith('/farmer');
-  
-  // Check if user is a farmer (handles both userData.role and userData.role.name)
   const isFarmer = userData?.role === 'farmer' || userData?.role?.name === 'farmer';
 
   useEffect(() => {
@@ -46,17 +47,12 @@ function App() {
         const parsedUserData = JSON.parse(storedUserData);
         setUserData(parsedUserData);
         setIsLoggedIn(true);
-        
-        console.log("User authenticated on app load:", parsedUserData);
-        console.log("User role:", parsedUserData.role);
-        
-        // Auto-redirect farmer to dashboard after login
+
         const userRole = parsedUserData.role?.name || parsedUserData.role;
         if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
           navigate('/farmer/dashboard');
         }
       } catch (e) {
-        console.error("Failed to parse user data from localStorage", e);
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user_data");
         setIsLoggedIn(false);
@@ -65,7 +61,6 @@ function App() {
     }
   }, [navigate, location.pathname]);
 
-  // Redirect non-farmers away from farmer routes
   useEffect(() => {
     if (isFarmerRoute && isLoggedIn && !isFarmer) {
       navigate('/');
@@ -82,88 +77,72 @@ function App() {
       navigate("/");
       alert("Logged out successfully!");
     } catch (error) {
-      console.error("Logout failed:", error);
       alert("Logout failed: " + error.message);
     }
   };
 
-  // Determine which layout to render based on conditions
   if (isFarmerRoute && isFarmer) {
     return (
-      <FarmerLayout
-        currentLanguage={currentLanguage}
-        setCurrentLanguage={setCurrentLanguage}
-        userData={userData}
-        handleLogout={handleLogout}
-      >
-        <Routes>
-          <Route path="/farmer/dashboard" element={<FarmerDashboard currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/orders" element={<FarmerOrders currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/customers" element={<FarmerCustomers currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/products" element={<FarmerProducts currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
-          <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
-        </Routes>
-      </FarmerLayout>
+      <ProductProvider>
+        <FarmerLayout
+          currentLanguage={currentLanguage}
+          setCurrentLanguage={setCurrentLanguage}
+          userData={userData}
+          handleLogout={handleLogout}
+        >
+          <Routes>
+            <Route path="/farmer/dashboard" element={<FarmerDashboard currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/orders" element={<FarmerOrders currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/customers" element={<FarmerCustomers currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/products" element={<FarmerProducts currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
+          </Routes>
+        </FarmerLayout>
+      </ProductProvider>
     );
   }
 
   return (
-    <PublicLayout
-      currentLanguage={currentLanguage}
-      setCurrentLanguage={setCurrentLanguage}
-      isLoggedIn={isLoggedIn}
-      userData={userData}
-      handleLogout={handleLogout}
-      isFarmer={isFarmer}
-    >
-      <Routes>
-        <Route
-          path="/"
-          element={<Home currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage} />}
-        />
-        <Route path="/products" element={<Products currentLanguage={currentLanguage} />} />
-        <Route path="/about" element={<About currentLanguage={currentLanguage} />} />
-        <Route path="/learning-center" element={<LearningCenter currentLanguage={currentLanguage} />} />
-        <Route path="/contact" element={<Contact currentLanguage={currentLanguage} />} />
-        <Route path="/cart" element={<BuyerCart currentLanguage={currentLanguage} />} />
-        <Route
-          path="/register"
-          element={
-            <RegisterForm
-              currentLanguage={currentLanguage}
-              setIsLoggedIn={setIsLoggedIn}
-              setUserData={setUserData}
-            />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <LoginForm
-              currentLanguage={currentLanguage}
-              setIsLoggedIn={setIsLoggedIn}
-              setUserData={setUserData}
-            />
-          }
-        />
-        {/* Access denied for farmer routes accessed by non-farmers */}
-        {isFarmerRoute && !isFarmer && (
-          <Route
-            path="/farmer/*"
-            element={
-              <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-                  <p className="text-gray-600">You don't have permission to access this page.</p>
+    <ProductProvider>
+      <PublicLayout
+        currentLanguage={currentLanguage}
+        setCurrentLanguage={setCurrentLanguage}
+        isLoggedIn={isLoggedIn}
+        userData={userData}
+        handleLogout={handleLogout}
+        isFarmer={isFarmer}
+      >
+        <Routes>
+          <Route path="/" element={<Home currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage} />} />
+          <Route path="/products" element={<Products currentLanguage={currentLanguage} />} />
+          <Route path="/about" element={<About currentLanguage={currentLanguage} />} />
+          <Route path="/learning-center" element={<LearningCenter currentLanguage={currentLanguage} />} />
+          <Route path="/contact" element={<Contact currentLanguage={currentLanguage} />} />
+          <Route path="/cart" element={<BuyerCart currentLanguage={currentLanguage} />} />
+          <Route path="/register" element={<RegisterForm currentLanguage={currentLanguage} setIsLoggedIn={setIsLoggedIn} setUserData={setUserData} />} />
+          <Route path="/login" element={<LoginForm currentLanguage={currentLanguage} setIsLoggedIn={setIsLoggedIn} setUserData={setUserData} />} />
+
+          {isFarmerRoute && !isFarmer && (
+            <Route
+              path="/farmer/*"
+              element={
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                    <p className="text-gray-600">You don't have permission to access this page.</p>
+                  </div>
                 </div>
-              </div>
-            }
-          />
-        )}
-      </Routes>
-    </PublicLayout>
+              }
+            />
+          )}
+
+          <Route path="/manage-products" element={<ProductManagement />} />
+          <Route path="/products" element={<ProductsPage />} />
+        </Routes>
+      </PublicLayout>
+    </ProductProvider>
   );
 }
 

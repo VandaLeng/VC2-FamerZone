@@ -131,4 +131,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH C:\Users\KHAT.LYNAK\Desktop\VC2-FamerZone\backend\resources\views/welcome.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Anzo\OneDrive\Desktop\Vc2-react-laravel\backend\resources\views/welcome.blade.php ENDPATH**/ ?>
