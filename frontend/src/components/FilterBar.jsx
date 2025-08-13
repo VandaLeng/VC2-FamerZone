@@ -1,7 +1,4 @@
 "use client"
-
-// Using Lucide React icons for better visual fidelity, as seen in the image.
-// Please ensure you have 'lucide-react' installed: npm install lucide-react
 import { Search } from "lucide-react"
 
 const FilterBar = ({ setFilterStatus, setSearchTerm, currentTexts }) => {

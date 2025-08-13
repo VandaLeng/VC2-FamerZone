@@ -444,4 +444,4 @@ const LearningCenter = ({ currentLanguage = "en" }) => {
   )
 }
 
-export default LearningCenter
+export default LearningCenter;

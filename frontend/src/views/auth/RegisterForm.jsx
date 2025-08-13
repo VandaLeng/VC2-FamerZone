@@ -1,7 +1,8 @@
-"use client"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { registerUser } from "../../stores/api"
+"use client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../stores/api";
+import provinces from "../../services/provinces";
 
 export default function RegisterForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
@@ -9,15 +10,15 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
     email: "",
     password: "",
     confirmPassword: "",
-    role: "buyer", 
+    role: "buyer",
     phone: "",
-    address: "",
-  })
-  const [errors, setErrors] = useState({})
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+    province_id: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const texts = {
     kh: {
@@ -34,8 +35,8 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
       role: "តួនាទី",
       phone: "លេខទូរស័ព្ទ",
       phonePlaceholder: "+855 12 345 678",
-      address: "អាសយដ្ឋាន",
-      addressPlaceholder: "បញ្ចូលអាសយដ្ឋានរបស់អ្នក",
+      province: "ខេត្ត",
+      provincePlaceholder: "ជ្រើសរើសខេត្ត",
       register: "ចុះឈ្មោះ",
       alreadyHaveAccount: "មានគណនីហើយ?",
       signIn: "ចូលប្រើ",
@@ -48,6 +49,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
       close: "បិទ",
       registerSuccess: "ការចុះឈ្មោះជោគជ័យ!",
       registerFailed: "ការចុះឈ្មោះបរាជ័យ។ សូមព្យាយាមម្តងទៀត។",
+      provinceRequired: "សូមជ្រើសរើសខេត្ត",
     },
     en: {
       title: "Create Account",
@@ -63,8 +65,8 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
       role: "I am a",
       phone: "Phone Number",
       phonePlaceholder: "+855 12 345 678",
-      address: "Address",
-      addressPlaceholder: "Enter your address",
+      province: "Province",
+      provincePlaceholder: "Select a province",
       register: "Create Account",
       alreadyHaveAccount: "Already have an account?",
       signIn: "Sign In",
@@ -77,56 +79,62 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
       close: "Close",
       registerSuccess: "Registration successful!",
       registerFailed: "Registration failed. Please try again.",
+      provinceRequired: "Please select a province",
     },
-  }
-  const currentTexts = texts[currentLanguage]
+  };
+  const currentTexts = texts[currentLanguage];
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
+    }));
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
-      }))
+      }));
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
     if (!formData.name.trim()) {
-      newErrors.name = currentLanguage === "kh" ? "ត្រូវការឈ្មោះ" : "Name is required"
+      newErrors.name = currentLanguage === "kh" ? "ត្រូវការឈ្មោះ" : "Name is required";
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
-      newErrors.email = currentLanguage === "kh" ? "ត្រូវការអ៊ីមែល" : "Email is required"
+      newErrors.email = currentLanguage === "kh" ? "ត្រូវការអ៊ីមែល" : "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = currentLanguage === "kh" ? "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ" : "Please enter a valid email"
+      newErrors.email = currentLanguage === "kh" ? "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ" : "Please enter a valid email";
     }
     if (!formData.password) {
-      newErrors.password = currentLanguage === "kh" ? "ត្រូវការលេខសម្ងាត់" : "Password is required"
+      newErrors.password = currentLanguage === "kh" ? "ត្រូវការលេខសម្ងាត់" : "Password is required";
     } else if (formData.password.length < 8) {
       newErrors.password =
-        currentLanguage === "kh" ? "លេខសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់ ៨ តួអក្សរ" : "Password must be at least 8 characters"
+        currentLanguage === "kh"
+          ? "លេខសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់ ៨ តួរអក្សរ"
+          : "Password must be at least 8 characters";
     }
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = currentLanguage === "kh" ? "សូមបញ្ជាក់លេខសម្ងាត់" : "Please confirm your password"
+      newErrors.confirmPassword = currentLanguage === "kh" ? "សូមបញ្ជាក់លេខសម្ងាត់" : "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = currentLanguage === "kh" ? "លេខសម្ងាត់មិនត្រូវគ្នា" : "Passwords do not match"
+      newErrors.confirmPassword = currentLanguage === "kh" ? "លេខសម្ងាត់មិនត្រូវគ្នា" : "Passwords do not match";
     }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    if (!formData.province_id) {
+      newErrors.province_id = currentTexts.provinceRequired;
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!validateForm()) {
-      return
+      return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const data = await registerUser({
         name: formData.name,
@@ -135,65 +143,60 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
         password_confirmation: formData.confirmPassword,
         role: formData.role,
         phone: formData.phone || null,
-        address: formData.address || null,
-      })
-      
+        province_id: formData.province_id || null,
+      });
+
       if (data && data.access_token) {
-        // Store token and user data in localStorage
-        localStorage.setItem("auth_token", data.access_token)
-        localStorage.setItem("user_data", JSON.stringify(data.user))
-        
-        // Ensure userData has all required fields for navbar display
+        localStorage.setItem("auth_token", data.access_token);
+        localStorage.setItem("user_data", JSON.stringify(data.user));
+
         const userData = {
           id: data.user.id,
           name: data.user.name || formData.name,
           email: data.user.email || formData.email,
           role: data.user.role || formData.role,
           phone: data.user.phone || formData.phone,
-          address: data.user.address || formData.address,
-          ...data.user // Spread any additional fields from API response
-        }
-        
-        // Update parent component state
-        setIsLoggedIn(true)
-        setUserData(userData)
-        
-        console.log("Registration successful!")
-        console.log("User data:", userData)
-        console.log("Token stored:", localStorage.getItem("auth_token"))
-        
-        alert(currentTexts.registerSuccess)
-        
-        // Close modal or navigate
+          province: data.user.province || null,
+        };
+
+        setIsLoggedIn(true);
+        setUserData(userData);
+
+        console.log("Registration successful!");
+        console.log("User data:", userData);
+        console.log("Token stored:", localStorage.getItem("auth_token"));
+
+        alert(currentTexts.registerSuccess);
+
         if (onClose) {
-          onClose()
+          onClose();
         } else {
-          navigate("/")
+          navigate(data.user.role === "farmer" ? "/farmer/dashboard" : "/");
         }
       } else {
-        throw new Error("Registration successful but no access token received.")
+        throw new Error("Registration successful but no access token received.");
       }
     } catch (error) {
-      console.error("Registration error:", error)
-      const errorMsg = error.message || currentTexts.registerFailed
-      setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.registerFailed })
-      alert(errorMsg)
+      console.error("Registration error:", error);
+      const errorMsg = error.message || currentTexts.registerFailed;
+      setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.registerFailed });
+      alert(errorMsg);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSignIn = () => {
-    navigate("/login")
-  }
+    navigate("/login");
+  };
 
   const handleClose = () => {
     if (onClose) {
-      onClose()
+      onClose();
     } else {
-      navigate("/")
+      navigate("/");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -471,9 +474,11 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{currentTexts.address}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {currentTexts.province} <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
-                <div className="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -489,15 +494,21 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
                     />
                   </svg>
                 </div>
-                <textarea
-                  name="address"
-                  rows={4}
-                  value={formData.address}
+                <select
+                  name="province_id"
+                  value={formData.province_id}
                   onChange={handleInputChange}
-                  placeholder={currentTexts.addressPlaceholder}
-                  className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 resize-none border-gray-200 hover:border-gray-300"
-                />
+                  className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 border-gray-200 hover:border-gray-300"
+                >
+                  <option value="">{currentTexts.provincePlaceholder}</option>
+                  {provinces.map((prov) => (
+                    <option key={prov.id} value={prov.id}>
+                      {currentLanguage === "kh" ? prov.nameKh : prov.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+              {errors.province_id && <p className="mt-1 text-sm text-red-600">{errors.province_id}</p>}
             </div>
           </div>
           {errors.general && <p className="text-sm text-red-600 text-center">{errors.general}</p>}
@@ -551,5 +562,5 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
         </form>
       </div>
     </div>
-  )
+  );
 }

@@ -6,7 +6,6 @@ import BackToTopButton from '../components/BackToTop';
 import UserProfile from '../views/buyer/BuyerProfile';
 import UserOrders from '../views/buyer/BuyerOrder';
 import UserSettings from '../views/buyer/BuyerSetting';
-// import UserDashboard from '../views/buyer/BuyerDashboard';
 
 const PublicLayout = ({ 
   children, 
@@ -20,7 +19,7 @@ const PublicLayout = ({
   const location = useLocation();
   
   // List of routes where Footer should not be displayed
-  const noFooterRoutes = ['/profile', '/orders', '/settings', '/dashboard'];
+  const noFooterRoutes = ['/profile', '/orders', '/settings', '/dashboard', '/cart'];
   
   // Check if current route is in noFooterRoutes
   const showFooter = !noFooterRoutes.includes(location.pathname);
@@ -51,10 +50,6 @@ const PublicLayout = ({
                 path="/settings" 
                 element={<UserSettings userData={userData} currentLanguage={currentLanguage} />}
               />
-              {/* <Route 
-                path="/dashboard" 
-                element={<UserDashboard userData={userData} currentLanguage={currentLanguage} />}
-              /> */}
             </>
           )}
           {/* Render children routes passed from App.jsx */}
