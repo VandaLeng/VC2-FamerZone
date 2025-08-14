@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "./index.css"; // global styles or Tailwind if installed
+import "./index.css";
 import { BrowserRouter as Router } from "react-router-dom";
-// import { CartProvider } from "./services/cartContext"; 
+import { CartProvider } from "./services/cartContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router>
-      {/* <CartProvider> */}
+      <CartProvider>
         <App />
-      {/* </CartProvider> */}
+      </CartProvider>
     </Router>
   </React.StrictMode>
 );
