@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../stores/api";
+import { useAuth } from "../../services/authContext"; // Adjust path to match your AuthContext
 
 export default function LoginForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use AuthContext's login function
 
   const texts = {
     kh: {
@@ -83,13 +84,11 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
     }
     setIsLoading(true);
     try {
-      const data = await loginUser({
+      const data = await login({
         email: formData.email,
         password: formData.password,
       });
       if (data && data.access_token) {
-        localStorage.setItem("auth_token", data.access_token);
-        localStorage.setItem("user_data", JSON.stringify(data.user));
         setIsLoggedIn(true);
         setUserData({
           id: data.user.id,
@@ -199,7 +198,7 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
               </div>

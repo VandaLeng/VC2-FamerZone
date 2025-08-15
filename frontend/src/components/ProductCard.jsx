@@ -209,7 +209,6 @@ function ProductCard({
                   onClick={(e) => {
                     e.stopPropagation();
                     addToCart(product);
-                    alert(currentTexts.orderSuccess || "Product added to cart!");
                   }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 mr-2"
                   disabled={!isInStock || isInCart}
@@ -342,7 +341,6 @@ function ProductCard({
             onClick={(e) => {
               e.stopPropagation();
               addToCart(product);
-              alert(currentTexts.orderSuccess || "Product added to cart!");
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn disabled:opacity-50 flex-shrink-0"
             disabled={!isInStock || isInCart}
