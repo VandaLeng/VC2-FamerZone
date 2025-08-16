@@ -23,7 +23,7 @@ import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
-import VideoProductManagement from "./views/farmer/VideoProductManagement"; // Imported the new component
+import VideoProductManagement from "./views/farmer/VideoProductManagement";
 // Api
 import { logoutUser } from "./stores/api";
 

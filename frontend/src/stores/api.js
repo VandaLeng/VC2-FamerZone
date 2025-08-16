@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
-// Axios instance
+// Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
     timeout: 10000,
@@ -12,12 +12,12 @@ const api = axios.create({
     },
 });
 
-// Get auth token helper
+// Get auth token
 const getAuthToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("auth_token");
 };
 
-// Create auth headers helper
+// Create auth headers
 const getAuthHeaders = () => {
     const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -25,25 +25,9 @@ const getAuthHeaders = () => {
 
 // ========== VIDEO API ==========
 export const videoAPI = {
-    // Public endpoints (no authentication required)
-    getPublicVideos: (params = {}) => {
-        const defaultParams = {
-            limit: 6,
-            type: 'recent'
-        };
-        return axios.get(`${API_BASE_URL}/videos/public`, {
-            params: {...defaultParams, ...params },
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then((response) => response.data);
-    },
-
+    // Get all videos for homepage (public)
     getAllVideos: (params = {}) => {
-        const defaultParams = {
-            limit: 8
-        };
+        const defaultParams = { limit: 6 };
         return axios.get(`${API_BASE_URL}/videos/all`, {
             params: {...defaultParams, ...params },
             headers: {
@@ -53,6 +37,7 @@ export const videoAPI = {
         }).then((response) => response.data);
     },
 
+    // Increment view count (public)
     incrementView: (videoId) => {
         return axios.post(`${API_BASE_URL}/videos/public/${videoId}/view`, {}, {
             headers: {
@@ -62,13 +47,14 @@ export const videoAPI = {
         }).then((response) => response.data);
     },
 
-    // Protected endpoints (authentication required)
+    // Get farmer's videos (protected)
     getMyVideos: () => {
         return axios.get(`${API_BASE_URL}/video-products`, {
             headers: getAuthHeaders()
         }).then((response) => response.data);
     },
 
+    // Create video (protected)
     createVideo: (data) => {
         return axios.post(`${API_BASE_URL}/video-products`, data, {
             headers: {
@@ -78,6 +64,7 @@ export const videoAPI = {
         }).then((response) => response.data);
     },
 
+    // Update video (protected)
     updateVideo: (id, data) => {
         return axios.put(`${API_BASE_URL}/video-products/${id}`, data, {
             headers: {
@@ -87,6 +74,7 @@ export const videoAPI = {
         }).then((response) => response.data);
     },
 
+    // Delete video (protected)
     deleteVideo: (id) => {
         return axios.delete(`${API_BASE_URL}/video-products/${id}`, {
             headers: {
@@ -97,6 +85,7 @@ export const videoAPI = {
         }).then((response) => response.data);
     },
 
+    // Toggle video status (protected)
     toggleVideoStatus: (id) => {
         return axios.post(`${API_BASE_URL}/video-products/${id}/toggle-status`, {}, {
             headers: {
@@ -105,16 +94,10 @@ export const videoAPI = {
                 ...getAuthHeaders()
             }
         }).then((response) => response.data);
-    },
-
-    getVideoById: (id) => {
-        return axios.get(`${API_BASE_URL}/video-products/${id}`, {
-            headers: getAuthHeaders()
-        }).then((response) => response.data);
     }
 };
 
-// ========== EXISTING APIs ==========
+// ========== OTHER EXISTING APIs ==========
 export const itemsAPI = {
     getAll: () => {
         return axios.get(`${API_BASE_URL}/items`, {
@@ -139,7 +122,6 @@ export const itemsAPI = {
     },
 
     update: (id, data) => {
-        // Use POST with _method=PUT for Laravel to handle file uploads properly
         if (data instanceof FormData) {
             data.append('_method', 'PUT');
         }
@@ -182,35 +164,6 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
-
-// Request interceptor
-api.interceptors.request.use(
-    function(config) {
-        const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
-        console.log('API Request:', method, config.url, config.params);
-        return config;
-    },
-    function(error) {
-        console.error('API Request Error:', error);
-        return Promise.reject(error);
-    }
-);
-
-// Response interceptor
-api.interceptors.response.use(
-    function(response) {
-        console.log('API Response:', response.status, response.data);
-        return response;
-    },
-    function(error) {
-        if (error && error.response) {
-            console.error('API Response Error:', error.response.status, error.response.data);
-        } else {
-            console.error('API Error:', error.message);
-        }
-        return Promise.reject(error);
-    }
-);
 
 // ========== AUTH API ==========
 export function registerUser(userData) {
@@ -290,7 +243,6 @@ export function logoutUser() {
         });
 }
 
-// ========== FETCH WITH AUTH ==========
 export function fetchWithAuth(url, options) {
     const token = localStorage.getItem('auth_token');
     const config = {

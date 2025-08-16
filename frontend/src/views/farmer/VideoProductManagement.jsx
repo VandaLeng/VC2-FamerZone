@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Video, Eye, EyeOff, Edit3, X, AlertCircle } from 'lucide-react';
-import { videoAPI } from '../../stores/api'; // Import the new video API
+import { videoAPI } from '../../stores/api';
 
 const VideoProductManagement = () => {
   const [videos, setVideos] = useState([]);
@@ -15,7 +15,7 @@ const VideoProductManagement = () => {
     description: ''
   });
 
-  // Fetch videos using the new API
+  // Fetch videos
   const fetchVideos = async () => {
     try {
       setLoading(true);
@@ -24,17 +24,14 @@ const VideoProductManagement = () => {
       const data = await videoAPI.getMyVideos();
       
       if (data.success) {
-        // Handle both paginated and non-paginated responses
-        const videosData = data.data.data ? data.data.data : data.data;
-        setVideos(Array.isArray(videosData) ? videosData : []);
+        setVideos(Array.isArray(data.data) ? data.data : []);
       } else {
-        console.error('Failed to fetch videos:', data.message);
         setMessage({ type: 'error', text: data.message || 'Failed to fetch videos' });
         setVideos([]);
       }
     } catch (error) {
       console.error('Error fetching videos:', error);
-      setMessage({ type: 'error', text: 'Network error occurred while fetching videos' });
+      setMessage({ type: 'error', text: 'Failed to fetch videos' });
       setVideos([]);
     } finally {
       setLoading(false);
@@ -73,7 +70,6 @@ const VideoProductManagement = () => {
       return false;
     }
     
-    // Basic URL validation
     try {
       new URL(formData.url);
     } catch {
@@ -106,13 +102,11 @@ const VideoProductManagement = () => {
 
       if (data.success) {
         if (editingVideo) {
-          // Update existing video in the list
           setVideos(prev => prev.map(video => 
             video.id === editingVideo.id ? data.data : video
           ));
           setMessage({ type: 'success', text: 'Video updated successfully!' });
         } else {
-          // Add new video to the beginning of the list
           setVideos(prev => [data.data, ...prev]);
           setMessage({ type: 'success', text: 'Video added successfully!' });
         }
@@ -125,7 +119,7 @@ const VideoProductManagement = () => {
       }
     } catch (error) {
       console.error('Error saving video:', error);
-      setMessage({ type: 'error', text: 'Network error occurred while saving video' });
+      setMessage({ type: 'error', text: 'Failed to save video' });
     } finally {
       setSubmitting(false);
     }
@@ -143,7 +137,7 @@ const VideoProductManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this video? This action cannot be undone.')) {
+    if (!window.confirm('Are you sure you want to delete this video?')) {
       return;
     }
 
@@ -158,7 +152,7 @@ const VideoProductManagement = () => {
       }
     } catch (error) {
       console.error('Error deleting video:', error);
-      setMessage({ type: 'error', text: 'Network error occurred while deleting video' });
+      setMessage({ type: 'error', text: 'Failed to delete video' });
     }
   };
 
@@ -176,7 +170,7 @@ const VideoProductManagement = () => {
       }
     } catch (error) {
       console.error('Error toggling video status:', error);
-      setMessage({ type: 'error', text: 'Network error occurred while updating status' });
+      setMessage({ type: 'error', text: 'Failed to update video status' });
     }
   };
 
@@ -190,14 +184,28 @@ const VideoProductManagement = () => {
   const getYouTubeVideoId = (url) => {
     if (!url) return null;
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
       /youtube\.com\/v\/([^&\n?#]+)/,
+      /youtube\.com\/embed\/([^&\n?#]+)/
     ];
 
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) return match[1];
     }
+    return null;
+  };
+
+  const getVideoThumbnail = (video) => {
+    if (video.thumbnail_url && !video.thumbnail_url.includes('youtube.com')) {
+      return video.thumbnail_url;
+    }
+    
+    const videoId = video.video_id || getYouTubeVideoId(video.url);
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+    
     return null;
   };
 
@@ -339,7 +347,7 @@ const VideoProductManagement = () => {
           </div>
         )}
 
-        {/* Video List Table */}
+        {/* Video List */}
         <div className="p-6">
           {videos.length === 0 ? (
             <div className="text-center py-12">
@@ -363,9 +371,7 @@ const VideoProductManagement = () => {
                 </thead>
                 <tbody>
                   {videos.map((video) => {
-                    const videoId = video.video_id || getYouTubeVideoId(video.url);
-                    const thumbnailUrl = video.thumbnail_url || 
-                      (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                    const thumbnailUrl = getVideoThumbnail(video);
                     
                     return (
                       <tr key={video.id} className="border-b hover:bg-gray-50 transition-colors duration-200">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { videoAPI } from '../../stores/api'; // Import the video API
+import { videoAPI } from '../../stores/api';
 import '../../styles/HomeStyle.css';
 import homeData from '../../data/homedata.js';
 
@@ -15,7 +15,7 @@ export default function HomePage({ currentLanguage }) {
     const [selectedVideo, setSelectedVideo] = useState(null);
     const navigate = useNavigate();
 
-    // Intersection Observer hook for scroll animations
+    // Intersection Observer for scroll animations
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -31,7 +31,6 @@ export default function HomePage({ currentLanguage }) {
             { threshold: 0.1, rootMargin: "50px" }
         );
 
-        // Observe all sections
         const sections = document.querySelectorAll("[data-animate]");
         sections.forEach((section) => observer.observe(section));
 
@@ -48,7 +47,6 @@ export default function HomePage({ currentLanguage }) {
             setLoadingVideos(true);
             setVideoError(null);
             
-            // Use the new video API service
             const data = await videoAPI.getAllVideos({ limit: 6 });
             
             if (data.success && Array.isArray(data.data)) {
@@ -67,9 +65,9 @@ export default function HomePage({ currentLanguage }) {
         }
     };
 
-    const currentTexts = homeData[currentLanguage];
+    const currentTexts = homeData[currentLanguage] || homeData["en"];
 
-    // Navigation function to products page with auto-scroll
+    // Navigation functions
     const navigateToProducts = () => {
         window.location.href = "/about";
     };
@@ -79,7 +77,6 @@ export default function HomePage({ currentLanguage }) {
         window.location.href = `/products${categoryParam}#products-section`;
     };
 
-    // Navigation functions for registration with specific roles
     const navigateToRegisterAsBuyer = () => {
         navigate("/register", { state: { defaultRole: "buyer" } });
     };
@@ -95,10 +92,8 @@ export default function HomePage({ currentLanguage }) {
     // Video functions
     const openVideoModal = async (video) => {
         try {
-            // Increment view count when opening video
             await videoAPI.incrementView(video.id);
         } catch (error) {
-            // Silently fail for view counting
             console.log('Failed to increment view count:', error);
         }
         
@@ -127,12 +122,10 @@ export default function HomePage({ currentLanguage }) {
     };
 
     const getVideoThumbnail = (video) => {
-        // Use custom thumbnail if available
         if (video.thumbnail_url && !video.thumbnail_url.includes('youtube.com')) {
             return video.thumbnail_url;
         }
         
-        // Generate YouTube thumbnail
         const videoId = video.video_id || getYouTubeVideoId(video.url);
         if (videoId) {
             return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
@@ -206,25 +199,25 @@ export default function HomePage({ currentLanguage }) {
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div className="text-center lg:text-left">
                             <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6 animate-slide-in-left">
-                                <span className="text-green-600 animate-text-shimmer">{currentTexts.heroTitle}</span>
+                                <span className="text-green-600 animate-text-shimmer">{currentTexts.heroTitle || "Fresh"}</span>
                                 <br />
-                                <span className="text-yellow-600 animate-text-shimmer-delayed">{currentTexts.heroSubtitle}</span>
+                                <span className="text-yellow-600 animate-text-shimmer-delayed">{currentTexts.heroSubtitle || "Farming"}</span>
                             </h1>
                             <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed animate-slide-in-left animate-delay-300">
-                                {currentTexts.heroDescription}
+                                {currentTexts.heroDescription || "Connect directly with local farmers"}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-in-up animate-delay-500">
                                 <button
                                     onClick={navigateToProducts}
                                     className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce-subtle cursor-pointer"
                                 >
-                                    {currentTexts.heroButton}
+                                    {currentTexts.heroButton || "Shop Now"}
                                 </button>
                                 <button
                                     onClick={navigateToRegisterAsFarmer}
                                     className="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-pulse-subtle cursor-pointer"
                                 >
-                                    {currentTexts.heroSecondaryButton}
+                                    {currentTexts.heroSecondaryButton || "Join as Farmer"}
                                 </button>
                             </div>
                         </div>
@@ -259,9 +252,9 @@ export default function HomePage({ currentLanguage }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                         {[
-                            { number: "500+", text: currentTexts.activeFarmers, color: "text-green-600" },
-                            { number: "1000+", text: currentTexts.freshProducts, color: "text-yellow-600" },
-                            { number: "2500+", text: currentTexts.happyCustomers, color: "text-brown-600" },
+                            { number: "500+", text: currentTexts.activeFarmers || "Active Farmers", color: "text-green-600" },
+                            { number: "1000+", text: currentTexts.freshProducts || "Fresh Products", color: "text-yellow-600" },
+                            { number: "2500+", text: currentTexts.happyCustomers || "Happy Customers", color: "text-brown-600" },
                         ].map((stat, index) => (
                             <div
                                 key={index}
@@ -443,7 +436,7 @@ export default function HomePage({ currentLanguage }) {
                         }`}
                     >
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                            {currentTexts.featuresTitle}
+                            {currentTexts.featuresTitle || "Why Choose Us"}
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                             {currentLanguage === "kh"
@@ -456,8 +449,8 @@ export default function HomePage({ currentLanguage }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             {
-                                title: currentTexts.feature1Title,
-                                desc: currentTexts.feature1Desc,
+                                title: currentTexts.feature1Title || "Fresh Products",
+                                desc: currentTexts.feature1Desc || "Direct from farm to your table",
                                 color: "green",
                                 image: "https://media.istockphoto.com/id/2221605330/photo/young-cabbage-after-watering-growing-in-the-garden-bed-home-gardening-concept-handheld-phone.jpg?s=612x612&w=0&k=20&c=UAYykpxX3INo8Mn2wP0zq4DCr3_vXszjf48Hu5RCUpU=",
                                 icon: (
@@ -467,8 +460,8 @@ export default function HomePage({ currentLanguage }) {
                                 ),
                             },
                             {
-                                title: currentTexts.feature2Title,
-                                desc: currentTexts.feature2Desc,
+                                title: currentTexts.feature2Title || "Direct Connection",
+                                desc: currentTexts.feature2Desc || "Connect with local farmers",
                                 color: "blue",
                                 image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=UOuur8q5SRru_fy1OdDybUlm9BuCq9Pw2XjLDkZ5aCY=",
                                 icon: (
@@ -478,8 +471,8 @@ export default function HomePage({ currentLanguage }) {
                                 ),
                             },
                             {
-                                title: currentTexts.feature3Title,
-                                desc: currentTexts.feature3Desc,
+                                title: currentTexts.feature3Title || "Fast Delivery",
+                                desc: currentTexts.feature3Desc || "Quick and reliable delivery",
                                 color: "orange",
                                 image: "https://media.istockphoto.com/id/1216988317/photo/a-man-is-delivering-a-bag-of-vegetables-and-fruit.jpg?s=612x612&w=0&k=20&c=4DfRUtmdVwwLEeS7DdFOacPglRbg-Q_vYcsFlkot_X0=",
                                 icon: (
@@ -489,8 +482,8 @@ export default function HomePage({ currentLanguage }) {
                                 ),
                             },
                             {
-                                title: currentTexts.feature4Title,
-                                desc: currentTexts.feature4Desc,
+                                title: currentTexts.feature4Title || "Fair Prices",
+                                desc: currentTexts.feature4Desc || "Best prices for everyone",
                                 color: "purple",
                                 image: "https://media.istockphoto.com/id/2156905193/photo/phone-payment-and-people-at-organic-market-with-fresh-groceries-sustainable-business-and.jpg?s=612x612&w=0&k=20&c=pU7KjjhZ2ItPIWYVPV1DQ-TrTCe__bfp-Xg0VN0e1NE=",
                                 icon: (

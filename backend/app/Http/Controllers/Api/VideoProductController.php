@@ -7,23 +7,20 @@ use App\Models\VideoProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class VideoProductController extends Controller
 {
     /**
-     * Display a listing of the resource for farmers
+     * Get farmer's videos
      */
     public function index()
     {
         try {
             $videos = VideoProduct::where('farmer_id', Auth::id())
-                ->with(['farmer' => function($query) {
-                    $query->select('id', 'name', 'email', 'profile_image');
-                }])
+                ->with(['farmer:id,name,email'])
                 ->orderBy('created_at', 'desc')
-                ->paginate(15);
+                ->get();
             
             return response()->json([
                 'success' => true,
@@ -33,63 +30,21 @@ class VideoProductController extends Controller
             Log::error('Video fetch error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch videos',
-                'error' => $e->getMessage()
+                'message' => 'Failed to fetch videos'
             ], 500);
         }
     }
 
     /**
-     * Display a listing of all active videos for public (Homepage)
-     */
-    public function publicIndex(Request $request)
-    {
-        try {
-            $limit = $request->get('limit', 6);
-            $type = $request->get('type', 'recent'); // recent, popular
-            
-            $query = VideoProduct::public()
-                ->with(['farmer' => function($query) {
-                    $query->select('id', 'name', 'email', 'profile_image');
-                }]);
-            
-            if ($type === 'popular') {
-                $videos = $query->popular($limit)->get();
-            } else {
-                $videos = $query->recent($limit)->get();
-            }
-            
-            return response()->json([
-                'success' => true,
-                'data' => $videos,
-                'count' => $videos->count(),
-                'message' => 'Videos fetched successfully'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Public video fetch error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch public videos',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Create new video
      */
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'url' => 'required|url|max:1000',
+                'url' => 'required|url',
                 'description' => 'nullable|string|max:1000',
-                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-            ], [
-                'title.required' => 'Video title is required',
-                'url.required' => 'Video URL is required',
-                'url.url' => 'Please enter a valid URL',
             ]);
 
             if ($validator->fails()) {
@@ -100,78 +55,37 @@ class VideoProductController extends Controller
                 ], 422);
             }
 
-            $validatedData = $validator->validated();
-            $validatedData['farmer_id'] = Auth::id();
-            $validatedData['status'] = 'approved'; // Auto-approve for now
-            $validatedData['is_active'] = true;
+            $video = VideoProduct::create([
+                'farmer_id' => Auth::id(),
+                'title' => $request->title,
+                'url' => $request->url,
+                'description' => $request->description,
+                'is_active' => true,
+                'status' => 'approved'
+            ]);
 
-            // Handle thumbnail upload if provided
-            if ($request->hasFile('thumbnail')) {
-                $thumbnailPath = $request->file('thumbnail')->store('video_thumbnails', 'public');
-                $validatedData['thumbnail'] = $thumbnailPath;
-            }
-
-            $video = VideoProduct::create($validatedData);
-            $video->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
-
-            Log::info('Video created successfully', ['video_id' => $video->id, 'farmer_id' => Auth::id()]);
+            $video->load(['farmer:id,name,email']);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Video created successfully and is now live!',
+                'message' => 'Video created successfully!',
                 'data' => $video
             ], 201);
         } catch (\Exception $e) {
             Log::error('Video creation error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create video',
-                'error' => $e->getMessage()
+                'message' => 'Failed to create video'
             ], 500);
         }
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(VideoProduct $videoProduct)
-    {
-        try {
-            // Check if the video belongs to the authenticated farmer or is public
-            if (Auth::check() && $videoProduct->farmer_id !== Auth::id() && !$videoProduct->is_active) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized access'
-                ], 403);
-            }
-
-            $videoProduct->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
-
-            return response()->json([
-                'success' => true,
-                'data' => $videoProduct
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Video show error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch video',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update video
      */
     public function update(Request $request, VideoProduct $videoProduct)
     {
         try {
-            // Check if the video belongs to the authenticated farmer
             if ($videoProduct->farmer_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -181,10 +95,8 @@ class VideoProductController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'url' => 'required|url|max:1000',
+                'url' => 'required|url',
                 'description' => 'nullable|string|max:1000',
-                'is_active' => 'boolean',
-                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             if ($validator->fails()) {
@@ -195,24 +107,13 @@ class VideoProductController extends Controller
                 ], 422);
             }
 
-            $validatedData = $validator->validated();
+            $videoProduct->update([
+                'title' => $request->title,
+                'url' => $request->url,
+                'description' => $request->description,
+            ]);
 
-            // Handle thumbnail upload if provided
-            if ($request->hasFile('thumbnail')) {
-                // Delete old thumbnail if exists
-                if ($videoProduct->thumbnail) {
-                    Storage::disk('public')->delete($videoProduct->thumbnail);
-                }
-                $thumbnailPath = $request->file('thumbnail')->store('video_thumbnails', 'public');
-                $validatedData['thumbnail'] = $thumbnailPath;
-            }
-
-            $videoProduct->update($validatedData);
-            $videoProduct->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
-
-            Log::info('Video updated successfully', ['video_id' => $videoProduct->id]);
+            $videoProduct->load(['farmer:id,name,email']);
 
             return response()->json([
                 'success' => true,
@@ -223,19 +124,17 @@ class VideoProductController extends Controller
             Log::error('Video update error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update video',
-                'error' => $e->getMessage()
+                'message' => 'Failed to update video'
             ], 500);
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete video
      */
     public function destroy(VideoProduct $videoProduct)
     {
         try {
-            // Check if the video belongs to the authenticated farmer
             if ($videoProduct->farmer_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -243,14 +142,7 @@ class VideoProductController extends Controller
                 ], 403);
             }
 
-            // Delete thumbnail if exists
-            if ($videoProduct->thumbnail) {
-                Storage::disk('public')->delete($videoProduct->thumbnail);
-            }
-
             $videoProduct->delete();
-
-            Log::info('Video deleted successfully', ['video_id' => $videoProduct->id]);
 
             return response()->json([
                 'success' => true,
@@ -260,19 +152,17 @@ class VideoProductController extends Controller
             Log::error('Video deletion error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete video',
-                'error' => $e->getMessage()
+                'message' => 'Failed to delete video'
             ], 500);
         }
     }
 
     /**
-     * Toggle video active status
+     * Toggle video status
      */
     public function toggleStatus(VideoProduct $videoProduct)
     {
         try {
-            // Check if the video belongs to the authenticated farmer
             if ($videoProduct->farmer_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -281,12 +171,9 @@ class VideoProductController extends Controller
             }
 
             $videoProduct->update(['is_active' => !$videoProduct->is_active]);
-            $videoProduct->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
+            $videoProduct->load(['farmer:id,name,email']);
 
             $status = $videoProduct->is_active ? 'activated' : 'deactivated';
-            Log::info('Video status toggled', ['video_id' => $videoProduct->id, 'status' => $status]);
 
             return response()->json([
                 'success' => true,
@@ -297,183 +184,61 @@ class VideoProductController extends Controller
             Log::error('Video status toggle error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update video status',
-                'error' => $e->getMessage()
+                'message' => 'Failed to update video status'
             ], 500);
         }
     }
 
     /**
-     * Get my videos for authenticated farmer
-     */
-    public function myVideos()
-    {
-        try {
-            $videos = VideoProduct::where('farmer_id', Auth::id())
-                ->with(['farmer' => function($query) {
-                    $query->select('id', 'name', 'email', 'profile_image');
-                }])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $videos
-            ]);
-        } catch (\Exception $e) {
-            Log::error('My videos fetch error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch your videos',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get all videos for homepage (without authentication) - MAIN ENDPOINT FOR HOMEPAGE
+     * Get all public videos for homepage
      */
     public function getAllVideos(Request $request)
     {
         try {
-            $limit = $request->get('limit', 8);
+            $limit = $request->get('limit', 6);
             
             $videos = VideoProduct::public()
-                ->with(['farmer' => function($query) {
-                    $query->select('id', 'name', 'email', 'profile_image');
-                }])
+                ->with(['farmer:id,name,email'])
                 ->recent($limit)
                 ->get();
             
             return response()->json([
                 'success' => true,
-                'data' => $videos,
-                'count' => $videos->count()
+                'data' => $videos
             ]);
         } catch (\Exception $e) {
-            Log::error('All videos fetch error: ' . $e->getMessage());
+            Log::error('Public videos fetch error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch videos',
-                'error' => $e->getMessage()
+                'message' => 'Failed to fetch videos'
             ], 500);
         }
     }
 
     /**
-     * Increment view count for public video viewing
+     * Increment view count
      */
     public function incrementView(VideoProduct $videoProduct)
     {
         try {
-            // Only increment if video is active and approved
             if ($videoProduct->is_active && $videoProduct->status === 'approved') {
                 $videoProduct->incrementViews();
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'View count updated',
-                    'views' => $videoProduct->views
+                    'message' => 'View count updated'
                 ]);
             }
             
             return response()->json([
                 'success' => false,
-                'message' => 'Video not available for viewing'
+                'message' => 'Video not available'
             ], 404);
         } catch (\Exception $e) {
             Log::error('View increment error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update view count'
-            ], 500);
-        }
-    }
-
-    /**
-     * Admin methods for video management
-     */
-    public function adminIndex()
-    {
-        try {
-            $videos = VideoProduct::with(['farmer' => function($query) {
-                    $query->select('id', 'name', 'email', 'profile_image');
-                }])
-                ->orderBy('created_at', 'desc')
-                ->paginate(20);
-
-            return response()->json([
-                'success' => true,
-                'data' => $videos
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Admin video fetch error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch videos',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Approve video (admin only)
-     */
-    public function approve(VideoProduct $videoProduct)
-    {
-        try {
-            $videoProduct->update([
-                'status' => 'approved',
-                'is_active' => true
-            ]);
-            $videoProduct->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
-
-            Log::info('Video approved', ['video_id' => $videoProduct->id]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Video approved successfully',
-                'data' => $videoProduct
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Video approval error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to approve video',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Reject video (admin only)
-     */
-    public function reject(VideoProduct $videoProduct)
-    {
-        try {
-            $videoProduct->update([
-                'status' => 'rejected',
-                'is_active' => false
-            ]);
-            $videoProduct->load(['farmer' => function($query) {
-                $query->select('id', 'name', 'email', 'profile_image');
-            }]);
-
-            Log::info('Video rejected', ['video_id' => $videoProduct->id]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Video rejected successfully',
-                'data' => $videoProduct
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Video rejection error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to reject video',
-                'error' => $e->getMessage()
             ], 500);
         }
     }

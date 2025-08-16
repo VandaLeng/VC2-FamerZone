@@ -35,14 +35,10 @@ Route::post('/users', [UserController::class, 'store']);
 Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-// ===== PUBLIC VIDEO ROUTES (NO AUTHENTICATION REQUIRED) =====
+// ===== PUBLIC VIDEO ROUTES =====
 Route::prefix('videos')->group(function () {
-    // Get videos for homepage
-    Route::get('/public', [VideoProductController::class, 'publicIndex']);
     Route::get('/all', [VideoProductController::class, 'getAllVideos']);
-    
-    // Get specific video (public access)
-    Route::get('/{videoProduct}', [VideoProductController::class, 'show']);
+    Route::post('/public/{videoProduct}/view', [VideoProductController::class, 'incrementView']);
 });
 
 // Public API routes for items
@@ -75,9 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
-    
-    // User's own videos
-    Route::get('/my-videos', [VideoProductController::class, 'myVideos']);
 });
 
 // Admin Routes
@@ -107,13 +100,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
     Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
     Route::post('/users/{id}/upload-image', [UserController::class, 'uploadImage']);
-    
-    // Admin Video Management
-    Route::prefix('admin/videos')->group(function () {
-        Route::get('/', [VideoProductController::class, 'adminIndex']);
-        Route::put('/{videoProduct}/approve', [VideoProductController::class, 'approve']);
-        Route::put('/{videoProduct}/reject', [VideoProductController::class, 'reject']);
-    });
 });
 
 // Farmer Routes
@@ -126,16 +112,12 @@ Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
     Route::delete('/farmer/products/{id}', [FarmerController::class, 'destroy']);
     
     // ===== FARMER VIDEO MANAGEMENT =====
-    Route::prefix('farmer/videos')->group(function () {
-        // Standard CRUD operations
+    Route::prefix('video-products')->group(function () {
         Route::get('/', [VideoProductController::class, 'index']);
         Route::post('/', [VideoProductController::class, 'store']);
-        Route::get('/{videoProduct}', [VideoProductController::class, 'show']);
         Route::put('/{videoProduct}', [VideoProductController::class, 'update']);
         Route::delete('/{videoProduct}', [VideoProductController::class, 'destroy']);
-        
-        // Toggle video status
-        Route::patch('/{videoProduct}/toggle-status', [VideoProductController::class, 'toggleStatus']);
+        Route::post('/{videoProduct}/toggle-status', [VideoProductController::class, 'toggleStatus']);
     });
 });
 
