@@ -16,4 +16,4 @@
 logs
 # Temporary files
 tmp
-*.log
+*.log/backend/storage
