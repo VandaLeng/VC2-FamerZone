@@ -18,7 +18,7 @@ class UserController extends Controller
         $users = User::with('roles')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%$search%")
-                    ->orWhere('email', 'like', "%$search%");
+                      ->orWhere('email', 'like', "%$search%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -46,7 +46,10 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        return response()->json(['message' => 'User created successfully', 'user' => $user->load('roles')]);
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $user->load('roles')
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -73,7 +76,10 @@ class UserController extends Controller
             $user->syncRoles([$request->role]);
         }
 
-        return response()->json(['message' => 'User updated successfully', 'user' => $user->load('roles')]);
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user->load('roles')
+        ]);
     }
 
     public function destroy($id)
@@ -121,12 +127,11 @@ class UserController extends Controller
 
     public function assignPermission(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-
         $request->validate([
             'permission' => 'required|string|exists:permissions,name',
         ]);
 
+        $user = User::findOrFail($id);
         $user->givePermissionTo($request->permission);
 
         return response()->json(['message' => 'Permission assigned to user']);
@@ -149,14 +154,13 @@ class UserController extends Controller
             }
 
             $image->storeAs('public/users', $imageName);
-
             $user->image = $imageName;
             $user->save();
 
             return response()->json([
                 'message' => 'Image uploaded successfully',
                 'image_url' => url('storage/users/' . $imageName),
-            ], 200);
+            ]);
         }
 
         return response()->json(['message' => 'No image uploaded'], 400);
@@ -190,29 +194,15 @@ class UserController extends Controller
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6|confirmed',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'address' => 'sometimes|nullable|string|max:255',
+            'province' => 'sometimes|nullable|string|max:255', // frontend field
             'phone' => 'sometimes|nullable|string|max:20',
         ]);
 
-        if ($request->has('name')) {
-            $user->name = $request->name;
-        }
-
-        if ($request->has('email')) {
-            $user->email = $request->email;
-        }
-
-        if ($request->has('address')) {
-            $user->address = $request->address;
-        }
-
-        if ($request->has('phone')) {
-            $user->phone = $request->phone;
-        }
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
+        if ($request->has('name')) $user->name = $request->name;
+        if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('province')) $user->province = $request->province; // map to DB column
+        if ($request->has('phone')) $user->phone = $request->phone;
+        if ($request->filled('password')) $user->password = Hash::make($request->password);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -227,7 +217,6 @@ class UserController extends Controller
         }
 
         $user->save();
-
         $user->load('roles', 'permissions');
 
         return response()->json([
@@ -253,7 +242,6 @@ class UserController extends Controller
             }
 
             $image->storeAs('public/users', $imageName);
-
             $user->image = $imageName;
             $user->save();
 
@@ -267,13 +255,20 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
 
-    // New method to fetch authenticated user's profile
     public function getProfile(Request $request)
     {
         $user = $request->user();
         $user->load('roles');
+
         return response()->json([
-            'data' => $user
+            'data' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'province' => $user->province, // map DB -> frontend
+                'image' => $user->image ? url('storage/users/' . $user->image) : null,
+                'roles' => $user->roles,
+            ]
         ]);
     }
 }
