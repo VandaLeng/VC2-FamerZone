@@ -16,8 +16,4 @@
 logs
 # Temporary files
 tmp
-<<<<<<< HEAD
-*.log/backend/storage
-=======
 *.logbackend/storage/framework/cache/
->>>>>>> e9408106147a5c694f43e8082fd6c08bcb885940
