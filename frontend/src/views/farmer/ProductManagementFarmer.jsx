@@ -6,9 +6,6 @@ import provinces from "../../services/provinces";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { itemsAPI } from "../../stores/api";
-import DeleteProduct from ".././Functions/DeleteProduct";
-import EditProduct from ".././Functions/EditProduct";
-import ViewProduct from ".././Functions/ViewProduct";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -16,8 +13,6 @@ const ProductManagement = () => {
   const [provincesList, setProvincesList] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
@@ -231,72 +226,21 @@ const ProductManagement = () => {
     setShowActionsMenu(showActionsMenu === productId ? null : productId);
   };
 
-  const handleEdit = (product) => {
-    setSelectedProduct(product);
-    setShowEditModal(true);
-    setShowActionsMenu(null);
-  };
-
-  const handleDelete = (product) => {
-    setSelectedProduct(product);
-    setShowDeleteModal(true);
-    setShowActionsMenu(null);
-  };
-
-  const handleView = (product) => {
-    setSelectedProduct(product);
-    setShowViewModal(true);
-    setShowActionsMenu(null);
-  };
-
-  // Fixed delete function
-  const handleDeleteConfirm = async (productId) => {
-    try {
-      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
-      
-      // Call API to delete from database
-      const response = await axios.delete(`${API_BASE_URL}/api/items/${productId}`, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      });
-
-      if (response.data.success) {
-        // Remove from local state
-        setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
+  const handleDelete = async (productId) => {
+    if (window.confirm(texts.en.deleteConfirm)) {
+      setIsLoading(true);
+      try {
+        await itemsAPI.delete(productId);
+        setProducts(products.filter((p) => p.id !== productId));
+        setShowActionsMenu(null);
         toast.success(texts.en.productDeleted);
         setRefreshTrigger(prev => prev + 1);
         window.dispatchEvent(new Event('productAdded'));
-      } else {
-        throw new Error(response.data.message || 'Failed to delete product');
+      } catch (err) {
+        toast.error(texts.en.error + (err.response?.data?.message || err.message));
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error("Delete Error:", err);
-      toast.error(texts.en.error + (err.response?.data?.message || err.message));
-    } finally {
-      setShowDeleteModal(false);
-      setSelectedProduct(null);
-    }
-  };
-
-  // Fixed edit function
-  const handleEditSave = async (updatedProduct) => {
-    try {
-      // Update the product in the local state
-      setProducts(prevProducts => 
-        prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
-      );
-      toast.success(texts.en.productUpdated);
-      setRefreshTrigger(prev => prev + 1);
-      window.dispatchEvent(new Event('productAdded'));
-    } catch (err) {
-      console.error("Edit Save Error:", err);
-      toast.error(texts.en.error + (err.response?.data?.message || err.message));
-    } finally {
-      setShowEditModal(false);
-      setSelectedProduct(null);
     }
   };
 
@@ -963,7 +907,7 @@ const ProductManagement = () => {
                         {product.orders || 0}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="relative" ref={showActionsMenu === product.id ? actionsMenuRef : null}>
+                        <div className="relative" ref={actionsMenuRef}>
                           <button
                             onClick={() => toggleActionsMenu(product.id)}
                             className="text-gray-500 hover:text-gray-700"
@@ -974,21 +918,20 @@ const ProductManagement = () => {
                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                               <div className="py-1">
                                 <button
-                                  onClick={() => handleView(product)}
-                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                  {texts.en.view}
-                                </button>
-                                <button
-                                  onClick={() => handleEdit(product)}
+                                  onClick={() => {
+                                    setSelectedProduct(product);
+                                    setShowEditModal(true);
+                                    setShowActionsMenu(null);
+                                  }}
                                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                                 >
                                   <Edit className="h-4 w-4" />
                                   {texts.en.edit}
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(product)}
+                                  onClick={() => {
+                                    handleDelete(product.id);
+                                  }}
                                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -999,8 +942,8 @@ const ProductManagement = () => {
                                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                                   onClick={() => setShowActionsMenu(null)}
                                 >
-                                  <ExternalLink className="h-4 w-4" />
-                                  {texts.en.viewOnWebsite}
+                                  <Eye className="h-4 w-4" />
+                                  {texts.en.view}
                                 </a>
                               </div>
                             </div>
@@ -1015,56 +958,20 @@ const ProductManagement = () => {
           )}
         </div>
 
-        {/* Add Product Modal */}
-        {showAddModal && (
+        {(showAddModal || showEditModal) && (
           <ProductForm
-            product={null}
+            product={showEditModal ? selectedProduct : null}
             onSave={() => {
               setShowAddModal(false);
-            }}
-            onCancel={() => {
-              setShowAddModal(false);
-              setValidationErrors({});
-              setError(null);
-            }}
-          />
-        )}
-
-        {/* Edit Product Modal */}
-        {showEditModal && selectedProduct && (
-          <EditProduct
-            product={selectedProduct}
-            categories={categories}
-            provinces={provincesList}
-            onSave={handleEditSave}
-            onCancel={() => {
               setShowEditModal(false);
               setSelectedProduct(null);
             }}
-          />
-        )}
-
-        {/* Delete Product Modal */}
-        {showDeleteModal && selectedProduct && (
-          <DeleteProduct
-            product={selectedProduct}
-            onDelete={handleDeleteConfirm}
             onCancel={() => {
-              setShowDeleteModal(false);
+              setShowAddModal(false);
+              setShowEditModal(false);
               setSelectedProduct(null);
-            }}
-          />
-        )}
-
-        {/* View Product Modal */}
-        {showViewModal && selectedProduct && (
-          <ViewProduct
-            product={selectedProduct}
-            provinces={provincesList}
-            onEdit={handleEdit}
-            onClose={() => {
-              setShowViewModal(false);
-              setSelectedProduct(null);
+              setValidationErrors({});
+              setError(null);
             }}
           />
         )}
