@@ -165,7 +165,7 @@ const CategoryManagement = () => {
     }
     setShowModal(true);
     setDropdownOpen(null);
-    setError(null);
+    setError(null); // Clear error
   };
 
   const handleCloseModal = () => {
@@ -177,7 +177,7 @@ const CategoryManagement = () => {
       status: 'active',
       image: null,
     });
-    setError(null);
+    setError(null); // Clear error
   };
 
   const handleSave = async () => {
@@ -211,13 +211,13 @@ const CategoryManagement = () => {
           categories.map((cat) =>
             cat.id === selectedCategory.id
               ? {
-                  ...cat,
-                  name: response.data.data.name,
-                  description: response.data.data.description,
-                  status: response.data.data.status,
-                  image_url: response.data.data.image_url,
-                  productCount: response.data.data.productCount,
-                }
+                ...cat,
+                name: response.data.data.name,
+                description: response.data.data.description,
+                status: response.data.data.status,
+                image_url: response.data.data.image_url,
+                productCount: response.data.data.productCount,
+              }
               : cat
           )
         );
@@ -601,6 +601,7 @@ const CategoryManagement = () => {
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -728,6 +729,7 @@ const CategoryManagement = () => {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">

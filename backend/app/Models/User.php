@@ -29,6 +29,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+<<<<<<< HEAD
     // ✅ Automatically include image_url in JSON
     protected $appends = ['image_url'];
 
@@ -41,28 +42,42 @@ class User extends Authenticatable
         return asset('images/default.png');
     }
 
+=======
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * A user has one role.
+     */
+>>>>>>> main
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
+    /**
+     * A user belongs to a province.
+     */
     public function province()
     {
         return $this->belongsTo(Province::class, 'province_id');
     }
 
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function item()
+    /**
+     * A user (as a seller) can have many items/products.
+     */
+    public function items()
     {
         return $this->hasMany(Item::class);
+    }
+
+    /**
+     * A user (as a buyer) can have many orders.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id');
     }
 }
