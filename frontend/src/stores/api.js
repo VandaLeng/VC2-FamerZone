@@ -23,6 +23,98 @@ const getAuthHeaders = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+// ========== VIDEO API ==========
+export const videoAPI = {
+    // Public endpoints (no authentication required)
+    getPublicVideos: (params = {}) => {
+        const defaultParams = {
+            limit: 6,
+            type: 'recent'
+        };
+        return axios.get(`${API_BASE_URL}/videos/public`, {
+            params: {...defaultParams, ...params },
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((response) => response.data);
+    },
+
+    getAllVideos: (params = {}) => {
+        const defaultParams = {
+            limit: 8
+        };
+        return axios.get(`${API_BASE_URL}/videos/all`, {
+            params: {...defaultParams, ...params },
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((response) => response.data);
+    },
+
+    incrementView: (videoId) => {
+        return axios.post(`${API_BASE_URL}/videos/public/${videoId}/view`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((response) => response.data);
+    },
+
+    // Protected endpoints (authentication required)
+    getMyVideos: () => {
+        return axios.get(`${API_BASE_URL}/video-products`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    createVideo: (data) => {
+        return axios.post(`${API_BASE_URL}/video-products`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    updateVideo: (id, data) => {
+        return axios.put(`${API_BASE_URL}/video-products/${id}`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    deleteVideo: (id) => {
+        return axios.delete(`${API_BASE_URL}/video-products/${id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    toggleVideoStatus: (id) => {
+        return axios.post(`${API_BASE_URL}/video-products/${id}/toggle-status`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    getVideoById: (id) => {
+        return axios.get(`${API_BASE_URL}/video-products/${id}`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    }
+};
+
+// ========== EXISTING APIs ==========
 export const itemsAPI = {
     getAll: () => {
         return axios.get(`${API_BASE_URL}/items`, {
@@ -90,6 +182,7 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
+
 // Request interceptor
 api.interceptors.request.use(
     function(config) {
