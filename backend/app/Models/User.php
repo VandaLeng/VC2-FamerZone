@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -18,14 +19,27 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'province_id',
+        'province', // match migration
         'role_id',
+        'image',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    // ✅ Automatically include image_url in JSON
+    protected $appends = ['image_url'];
+
+    // ✅ Return full image URL
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return url('storage/users/' . $this->image);
+        }
+        return asset('images/default.png');
+    }
 
     public function role()
     {

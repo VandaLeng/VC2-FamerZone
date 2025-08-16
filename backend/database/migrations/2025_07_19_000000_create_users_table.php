@@ -10,18 +10,22 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->id(); // this is unsignedBigInteger
+            $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->string('province')->nullable();
-            $table->unsignedBigInteger('role_id');
-            $table->string('image')->nullable(); // new image column
+            $table->string('province')->nullable(); // using province name, not province_id
+            $table->unsignedBigInteger('role_id')->nullable(); // make nullable
+            $table->string('image')->nullable(); // user image
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('restrict');
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('set null'); // set null if role deleted
         });
     }
 
