@@ -249,7 +249,7 @@ const ProductManagement = () => {
     setShowActionsMenu(null);
   };
 
-  // Fixed delete function
+  // Fixed delete function - removed extra API calls and toast messages
   const handleDeleteConfirm = async (productId) => {
     try {
       const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
@@ -267,30 +267,31 @@ const ProductManagement = () => {
         // Remove from local state
         setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
         toast.success(texts.en.productDeleted);
-        setRefreshTrigger(prev => prev + 1);
-        window.dispatchEvent(new Event('productAdded'));
+        // Removed extra triggers that were causing additional API calls
       } else {
         throw new Error(response.data.message || 'Failed to delete product');
       }
     } catch (err) {
       console.error("Delete Error:", err);
-      toast.error(texts.en.error + (err.response?.data?.message || err.message));
+      // Only show error if it's not a 404 (item already deleted)
+      if (err.response?.status !== 404) {
+        toast.error(texts.en.error + (err.response?.data?.message || err.message));
+      }
     } finally {
       setShowDeleteModal(false);
       setSelectedProduct(null);
     }
   };
 
-  // Fixed edit function
+  // Fixed edit function - removed duplicate success messages
   const handleEditSave = async (updatedProduct) => {
     try {
       // Update the product in the local state
       setProducts(prevProducts => 
         prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
       );
+      // Only show one success message - removed duplicate toast
       toast.success(texts.en.productUpdated);
-      setRefreshTrigger(prev => prev + 1);
-      window.dispatchEvent(new Event('productAdded'));
     } catch (err) {
       console.error("Edit Save Error:", err);
       toast.error(texts.en.error + (err.response?.data?.message || err.message));

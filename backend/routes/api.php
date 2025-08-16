@@ -120,10 +120,10 @@ Route::apiResource('orders', OrderController::class);
 
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/profile/update', [UserController::class, 'updateProfile']);
-    Route::post('/profile/image', [UserController::class, 'updateImage']);
-});
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::post('/profile/update', [UserController::class, 'updateProfile']);
+//     Route::post('/profile/image', [UserController::class, 'updateImage']);
+// });
 
 Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
     Route::get('/farmer/products', [FarmerController::class, 'index']);
@@ -132,3 +132,13 @@ Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
     Route::put('/farmer/products/{id}', [FarmerController::class, 'update']);
     Route::delete('/farmer/products/{id}', [FarmerController::class, 'destroy']);
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/profile/image', [UserController::class, 'updateImage']);
+});
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user()->load('roles');
+});
+
