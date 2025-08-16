@@ -12,30 +12,84 @@ const api = axios.create({
     },
 });
 
+// Get auth token helper
+const getAuthToken = () => {
+    return localStorage.getItem("token") || localStorage.getItem("auth_token");
+};
+
+// Create auth headers helper
+const getAuthHeaders = () => {
+    const token = getAuthToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const itemsAPI = {
-    getAll: () =>
-        axios.get(`${API_BASE_URL}/items`).then((response) => response.data),
-    getFiltered: (params) =>
-        axios.get(`${API_BASE_URL}/items/filtered`, { params }).then((response) => response.data),
-    create: (data) =>
-        axios.post(`${API_BASE_URL}/items`, data, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((response) => response.data),
-    update: (id, data) =>
-        axios.post(`${API_BASE_URL}/items/${id}`, data, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((response) => response.data),
-    delete: (id) =>
-        axios.delete(`${API_BASE_URL}/items/${id}`).then((response) => response.data),
+    getAll: () => {
+        return axios.get(`${API_BASE_URL}/items`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    getFiltered: (params) => {
+        return axios.get(`${API_BASE_URL}/items/filtered`, {
+            params,
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    create: (data) => {
+        return axios.post(`${API_BASE_URL}/items`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    update: (id, data) => {
+        // Use POST with _method=PUT for Laravel to handle file uploads properly
+        if (data instanceof FormData) {
+            data.append('_method', 'PUT');
+        }
+
+        return axios.post(`${API_BASE_URL}/items/${id}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    delete: (id) => {
+        return axios.delete(`${API_BASE_URL}/items/${id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    getById: (id) => {
+        return axios.get(`${API_BASE_URL}/items/${id}`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    }
 };
 
 export const addressesAPI = {
     getAll: () =>
-        axios.get(`${API_BASE_URL}/addresses`).then((response) => response.data),
+        axios.get(`${API_BASE_URL}/addresses`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data),
     create: (data) =>
-        axios.post(`${API_BASE_URL}/addresses`, data).then((response) => response.data),
+        axios.post(`${API_BASE_URL}/addresses`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data),
 };
-
 // Request interceptor
 api.interceptors.request.use(
     function(config) {
