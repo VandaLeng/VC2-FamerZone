@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation, BrowserRouter as Router } from "react-router-dom";
 import 'leaflet/dist/leaflet.css';
+
 // User Website
 import Home from "./views/user/HomePage";
 import Products from "./views/user/ProductPage";

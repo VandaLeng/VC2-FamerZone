@@ -1,6 +1,7 @@
 "use client"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useContext } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
+import { CartContext } from "../services/cartContext"
 import "../styles/NavbarStyle.css" 
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
@@ -9,6 +10,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const profileRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const { cartItems } = useContext(CartContext)
+  const cartItemCount = cartItems.length
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -91,9 +94,6 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
 
-  // Mock cart item count - replace with your actual cart state
-  const cartItemCount = 3 
-
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,7 +149,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           <div className="hidden md:flex items-center space-x-4">
             {/* Shopping Cart */}
             <a
-              href="cart"
+              href="/cart"
               onClick={handleCart}
               className="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-600 hover:text-green-600 group"
               title={currentTexts.cart}

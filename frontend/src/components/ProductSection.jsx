@@ -1,7 +1,7 @@
-// File: ProductSection.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ProductCard from "./ProductCard";
 import { Package, Loader2, RefreshCw } from 'lucide-react';
+import { CartContext } from "../services/cartContext";
 
 function ProductSection({
   products: propProducts,
@@ -9,9 +9,6 @@ function ProductSection({
   currentLanguage = "en",
   favorites = [],
   onToggleFavorite,
-  onOrder,
-  orderingProducts = [],
-  orderedProducts = [],
   viewMode = "grid",
   provinces = [],
   onShowDetail,
@@ -19,6 +16,7 @@ function ProductSection({
   error = null,
   categories = []
 }) {
+  const { cartItems } = useContext(CartContext);
   const [products, setProducts] = useState(propProducts || []);
   const [localLoading, setLocalLoading] = useState(!propProducts && !isLoading);
   const [localError, setLocalError] = useState(error);
@@ -27,8 +25,8 @@ function ProductSection({
     allProducts: "All Products",
     noProductsFound: "No products found",
     orderNow: "Order Now",
-    orderPlaced: "Order Placed",
-    orderSuccess: "Order placed successfully! The farmer will contact you soon",
+    orderPlaced: "In Cart",
+    orderSuccess: "Product added to cart!",
     inStock: "In Stock",
     outOfStock: "Out of Stock",
     from: "From",
@@ -92,12 +90,6 @@ function ProductSection({
   const handleToggleFavorite = (productId) => {
     if (onToggleFavorite) {
       onToggleFavorite(productId);
-    }
-  };
-
-  const handleOrder = (productId) => {
-    if (onOrder) {
-      onOrder(productId);
     }
   };
 
@@ -183,13 +175,11 @@ function ProductSection({
                 currentLanguage={currentLanguage}
                 isFavorite={favorites.includes(product.id)}
                 onToggleFavorite={handleToggleFavorite}
-                onOrder={handleOrder}
-                orderingProducts={orderingProducts}
-                orderedProducts={orderedProducts}
                 viewMode={viewMode}
                 provinces={provinces}
                 categories={categories}
                 onShowDetail={handleShowDetail}
+                showDistance={!!product.distance}
               />
             ))}
           </div>

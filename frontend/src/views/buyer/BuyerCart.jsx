@@ -1,75 +1,80 @@
-import React, { useState } from 'react';
-import { Minus, Plus, X, ShoppingBag, ArrowLeft, Truck, Shield, RotateCcw, ShoppingCart } from 'lucide-react';
+import React, { useContext } from "react";
+import { CartContext } from "../../services/cartContext";
+import { Minus, Plus, X, ShoppingBag, ArrowLeft, Truck, Shield, RotateCcw, ShoppingCart } from "lucide-react";
 
-const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'ម្រេចខ្យងបៃតង',
-      nameEn: 'Green Chili Pepper',
-      price: 8500,
-      originalPrice: 10000,
-      quantity: 2,
-      image: 'https://images.unsplash.com/photo-1583281629518-4c4c83a1dee8?w=300&h=300&fit=crop',
-      weight: '1kg',
-      farmer: 'កសិករ ម៉ៅ សុភា',
-      inStock: true,
-      discount: 15
-    },
-    {
-      id: 2,
-      name: 'ត្រសក់ស',
-      nameEn: 'Fresh Lettuce',
-      price: 4200,
-      originalPrice: 5000,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1556909114-c7e5a0ba8bb0?w=300&h=300&fit=crop',
-      weight: '500g',
-      farmer: 'កសិករ លី វណ្ណី',
-      inStock: true,
-      discount: 16
-    },
-    {
-      id: 3,
-      name: 'ផ្លែប៉េងប៉ោះ',
-      nameEn: 'Fresh Tomatoes',
-      price: 6800,
-      originalPrice: 8000,
-      quantity: 3,
-      image: 'https://images.unsplash.com/photo-1546470427-e26264be0b95?w=300&h=300&fit=crop',
-      weight: '1kg',
-      farmer: 'កសិករ ឆេង សុវណ្ណ',
-      inStock: true,
-      discount: 15
-    },
-    {
-      id: 4,
-      name: 'ស្ពៃបៃតង',
-      nameEn: 'Green Vegetables Mix',
-      price: 12000,
-      originalPrice: 0,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&h=300&fit=crop',
-      weight: '2kg',
-      farmer: 'កសិករ ខៀវ ម៉ានី',
-      inStock: false,
-      discount: 0
-    }
-  ]);
+function BuyerCart({ currentLanguage = "en" }) {
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity === 0) {
-      setCartItems(cartItems.filter(item => item.id !== id));
-    } else {
-      setCartItems(cartItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ));
+  const texts = {
+    kh: {
+      cartTitle: "រទេះទិញឥវ៉ាន់",
+      emptyCart: "រទេះទិញឥវ៉ាន់របស់អ្នកទទេ",
+      quantity: "បរិមាណ",
+      price: "តម្លៃ",
+      total: "សរុប",
+      remove: "លុប",
+      clearCart: "សម្អាតរទេះ",
+      checkout: "បន្តទៅបង់ប្រាក់",
+      backToShop: "ត្រលប់ទៅទិញទំនិញ",
+      itemsInCart: (count) => `អ្នកមាន <span class="font-semibold text-green-600">${count}</span> ធាតុក្នុងរទេះរបស់អ្នក`,
+      emptyCartPrompt: "សូមបន្ថែមទំនិញទៅក្នុងរទេះរបស់អ្នក",
+      shopNow: "ចាប់ផ្តើមទិញទំនិញ",
+      weight: "ទម្ងន់",
+      farmer: "កសិករ",
+      outOfStock: "អស់ពីស្តុក",
+      discountSaved: (amount) => `សន្សំបាន ${amount.toLocaleString()} ៛`,
+      subtotal: (count) => `តម្លៃសរុប (${count} ធាតុ)`,
+      discount: "ចុះតម្លៃ",
+      shipping: "ថ្លៃដឹកជញ្ជូន",
+      freeShipping: "ឥតគិតថ្លៃ",
+      totalAll: "សរុបទាំងអស់",
+      freeShippingPrompt: (amount) => `បន្ថែមទំនិញ <span class="font-semibold">${amount.toLocaleString()} ៛</span> ទៀត ដើម្បីបានដឹកជញ្ជូនឥតគិតថ្លៃ!`,
+      promoCode: "លេខកូដបញ្ចុះតម្លៃ",
+      apply: "ប្រើ",
+      freeDelivery: "ដឹកជញ្ជូនឥតគិតថ្លៃ",
+      freeDeliveryOver: "លើសពី ៥០,០០០៛",
+      qualityGuarantee: "ធានាគុណភាព",
+      freshProducts: "ទំនិញស្រស់ថ្មី ១០០%",
+      easyReturns: "ងាយស្រួលប្តូរ",
+      returnPeriod: "ក្នុងរយៈពេល ២៤ម៉ោង",
+      continueShopping: "បន្តទិញទំនិញ"
+    },
+    en: {
+      cartTitle: "Your Cart",
+      emptyCart: "Your cart is empty",
+      quantity: "Quantity",
+      price: "Price",
+      total: "Total",
+      remove: "Remove",
+      clearCart: "Clear Cart",
+      checkout: "Proceed to Checkout",
+      backToShop: "Back to Shopping",
+      itemsInCart: (count) => `You have <span class="font-semibold text-green-600">${count}</span> items in your cart`,
+      emptyCartPrompt: "Please add items to your cart",
+      shopNow: "Start Shopping",
+      weight: "Weight",
+      farmer: "Farmer",
+      outOfStock: "Out of Stock",
+      discountSaved: (amount) => `Saved ${amount.toLocaleString()} ៛`,
+      subtotal: (count) => `Subtotal (${count} items)`,
+      discount: "Discount",
+      shipping: "Shipping",
+      freeShipping: "Free",
+      totalAll: "Total",
+      freeShippingPrompt: (amount) => `Add <span class="font-semibold">${amount.toLocaleString()} ៛</span> more to get free shipping!`,
+      promoCode: "Promo Code",
+      apply: "Apply",
+      freeDelivery: "Free Delivery",
+      freeDeliveryOver: "Over 50,000 ៛",
+      qualityGuarantee: "Quality Guarantee",
+      freshProducts: "100% Fresh Products",
+      easyReturns: "Easy Returns",
+      returnPeriod: "Within 24 Hours",
+      continueShopping: "Continue Shopping"
     }
   };
 
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
+  const currentTexts = texts[currentLanguage];
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shipping = subtotal > 50000 ? 0 : 3000;
@@ -89,7 +94,7 @@ const CartPage = () => {
           {/* Back Button */}
           <button className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4 group">
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">ត្រលប់ទៅទិញទំនិញ</span>
+            <span className="text-sm font-medium">{currentTexts.backToShop}</span>
           </button>
           
           {/* Cart Title */}
@@ -98,18 +103,16 @@ const CartPage = () => {
               <ShoppingCart className="h-6 w-6 text-green-600" />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              រទេះទិញឥវ៉ាន់
+              {currentTexts.cartTitle}
             </h1>
           </div>
           
           {/* Item Count */}
           <p className="text-gray-600">
             {cartItems.length === 0 ? (
-              <span>គ្មានទំនិញក្នុងរទេះ</span>
+              <span>{currentTexts.emptyCart}</span>
             ) : (
-              <span>
-                អ្នកមាន <span className="font-semibold text-green-600">{cartItems.length}</span> ធាតុក្នុងរទេះរបស់អ្នក
-              </span>
+              <span dangerouslySetInnerHTML={{ __html: currentTexts.itemsInCart(cartItems.length) }} />
             )}
           </p>
         </div>
@@ -120,7 +123,7 @@ const CartPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900">ទំនិញក្នុងរទេះ</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{currentTexts.cartTitle}</h2>
               </div>
               
               <div className="divide-y divide-gray-100">
@@ -130,8 +133,8 @@ const CartPage = () => {
                       {/* Product Image */}
                       <div className="flex-shrink-0 relative">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.image_url || item.image || "/placeholder.svg?height=100&width=100"}
+                          alt={currentLanguage === "kh" ? item.nameKh || item.name : item.name}
                           className="w-20 h-20 object-cover rounded-xl"
                         />
                         {item.discount > 0 && (
@@ -141,7 +144,7 @@ const CartPage = () => {
                         )}
                         {!item.inStock && (
                           <div className="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-xl flex items-center justify-center">
-                            <span className="text-white text-xs font-medium">អស់ពីស្តុក</span>
+                            <span className="text-white text-xs font-medium">{currentTexts.outOfStock}</span>
                           </div>
                         )}
                       </div>
@@ -150,16 +153,18 @@ const CartPage = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">{item.name}</h3>
-                            <p className="text-sm text-gray-500 mb-2">{item.nameEn}</p>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                              {currentLanguage === "kh" ? item.nameKh || item.name : item.name}
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-2">{item.nameEn || item.name}</p>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                               <span className="flex items-center">
-                                <span className="font-medium">ទម្ងន់:</span>
-                                <span className="ml-1">{item.weight}</span>
+                                <span className="font-medium">{currentTexts.weight}:</span>
+                                <span className="ml-1">{item.weight || "N/A"}</span>
                               </span>
                               <span className="flex items-center">
-                                <span className="font-medium">កសិករ:</span>
-                                <span className="ml-1">{item.farmer}</span>
+                                <span className="font-medium">{currentTexts.farmer}:</span>
+                                <span className="ml-1">{item.farmer || "N/A"}</span>
                               </span>
                             </div>
                             
@@ -178,14 +183,14 @@ const CartPage = () => {
                             {!item.inStock && (
                               <div className="flex items-center text-red-600 text-sm mb-3">
                                 <X className="h-4 w-4 mr-1" />
-                                <span>ទំនិញនេះអស់ពីស្តុកហើយ</span>
+                                <span>{currentTexts.outOfStock}</span>
                               </div>
                             )}
                           </div>
 
                           {/* Remove Button */}
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="text-gray-400 hover:text-red-500 transition-colors p-1"
                           >
                             <X className="h-5 w-5" />
@@ -220,7 +225,7 @@ const CartPage = () => {
                             </p>
                             {item.originalPrice > item.price && (
                               <p className="text-sm text-green-600">
-                                សន្សំបាន {((item.originalPrice - item.price) * item.quantity).toLocaleString()} ៛
+                                {currentTexts.discountSaved((item.originalPrice - item.price) * item.quantity)}
                               </p>
                             )}
                           </div>
@@ -234,47 +239,14 @@ const CartPage = () => {
               {cartItems.length === 0 && (
                 <div className="text-center py-12">
                   <ShoppingBag className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">រទេះទិញឥវ៉ាន់ទទេ</h3>
-                  <p className="text-gray-500 mb-6">សូមបន្ថែមទំនិញទៅក្នុងរទេះរបស់អ្នក</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{currentTexts.emptyCart}</h3>
+                  <p className="text-gray-500 mb-6">{currentTexts.emptyCartPrompt}</p>
                   <button className="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700 transition-all">
-                    ចាប់ផ្តើមទិញទំនិញ
+                    {currentTexts.shopNow}
                   </button>
                 </div>
               )}
             </div>
-
-            {/* Features */}
-            {cartItems.length > 0 && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-gray-100 flex items-center space-x-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <Truck className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">ដឹកជញ្ជូនឥតគិតថ្លៃ</p>
-                    <p className="text-sm text-gray-500">លើសពី ៥០,០០០៛</p>
-                  </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 flex items-center space-x-3">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Shield className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">ធានាគុណភាព</p>
-                    <p className="text-sm text-gray-500">ទំនិញស្រស់ថ្មី ១០០%</p>
-                  </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 flex items-center space-x-3">
-                  <div className="bg-orange-100 p-2 rounded-lg">
-                    <RotateCcw className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">ងាយស្រួលប្តូរ</p>
-                    <p className="text-sm text-gray-500">ក្នុងរយៈពេល ២៤ម៉ោង</p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Order Summary */}
@@ -282,69 +254,49 @@ const CartPage = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-                  <h2 className="text-lg font-semibold text-gray-900">សង្ខេបការបញ្ជាទិញ</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">{currentTexts.total}</h2>
                 </div>
                 
                 <div className="p-6 space-y-4">
                   {/* Subtotal */}
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">តម្លៃសរុប ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} ធាតុ)</span>
+                    <span className="text-gray-600">{currentTexts.subtotal(cartItems.reduce((sum, item) => sum + item.quantity, 0))}</span>
                     <span className="font-medium">{subtotal.toLocaleString()} ៛</span>
                   </div>
 
                   {/* Discount */}
                   {discount > 0 && (
                     <div className="flex justify-between items-center text-green-600">
-                      <span>ចុះតម្លៃ</span>
+                      <span>{currentTexts.discount}</span>
                       <span className="font-medium">-{discount.toLocaleString()} ៛</span>
                     </div>
                   )}
 
                   {/* Shipping */}
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">ថ្លៃដឹកជញ្ជូន</span>
+                    <span className="text-gray-600">{currentTexts.shipping}</span>
                     <span className={`font-medium ${shipping === 0 ? 'text-green-600' : ''}`}>
-                      {shipping === 0 ? 'ឥតគិតថ្លៃ' : `${shipping.toLocaleString()} ៛`}
+                      {shipping === 0 ? currentTexts.freeShipping : `${shipping.toLocaleString()} ៛`}
                     </span>
                   </div>
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold text-gray-900">សរុបទាំងអស់</span>
+                      <span className="text-lg font-semibold text-gray-900">{currentTexts.totalAll}</span>
                       <span className="text-xl font-bold text-green-600">{total.toLocaleString()} ៛</span>
                     </div>
                   </div>
 
-                  {subtotal < 50000 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <p className="text-sm text-blue-800">
-                        បន្ថែមទំនិញ <span className="font-semibold">{(50000 - subtotal).toLocaleString()} ៛</span> ទៀត 
-                        ដើម្បីបានដឹកជញ្ជូនឥតគិតថ្លៃ!
-                      </p>
-                    </div>
-                  )}
-
-                  <button className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-all transform hover:scale-[1.02]">
-                    បន្តទៅបង់ប្រាក់
+                  <button
+                    onClick={() => alert("Checkout functionality not implemented yet!")}
+                    className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-all transform hover:scale-[1.02]"
+                  >
+                    {currentTexts.checkout}
                   </button>
 
                   <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-all">
-                    បន្តទិញទំនិញ
+                    {currentTexts.continueShopping}
                   </button>
-                </div>
-
-                {/* Promo Code */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      placeholder="លេខកូដបញ្ចុះតម្លៃ"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                    <button className="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all">
-                      ប្រើ
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -353,6 +305,6 @@ const CartPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default CartPage;
+export default BuyerCart;
