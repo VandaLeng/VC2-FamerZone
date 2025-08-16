@@ -20,19 +20,22 @@ const NotificationsPage = () => {
   const [filterType, setFilterType] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Sample notification data
+  // Sample notification data integrated with order_item and orders tables, including product name
   const [notifications, setNotifications] = useState([
     {
       id: 1,
       type: 'new_order',
       priority: 'high',
       title: 'បានទទួលការបញ្ជាទិញថ្មី',
-      message: 'ការបញ្ជាទិញថ្មី៖ បានបញ្ជាទិញប៉េងប៉ោះស្រស់ 5 គ្រាប់! ពិនិត្យមើលសេចក្តីលម្អិតការបញ្ជាទិញ។',
-      productName: 'ប៉េងប៉ោះស្រស់',
-      quantity: 5,
-      orderId: 'ORD001',
-      customerName: 'Sophea Chan',
-      timestamp: '2025-01-28T10:30:00Z',
+      message: 'ការបញ្ជាទិញថ្មីសម្រាប់លេខការបញ្ជាទិញ #1 ត្រូវបានទទួល។',
+      orderId: '1',
+      productId: '1',
+      productName: 'iPhone 13 Mini', // Added product name
+      quantity: 2,
+      price: 10.00,
+      createdAt: '2025-08-16 16:18:38',
+      updatedAt: '2025-08-16 16:18:38',
+      status: 'confirmed',
       isRead: false,
       actions: ['view_order'],
       messageIcon: 'shopping_cart'
@@ -40,64 +43,44 @@ const NotificationsPage = () => {
     {
       id: 2,
       type: 'order_update',
-      priority: 'medium',
-      title: 'ស្ថានភាពការបញ្ជាទិញត្រូវបានធ្វើបច្ចុប្បន្នភាព',
-      message: 'ការធ្វើបច្ចុប្បន្នភាពការបញ្ជាទិញ៖ ការបញ្ជាទិញលេខ #ORD002 សម្រាប់អង្ករធម្មជាតិកំពុងដំណើរការ។',
-      productName: 'អង្ករធម្មជាតិ',
-      orderId: 'ORD002',
-      status: 'កំពុងដំណើរការ',
-      timestamp: '2025-01-28T09:15:00Z',
+      priority: 'high',
+      title: 'ការបញ្ជាទិញត្រូវបានធ្វើបច្ចុប្បន្នភាព',
+      message: 'ការបញ្ជាទិញលេខ #2 ត្រូវបានធ្វើបច្ចុប្បន្នភាព។',
+      orderId: '2',
+      productId: '2',
+      productName: 'Banana', // Added product name
+      quantity: 5,
+      price: 8.75,
+      createdAt: '2025-08-16 16:18:38',
+      updatedAt: '2025-08-16 16:18:38',
+      status: 'delivered',
       isRead: false,
       actions: ['view_order'],
       messageIcon: 'package'
     },
     {
       id: 3,
-      type: 'new_order',
-      priority: 'high',
-      title: 'បានទទួលការបញ្ជាទិញថ្មី',
-      message: 'ការបញ្ជាទិញថ្មី៖ បានបញ្ជាទិញបន្លែបៃតង 10 បាច់! ពិនិត្យមើលសេចក្តីលម្អិតការបញ្ជាទិញ។',
-      productName: 'បន្លែបៃតង',
-      quantity: 10,
-      orderId: 'ORD003',
-      customerName: 'David Kim',
-      timestamp: '2025-01-28T08:45:00Z',
-      isRead: true,
-      actions: ['view_order'],
-      messageIcon: 'shopping_cart'
-    },
-    {
-      id: 4,
       type: 'order_update',
       priority: 'medium',
-      title: 'ការបញ្ជាទិញត្រូវបានដឹកជញ្ជូន',
-      message: 'ការធ្វើបច្ចុប្បន្នភាពការបញ្ជាទិញ៖ ការបញ្ជាទិញលេខ #ORD001 សម្រាប់ប៉េងប៉ោះស្រស់ត្រូវបានដឹកជញ្ជូន។',
-      productName: 'ប៉េងប៉ោះស្រស់',
-      orderId: 'ORD001',
-      status: 'បានដឹកជញ្ជូន',
-      timestamp: '2025-01-27T16:20:00Z',
+      title: 'ការបញ្ជាទិញត្រូវបានធ្វើបច្ចុប្បន្នភាព',
+      message: 'ការបញ្ជាទិញលេខ #3 ត្រូវបានធ្វើបច្ចុប្បន្នភាព។',
+      orderId: '3',
+      productId: '2',
+      productName: 'Banana', // Added product name
+      quantity: 4,
+      price: 1.00,
+      createdAt: '2025-08-16 16:18:38',
+      updatedAt: '2025-08-16 16:18:38',
+      status: 'cancelled',
       isRead: true,
-      actions: ['view_order', 'rate_customer'],
-      messageIcon: 'truck'
-    },
-    {
-      id: 5,
-      type: 'payment',
-      priority: 'high',
-      title: 'បានទទួលការទូទាត់',
-      message: 'បានទទួលការទូទាត់៖ ការទូទាត់ $45.00 សម្រាប់ការបញ្ជាទិញលេខ #ORD002 ត្រូវបានដំណើរការ។',
-      orderId: 'ORD002',
-      amount: 45.00,
-      timestamp: '2025-01-27T14:10:00Z',
-      isRead: false,
-      actions: ['view_transaction'],
-      messageIcon: 'credit_card'
+      actions: ['view_order'],
+      messageIcon: 'package'
     }
   ]);
 
+  // Function to get notification icon based on type
   const getNotificationIcon = (type) => {
-    const iconProps = { className: "w-6 h-6" };
-    
+    const iconProps = { className: "w-12 h-12" };
     switch (type) {
       case 'new_order':
         return <ShoppingCart {...iconProps} style={{ color: '#228B22' }} />;
@@ -110,9 +93,9 @@ const NotificationsPage = () => {
     }
   };
 
+  // Function to get message icon based on icon type
   const getMessageIcon = (iconType) => {
     const iconProps = { className: "w-4 h-4 mr-2 inline" };
-    
     switch (iconType) {
       case 'shopping_cart':
         return <ShoppingCart {...iconProps} style={{ color: '#228B22' }} />;
@@ -127,6 +110,7 @@ const NotificationsPage = () => {
     }
   };
 
+  // Function to calculate time ago
   const getTimeAgo = (timestamp) => {
     const now = new Date();
     const time = new Date(timestamp);
@@ -134,14 +118,13 @@ const NotificationsPage = () => {
     
     if (diffInMinutes < 1) return 'ភ្លាមៗនេះ';
     if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? 'នាទីមុន' : 'នាទីមុន'}`;
-    
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'ម៉ោងមុន' : 'ម៉ោងមុន'}`;
-    
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} ${diffInDays === 1 ? 'ថ្ងៃមុន' : 'ថ្ងៃមុន'}`;
   };
 
+  // Function to mark a single notification as read
   const markAsRead = (id) => {
     setNotifications(prev => 
       prev.map(notif => 
@@ -150,12 +133,14 @@ const NotificationsPage = () => {
     );
   };
 
+  // Function to mark all notifications as read
   const markAllAsRead = () => {
     setNotifications(prev => 
       prev.map(notif => ({ ...notif, isRead: true }))
     );
   };
 
+  // Function to delete a notification
   const deleteNotification = (id) => {
     setNotifications(prev => prev.filter(notif => notif.id !== id));
   };
@@ -167,20 +152,20 @@ const NotificationsPage = () => {
     
     const matchesSearch = searchTerm === '' || 
                          notif.title.includes(searchTerm) ||
-                         (notif.productName && notif.productName.includes(searchTerm)) ||
-                         (notif.message && notif.message.includes(searchTerm));
+                         notif.message.includes(searchTerm) ||
+                         notif.orderId.includes(searchTerm) ||
+                         notif.productName.includes(searchTerm); // Added productName to search
     
     return matchesFilter && matchesSearch;
   });
 
-  // Sort by priority and timestamp (unread first, then by time)
   const sortedNotifications = filteredNotifications.sort((a, b) => {
     if (a.isRead !== b.isRead) return a.isRead - b.isRead;
     if (a.priority !== b.priority) {
       const priorityOrder = { high: 0, medium: 1, low: 2 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     }
-    return new Date(b.timestamp) - new Date(a.timestamp);
+    return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -201,6 +186,9 @@ const NotificationsPage = () => {
         .priority-medium { border-left: 4px solid #ffc107; }
         .priority-low { border-left: 4px solid #28a745; }
         .unread-indicator { background-color: #228B22; }
+        .status-confirmed { color: #28a745; }
+        .status-delivered { color: #17a2b8; }
+        .status-cancelled { color: #dc3545; }
       `}</style>
 
       <div className="max-w-6xl mx-auto p-6">
@@ -218,7 +206,7 @@ const NotificationsPage = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold mb-2">ការជូនដំណឹង</h1>
-                <p className="text-xl opacity-90">ទទួលបានព័ត៌មានចុងក្រោយអំពីការបញ្ជាទិញ និងសកម្មភាពកសិដ្ឋានរបស់អ្នក</p>
+                <p className="text-xl opacity-90">ទទួលបានព័ត៌មានចុងក្រោយអំពីការបញ្ជាទិញ</p>
               </div>
             </div>
           </div>
@@ -331,7 +319,7 @@ const NotificationsPage = () => {
                               )}
                               <span className="text-sm text-gray-500 flex items-center">
                                 <Clock className="w-4 h-4 mr-1" />
-                                {getTimeAgo(notification.timestamp)}
+                                {getTimeAgo(notification.createdAt)}
                               </span>
                             </div>
                           </div>
@@ -341,51 +329,45 @@ const NotificationsPage = () => {
                             <span>{notification.message}</span>
                           </p>
 
-                          {/* Order Details */}
-                          {(notification.type === 'new_order' || notification.type === 'order_update') && (
-                            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                <div>
-                                  <span className="font-medium text-gray-600">លេខការបញ្ជាទិញ:</span>
-                                  <p className="font-semibold" style={{ color: '#228B22' }}>
-                                    #{notification.orderId}
-                                  </p>
-                                </div>
-                                <div>
-                                  <span className="font-medium text-gray-600">ផលិតផល:</span>
-                                  <p className="font-semibold text-dark">
-                                    {notification.productName}
-                                  </p>
-                                </div>
-                                {notification.quantity && (
-                                  <div>
-                                    <span className="font-medium text-gray-600">បរិមាណ:</span>
-                                    <p className="font-semibold text-dark">{notification.quantity}</p>
-                                  </div>
-                                )}
-                                {notification.status && (
-                                  <div>
-                                    <span className="font-medium text-gray-600">ស្ថានភាព:</span>
-                                    <p className="font-semibold" style={{ color: '#8B4513' }}>
-                                      {notification.status}
-                                    </p>
-                                  </div>
-                                )}
+                          {/* Order Details from order_item and orders tables */}
+                          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                              <div>
+                                <span className="font-medium text-gray-600">លេខការបញ្ជាទិញ:</span>
+                                <p className="font-semibold" style={{ color: '#228B22' }}>
+                                  #{notification.orderId}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">ផលិតផល:</span>
+                                <p className="font-semibold text-dark">
+                                  {notification.productName}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">បរិមាណ:</span>
+                                <p className="font-semibold text-dark">{notification.quantity}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">តម្លៃ:</span>
+                                <p className="font-semibold" style={{ color: '#8B4513' }}>
+                                  ${notification.price}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">ស្ថានភាព:</span>
+                                <p className={`font-semibold ${
+                                  notification.status === 'confirmed' ? 'status-confirmed' :
+                                  notification.status === 'delivered' ? 'status-delivered' :
+                                  notification.status === 'cancelled' ? 'status-cancelled' : ''
+                                }`}>
+                                  {notification.status === 'confirmed' ? 'បានបញ្ជាក់' :
+                                   notification.status === 'delivered' ? 'បានដឹកជញ្ជូន' :
+                                   notification.status === 'cancelled' ? 'បានលុប' : notification.status}
+                                </p>
                               </div>
                             </div>
-                          )}
-
-                          {/* Payment Details */}
-                          {notification.type === 'payment' && notification.amount && (
-                            <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-gray-600">ចំនួនទឹកប្រាក់បានទទួល:</span>
-                                <span className="text-2xl font-bold" style={{ color: '#FFD700' }}>
-                                  ${notification.amount.toFixed(2)}
-                                </span>
-                              </div>
-                            </div>
-                          )}
+                          </div>
 
                           {/* Action Buttons */}
                           <div className="flex flex-wrap gap-3">
@@ -395,20 +377,6 @@ const NotificationsPage = () => {
                                 <span>មើលការបញ្ជាទិញ</span>
                               </button>
                             )}
-                            {notification.actions.includes('view_transaction') && (
-                              <button className="flex items-center space-x-2 px-4 py-2 accent-yellow text-black rounded-lg hover:opacity-90 transition-opacity">
-                                <DollarSign className="w-4 h-4" />
-                                <span>មើលប្រតិបត្តិការ</span>
-                              </button>
-                            )}
-                            {notification.actions.includes('rate_customer') && (
-                              <button className="flex items-center space-x-2 px-4 py-2 secondary-brown text-white rounded-lg hover:opacity-90 transition-opacity">
-                                <Star className="w-4 h-4" />
-                                <span>វាយតម្លៃអតិថិជន</span>
-                              </button>
-                            )}
-                            
-                            {/* Mark as Read / Delete */}
                             <div className="ml-auto flex items-center space-x-2">
                               {!notification.isRead && (
                                 <button
