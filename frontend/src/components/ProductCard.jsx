@@ -123,7 +123,7 @@ function ProductCard({
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{productName}</h3>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{productDescription}</p>
+                {/* Removed product description from list view */}
 
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-indigo-600">{currentTexts.category || "Category"}:</span>
@@ -280,7 +280,7 @@ function ProductCard({
           </div>
         </div>
 
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{productDescription}</p>
+        {/* Removed product description from grid view */}
 
         <div className="text-sm text-gray-600 mb-1">
           <strong>{currentTexts.category || "Category"}:</strong> {categoryName}
