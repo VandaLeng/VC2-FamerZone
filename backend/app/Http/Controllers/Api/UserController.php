@@ -18,7 +18,7 @@ class UserController extends Controller
         $users = User::with('roles')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%$search%")
-                      ->orWhere('email', 'like', "%$search%");
+                    ->orWhere('email', 'like', "%$search%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -33,54 +33,96 @@ class UserController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
             'role' => 'required|string|exists:roles,name',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $role = Role::where('name', $request->role)->firstOrFail();
+
+        $imageName = 'default.jpg';
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/users', $imageName);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'image' => 'default.jpg',
-            'role_id' => $role->id, // Add the role_id here
+            'image' => $imageName,
+            'role_id' => $role->id,
         ]);
 
         $user->assignRole($request->role);
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user->load('roles')
+            'user' => $user->load('roles') // image_url will auto-appear
         ]);
     }
 
     public function update(Request $request, $id)
     {
+        // ✅ First, get the user
         $user = User::findOrFail($id);
 
-        $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $id,
-            'password' => 'sometimes|nullable|string|min:6',
-            'role' => 'sometimes|required|string|exists:roles,name',
+        // ✅ Validation rules
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'nullable|string|exists:roles,name',
+            'phone' => 'nullable|string|max:20',
+            'province' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user->name = $request->name ?? $user->name;
-        $user->email = $request->email ?? $user->email;
+        // ✅ Fill only provided values, keep existing for missing fields
+        $user->fill($request->only(['name', 'email', 'phone', 'province']));
 
+        // ✅ Update password if provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        $user->save();
-
-        if ($request->role) {
-            $user->syncRoles([$request->role]);
+        // ✅ Update role if provided
+        if ($request->filled('role')) {
+            $role = Role::where('name', $request->role)->first();
+            if ($role) {
+                $user->role_id = $role->id;
+                $user->syncRoles([$request->role]);
+            }
         }
 
+        // ✅ Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
+                Storage::delete('public/users/' . $user->image);
+            }
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/users', $imageName);
+            $user->image = $imageName;
+        }
+
+        // ✅ Save changes
+        $user->save();
+
+        // ✅ Return updated data
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user->load('roles')
+            'user' => $user->load('roles')->append('image_url')
         ]);
     }
+
+
+
+
+
+
+
 
     public function destroy($id)
     {
@@ -127,11 +169,12 @@ class UserController extends Controller
 
     public function assignPermission(Request $request, $id)
     {
+        $user = User::findOrFail($id);
+
         $request->validate([
             'permission' => 'required|string|exists:permissions,name',
         ]);
 
-        $user = User::findOrFail($id);
         $user->givePermissionTo($request->permission);
 
         return response()->json(['message' => 'Permission assigned to user']);
@@ -154,13 +197,14 @@ class UserController extends Controller
             }
 
             $image->storeAs('public/users', $imageName);
+
             $user->image = $imageName;
             $user->save();
 
             return response()->json([
                 'message' => 'Image uploaded successfully',
                 'image_url' => url('storage/users/' . $imageName),
-            ]);
+            ], 200);
         }
 
         return response()->json(['message' => 'No image uploaded'], 400);
@@ -194,15 +238,29 @@ class UserController extends Controller
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6|confirmed',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'province' => 'sometimes|nullable|string|max:255', // frontend field
+            'address' => 'sometimes|nullable|string|max:255',
             'phone' => 'sometimes|nullable|string|max:20',
         ]);
 
-        if ($request->has('name')) $user->name = $request->name;
-        if ($request->has('email')) $user->email = $request->email;
-        if ($request->has('province')) $user->province = $request->province; // map to DB column
-        if ($request->has('phone')) $user->phone = $request->phone;
-        if ($request->filled('password')) $user->password = Hash::make($request->password);
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
+        if ($request->has('address')) {
+            $user->address = $request->address;
+        }
+
+        if ($request->has('phone')) {
+            $user->phone = $request->phone;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -217,6 +275,7 @@ class UserController extends Controller
         }
 
         $user->save();
+
         $user->load('roles', 'permissions');
 
         return response()->json([
@@ -242,6 +301,7 @@ class UserController extends Controller
             }
 
             $image->storeAs('public/users', $imageName);
+
             $user->image = $imageName;
             $user->save();
 
@@ -255,20 +315,13 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
 
+    // New method to fetch authenticated user's profile
     public function getProfile(Request $request)
     {
         $user = $request->user();
         $user->load('roles');
-
         return response()->json([
-            'data' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'province' => $user->province, // map DB -> frontend
-                'image' => $user->image ? url('storage/users/' . $user->image) : null,
-                'roles' => $user->roles,
-            ]
+            'data' => $user
         ]);
     }
 }
