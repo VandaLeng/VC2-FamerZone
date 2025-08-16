@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from 'lucide-react';
+import { CartContext } from '../services/cartContext';
 
 function ProductCard({
   product,
@@ -16,6 +17,8 @@ function ProductCard({
   onShowDetail,
   showDistance = false,
 }) {
+  const { addToCart, cartItems } = useContext(CartContext);
+
   if (!product) {
     return null;
   }
@@ -30,26 +33,20 @@ function ProductCard({
     ? farmer.nameKh || farmer.name || "Unknown Farmer"
     : farmer.name || farmer.nameKh || "Unknown Farmer";
 
-  // Get province name with better fallback logic
   let provinceName = "Unknown";
   if (product.province && typeof product.province === 'object') {
-    // Product has province object attached
     provinceName = currentLanguage === "kh" ? product.province.nameKh || product.province.province_name : product.province.province_name;
   } else if (product.province_id && provinces.length > 0) {
-    // Find province by ID from provinces array
     const province = provinces.find((p) => p.id === product.province_id);
     if (province) {
       provinceName = currentLanguage === "kh" ? province.nameKh || province.province_name : province.province_name;
     }
   }
 
-  // Get category name with better fallback logic
   let categoryName = "Unknown";
   if (product.category && typeof product.category === 'object') {
-    // Product has category object attached
     categoryName = currentLanguage === "kh" ? product.category.nameKh || product.category.name : product.category.name;
   } else if (product.category_id && categories.length > 0) {
-    // Find category by ID from categories array
     const category = categories.find((c) => c.id === product.category_id || c.id === product.category_id.toString());
     if (category) {
       categoryName = currentLanguage === "kh" ? category.nameKh || category.name : category.name;
@@ -60,17 +57,13 @@ function ProductCard({
   const statusText = product.status === "active" ? (currentTexts.active || "Active") : (currentTexts.inactive || "Inactive");
 
   const isInStock = product.stock > 0;
+  const isInCart = cartItems.some(item => item.id === product.id);
 
-  // Fix image URL construction
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return "/placeholder.svg?height=300&width=300";
-    
-    // If it's already a full URL, return as is
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
-    // Remove any leading slash or 'storage/' from the path
     const cleanPath = imageUrl.replace(/^\/?(storage\/)?/, '');
     return `http://localhost:8000/storage/${cleanPath}`;
   };
@@ -215,15 +208,13 @@ function ProductCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onOrder && onOrder(product.id);
+                    addToCart(product);
                   }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg disabled:opacity-50 mr-2"
-                  disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
+                  disabled={!isInStock || isInCart}
                 >
-                  {orderingProducts.includes(product.id)
-                    ? "Ordering..."
-                    : orderedProducts.includes(product.id)
-                    ? (currentTexts.orderPlaced || "Order Placed")
+                  {isInCart
+                    ? (currentTexts.orderPlaced || "In Cart")
                     : (currentTexts.orderNow || "Order Now")}
                 </button>
               </div>
@@ -349,15 +340,13 @@ function ProductCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onOrder && onOrder(product.id);
+              addToCart(product);
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg order-btn disabled:opacity-50 flex-shrink-0"
-            disabled={!isInStock || orderingProducts.includes(product.id) || orderedProducts.includes(product.id)}
+            disabled={!isInStock || isInCart}
           >
-            {orderingProducts.includes(product.id)
-              ? "..."
-              : orderedProducts.includes(product.id)
-              ? "✓"
+            {isInCart
+              ? (currentTexts.orderPlaced || "In Cart")
               : (currentTexts.orderNow || "Order Now")}
           </button>
         </div>

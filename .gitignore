@@ -16,4 +16,4 @@
 logs
 # Temporary files
 tmp
-*.log
+*.logbackend/storage/framework/cache/
