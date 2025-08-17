@@ -134,8 +134,9 @@ Route::middleware(['auth:sanctum', 'role:farmer'])->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::put('/profile', [UserController::class, 'updateProfile']);
-    Route::post('/profile/image', [UserController::class, 'updateImage']);
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/profile/image', [AuthController::class, 'updateImage']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
