@@ -1,14 +1,19 @@
 "use client"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useContext } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
+import { userAPI } from "../stores/api" // Import your API
 import "../styles/NavbarStyle.css" 
 
-export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout }) {
+export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout, setUserData }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isImageUploading, setIsImageUploading] = useState(false)
   const profileRef = useRef(null)
+  const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const { cartItems } = useContext(CartContext)
+  const cartItemCount = cartItems.length
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -24,17 +29,74 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
 
   const handleLogin = () => {
     navigate("/login")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
   }
 
   const handleRegister = () => {
     navigate("/register")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
   }
 
   const handleCart = () => {
     navigate("/cart")
-    setIsMobileMenuOpen(false) // Close mobile menu on navigation
+    setIsMobileMenuOpen(false)
+  }
+
+  // Handle profile image click
+  const handleImageClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  // Handle image upload
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB')
+      return
+    }
+
+    try {
+      setIsImageUploading(true)
+      
+      // Call API to update profile image
+      const response = await userAPI.updateProfileImage(file)
+      
+      if (response.success) {
+        // Update user data in parent component
+        const updatedUserData = {
+          ...userData,
+          image: response.user.image,
+          image_url: response.user.image_url
+        }
+        
+        // Update localStorage
+        localStorage.setItem('user_data', JSON.stringify(updatedUserData))
+        
+        // Update parent component state
+        if (setUserData) {
+          setUserData(updatedUserData)
+        }
+        
+        // Show success message
+        alert(currentLanguage === 'kh' ? 'រូបភាពបានកែប្រែបានជោគជ័យ' : 'Profile image updated successfully!')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert(currentLanguage === 'kh' ? 'មានបញ្ហាក្នុងការកែប្រែរូបភាព' : 'Error updating profile image')
+    } finally {
+      setIsImageUploading(false)
+      // Clear the file input
+      event.target.value = ''
+    }
   }
 
   // Close profile dropdown when clicking outside
@@ -66,6 +128,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
       dashboard: "ផ្ទាំងគ្រប់គ្រង",
       switchLang: "ប្តូរទៅភាសាអង់គ្លេស",
       cart: "រទេះទិញឥវ៉ាន់",
+      changePhoto: "ប្តូររូបភាព",
     },
     en: {
       home: "Home",
@@ -82,6 +145,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
       dashboard: "Dashboard",
       switchLang: "Switch to Khmer",
       cart: "Cart",
+      changePhoto: "Change Photo",
     },
   }
   const currentTexts = texts[currentLanguage]
@@ -90,9 +154,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
-
-  // Mock cart item count - replace with your actual cart state
-  const cartItemCount = 3 
+  const userImageUrl = userData?.image_url || null
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -149,7 +211,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           <div className="hidden md:flex items-center space-x-4">
             {/* Shopping Cart */}
             <a
-              href="cart"
+              href="/cart"
               onClick={handleCart}
               className="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-600 hover:text-green-600 group"
               title={currentTexts.cart}
@@ -188,8 +250,26 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                   onClick={toggleProfile}
                   className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 group"
                 >
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-semibold text-sm">{userInitial}</span>
+                  <div className="relative">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-transparent group-hover:border-green-200 transition-all duration-200">
+                      {userImageUrl ? (
+                        <img 
+                          src={userImageUrl} 
+                          alt={userName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <span 
+                        className={`text-green-600 font-semibold text-sm ${userImageUrl ? 'hidden' : 'flex'}`}
+                        style={{ display: userImageUrl ? 'none' : 'flex' }}
+                      >
+                        {userInitial}
+                      </span>
+                    </div>
                   </div>
                   <span className="text-gray-700 font-medium text-sm hidden lg:block">{userName}</span>
                   <svg
@@ -206,19 +286,65 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-green-600 font-semibold">{userInitial}</span>
+                        <div className="relative group">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                            {userImageUrl ? (
+                              <img 
+                                src={userImageUrl} 
+                                alt={userName}
+                                className="w-full h-full object-cover"
+                                onClick={handleImageClick}
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <span 
+                              className={`text-green-600 font-semibold cursor-pointer ${userImageUrl ? 'hidden' : 'flex'}`}
+                              onClick={handleImageClick}
+                              style={{ display: userImageUrl ? 'none' : 'flex' }}
+                            >
+                              {userInitial}
+                            </span>
+                          </div>
+                          {/* Upload overlay */}
+                          <div 
+                            className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                            onClick={handleImageClick}
+                          >
+                            {isImageUploading ? (
+                              <svg className="h-4 w-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                              </svg>
+                            ) : (
+                              <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                            )}
+                          </div>
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 text-sm">{userName}</p>
                           <p className="text-gray-500 text-xs">{userEmail}</p>
                         </div>
                       </div>
+                      {/* Change photo button */}
+                      <button
+                        onClick={handleImageClick}
+                        disabled={isImageUploading}
+                        className="mt-2 w-full text-xs text-green-600 hover:text-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isImageUploading ? 'Uploading...' : currentTexts.changePhoto}
+                      </button>
                     </div>
                     <div className="py-2">
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                        onClick={() => setIsProfileOpen(false)}
                       >
                         <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -233,6 +359,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       <Link
                         to="/orders"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                        onClick={() => setIsProfileOpen(false)}
                       >
                         <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -247,6 +374,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       <Link
                         to="/settings"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                        onClick={() => setIsProfileOpen(false)}
                       >
                         <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -391,12 +519,39 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                 {isLoggedIn && userData ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <span className="text-green-600 font-semibold">{userInitial}</span>
+                      <div className="relative group">
+                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                          {userImageUrl ? (
+                            <img 
+                              src={userImageUrl} 
+                              alt={userName}
+                              className="w-full h-full object-cover"
+                              onClick={handleImageClick}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <span 
+                            className={`text-green-600 font-semibold cursor-pointer ${userImageUrl ? 'hidden' : 'flex'}`}
+                            onClick={handleImageClick}
+                            style={{ display: userImageUrl ? 'none' : 'flex' }}
+                          >
+                            {userInitial}
+                          </span>
+                        </div>
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium text-gray-900 text-sm">{userName}</p>
                         <p className="text-gray-500 text-xs">{userEmail}</p>
+                        <button
+                          onClick={handleImageClick}
+                          disabled={isImageUploading}
+                          className="mt-1 text-xs text-green-600 hover:text-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isImageUploading ? 'Uploading...' : currentTexts.changePhoto}
+                        </button>
                       </div>
                     </div>
                     <Link
@@ -474,6 +629,15 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           </div>
         )}
       </div>
+
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
     </nav>
   )
 }

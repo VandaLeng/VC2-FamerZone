@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
-// Axios instance
+// Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
     timeout: 10000,
@@ -12,17 +12,92 @@ const api = axios.create({
     },
 });
 
-// Get auth token helper
+// Get auth token
 const getAuthToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("auth_token");
 };
 
-// Create auth headers helper
+// Create auth headers
 const getAuthHeaders = () => {
     const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+// ========== VIDEO API ==========
+export const videoAPI = {
+    // Get all videos for homepage (public)
+    getAllVideos: (params = {}) => {
+        const defaultParams = { limit: 6 };
+        return axios.get(`${API_BASE_URL}/videos/all`, {
+            params: {...defaultParams, ...params },
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((response) => response.data);
+    },
+
+    // Increment view count (public)
+    incrementView: (videoId) => {
+        return axios.post(`${API_BASE_URL}/videos/public/${videoId}/view`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((response) => response.data);
+    },
+
+    // Get farmer's videos (protected)
+    getMyVideos: () => {
+        return axios.get(`${API_BASE_URL}/video-products`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    // Create video (protected)
+    createVideo: (data) => {
+        return axios.post(`${API_BASE_URL}/video-products`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    // Update video (protected)
+    updateVideo: (id, data) => {
+        return axios.put(`${API_BASE_URL}/video-products/${id}`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+        }).then((response) => response.data);
+    },
+
+    // Delete video (protected)
+    deleteVideo: (id) => {
+        return axios.delete(`${API_BASE_URL}/video-products/${id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Toggle video status (protected)
+    toggleVideoStatus: (id) => {
+        return axios.post(`${API_BASE_URL}/video-products/${id}/toggle-status`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    }
+};
+
+// ========== OTHER EXISTING APIs ==========
 export const itemsAPI = {
     getAll: () => {
         return axios.get(`${API_BASE_URL}/items`, {
@@ -47,7 +122,6 @@ export const itemsAPI = {
     },
 
     update: (id, data) => {
-        // Use POST with _method=PUT for Laravel to handle file uploads properly
         if (data instanceof FormData) {
             data.append('_method', 'PUT');
         }
@@ -90,6 +164,52 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
+<<<<<<< HEAD
+=======
+
+// Profile and User API functions
+export const userAPI = {
+    // Get current user profile
+    getProfile: () => {
+        return axios.get(`${API_BASE_URL}/profile`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    // Update user profile
+    updateProfile: (data) => {
+        return axios.post(`${API_BASE_URL}/profile/update`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Update only profile image
+    updateProfileImage: (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        return axios.post(`${API_BASE_URL}/profile/update-image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Change password
+    changePassword: (passwordData) => {
+        return axios.post(`${API_BASE_URL}/change-password`, passwordData, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    }
+};
+
 // Request interceptor
 api.interceptors.request.use(
     function(config) {
@@ -118,6 +238,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+>>>>>>> feature/profile
 
 // ========== AUTH API ==========
 export function registerUser(userData) {
@@ -133,6 +254,8 @@ export function registerUser(userData) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
@@ -159,6 +282,8 @@ export function loginUser(credentials) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
@@ -197,7 +322,6 @@ export function logoutUser() {
         });
 }
 
-// ========== FETCH WITH AUTH ==========
 export function fetchWithAuth(url, options) {
     const token = localStorage.getItem('auth_token');
     const config = {

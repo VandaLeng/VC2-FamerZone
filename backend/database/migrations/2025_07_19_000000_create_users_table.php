@@ -10,22 +10,29 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->id(); // this is unsignedBigInteger
+            $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->string('province')->nullable(); 
-            $table->unsignedBigInteger('role_id');
+            $table->string('province_id', 50)->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->string('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('restrict');
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('set null');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('province_id');
+        });
     }
 }
