@@ -15,9 +15,9 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->string('province')->nullable(); // using province name, not province_id
-            $table->unsignedBigInteger('role_id')->nullable(); // make nullable
-            $table->string('image')->nullable(); // user image
+            $table->string('province_id', 50)->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->string('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
@@ -25,12 +25,14 @@ class CreateUsersTable extends Migration
             $table->foreign('role_id')
                 ->references('id')
                 ->on('roles')
-                ->onDelete('set null'); // set null if role deleted
+                ->onDelete('set null');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('province_id');
+        });
     }
 }

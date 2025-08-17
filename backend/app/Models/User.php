@@ -19,7 +19,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'province', // match migration
+        'province_id', // <-- use province_id
         'role_id',
         'image',
     ];
@@ -29,29 +29,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-<<<<<<< HEAD
-    // ✅ Automatically include image_url in JSON
-    protected $appends = ['image_url'];
-
-    // ✅ Return full image URL
-    public function getImageUrlAttribute()
-    {
-        if ($this->image) {
-            return url('storage/users/' . $this->image);
-        }
-        return asset('images/default.png');
-    }
-
-=======
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
+    protected $appends = ['image_url'];
+
     /**
      * A user has one role.
      */
->>>>>>> main
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -79,5 +66,13 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id', 'id');
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image && $this->image !== 'default.jpg') {
+            return url('storage/users/' . $this->image);
+        }
+        return url('storage/users/default.jpg');
     }
 }

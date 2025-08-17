@@ -26,6 +26,7 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -33,6 +34,8 @@ class UserController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
             'role' => 'required|string|exists:roles,name',
+            'phone' => 'nullable|string|max:20',
+            'province_id' => 'required|exists:provinces,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -50,6 +53,8 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'province_id' => $request->province_id,
             'image' => $imageName,
             'role_id' => $role->id,
         ]);
@@ -58,16 +63,20 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user->load('roles') // image_url will auto-appear
+            'user' => $user->load('roles', 'province')
         ]);
     }
 
-    public function update(Request $request, $id)
+    function update(Request $request, $id)
     {
-        // ✅ First, get the user
-        $user = User::findOrFail($id);
+        // Try to find the user, return 404 if not found
+        try {
+            $user = User::findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
 
-        // ✅ Validation rules
+        // Validate the request
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255|unique:users,email,' . $id,
@@ -78,15 +87,15 @@ class UserController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // ✅ Fill only provided values, keep existing for missing fields
+        // Fill only provided values, keep existing for missing fields
         $user->fill($request->only(['name', 'email', 'phone', 'province']));
 
-        // ✅ Update password if provided
+        // Update password if provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        // ✅ Update role if provided
+        // Update role if provided
         if ($request->filled('role')) {
             $role = Role::where('name', $request->role)->first();
             if ($role) {
@@ -95,7 +104,7 @@ class UserController extends Controller
             }
         }
 
-        // ✅ Handle image upload
+        // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
@@ -107,16 +116,15 @@ class UserController extends Controller
             $user->image = $imageName;
         }
 
-        // ✅ Save changes
+        // Save changes
         $user->save();
 
-        // ✅ Return updated data
+        // Return updated data
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user->load('roles')->append('image_url')
         ]);
     }
-
 
 
 

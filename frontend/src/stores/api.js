@@ -47,7 +47,6 @@ export const itemsAPI = {
     },
 
     update: (id, data) => {
-        // Use POST with _method=PUT for Laravel to handle file uploads properly
         if (data instanceof FormData) {
             data.append('_method', 'PUT');
         }
@@ -90,6 +89,50 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
+
+// Profile and User API functions
+export const userAPI = {
+    // Get current user profile
+    getProfile: () => {
+        return axios.get(`${API_BASE_URL}/profile`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    // Update user profile
+    updateProfile: (data) => {
+        return axios.post(`${API_BASE_URL}/profile/update`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Update only profile image
+    updateProfileImage: (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        return axios.post(`${API_BASE_URL}/profile/update-image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Change password
+    changePassword: (passwordData) => {
+        return axios.post(`${API_BASE_URL}/change-password`, passwordData, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    }
+};
+
 // Request interceptor
 api.interceptors.request.use(
     function(config) {
@@ -133,6 +176,8 @@ export function registerUser(userData) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
@@ -159,6 +204,8 @@ export function loginUser(credentials) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
