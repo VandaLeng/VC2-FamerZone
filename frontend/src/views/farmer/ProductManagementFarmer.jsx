@@ -213,19 +213,32 @@ const ProductManagement = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "" || product.category?.id.toString() === filterCategory;
-    const matchesStatus = filterStatus === "" || product.status === filterStatus;
-    const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
-    return matchesSearch && matchesCategory && matchesStatus && matchesProvince;
-  });
+  // Only show products belonging to the current user, sorted by newest first
+  const filteredProducts = products
+    .filter((product) => {
+      if (!currentUser || String(product.user_id) !== String(currentUser.id)) {
+        return false;
+      }
+      const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = filterCategory === "" || product.category?.id?.toString() === filterCategory;
+      const matchesStatus = filterStatus === "" || product.status === filterStatus;
+      const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
+      return matchesSearch && matchesCategory && matchesStatus && matchesProvince;
+    })
+    .sort((a, b) => {
+      // Sort by createdAt descending (newest first)
+      const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+      const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
 
-  const totalProducts = products.length;
-  const activeProducts = products.filter((p) => p.status === "active").length;
-  const outOfStockProducts = products.filter((p) => p.stock === 0).length;
-  const totalRevenue = products.reduce((sum, p) => sum + (p.price * (p.orders || 0)), 0);
+  // Only calculate stats for current user's products
+  const myProducts = products.filter(p => currentUser && String(p.user_id) === String(currentUser.id));
+  const totalProducts = myProducts.length;
+  const activeProducts = myProducts.filter((p) => p.status === "active").length;
+  const outOfStockProducts = myProducts.filter((p) => p.stock === 0).length;
+  const totalRevenue = myProducts.reduce((sum, p) => sum + (p.price * (p.orders || 0)), 0);
 
   const toggleActionsMenu = (productId) => {
     setShowActionsMenu(showActionsMenu === productId ? null : productId);
