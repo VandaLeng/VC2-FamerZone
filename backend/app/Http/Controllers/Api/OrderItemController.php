@@ -32,7 +32,10 @@ class OrderItemController extends Controller
      */
     public function show(OrderItem $orderItem)
     {
-        //
+        // Load the related order and item for this orderItem
+        $orderItem->load(['order', 'item']);
+
+        return response()->json($orderItem);
     }
 
     /**
