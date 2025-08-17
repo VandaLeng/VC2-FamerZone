@@ -5,7 +5,7 @@ export const ProductContext = createContext();
 export const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
 
-    const fetchProducts = useCallback(async() => {
+    const fetchProducts = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:8000/api/items');
             const data = await response.json();
@@ -23,7 +23,7 @@ export const ProductProvider = ({ children }) => {
         fetchProducts();
     }, [fetchProducts]);
 
-    const addProduct = useCallback(async(product) => {
+    const addProduct = useCallback(async (product) => {
         try {
             const formData = new FormData();
 
@@ -68,7 +68,7 @@ export const ProductProvider = ({ children }) => {
         }
     }, []);
 
-    const updateProduct = useCallback(async(productId, updatedProduct) => {
+    const updateProduct = useCallback(async (productId, updatedProduct) => {
         try {
             const formData = new FormData();
 
@@ -115,7 +115,7 @@ export const ProductProvider = ({ children }) => {
         }
     }, []);
 
-    const deleteProduct = useCallback(async(productId) => {
+    const deleteProduct = useCallback(async (productId) => {
         try {
             const response = await fetch(`http://localhost:8000/api/items/${productId}`, {
                 method: 'DELETE',
@@ -135,9 +135,9 @@ export const ProductProvider = ({ children }) => {
         }
     }, []);
 
-    return ( <
-        ProductContext.Provider value = {
-            { products, addProduct, updateProduct, deleteProduct, fetchProducts } } > { children } <
+    return (<
+        ProductContext.Provider value={
+            { products, addProduct, updateProduct, deleteProduct, fetchProducts }} > {children} <
         /ProductContext.Provider>
-    );
+        );
 };
