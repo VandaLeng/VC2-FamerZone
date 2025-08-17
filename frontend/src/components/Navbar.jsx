@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useContext } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { userAPI } from "../stores/api" // Import your API
+import { CartContext } from "../services/cartContext";
 import "../styles/NavbarStyle.css" 
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout, setUserData }) {

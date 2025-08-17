@@ -156,13 +156,8 @@ const NotificationsPage = () => {
     }
   };
 
-  const deleteNotification = async (id) => {
-    try {
-      await axios.delete(`http://127.0.0.1:8000/api/order-items/${id}`);
-      setNotifications(prev => prev.filter(notif => notif.id !== id));
-    } catch (err) {
-      console.error('Failed to delete notification:', err);
-    }
+  const deleteNotification = (id) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
   };
 
   const filteredNotifications = notifications.filter(notif => {
@@ -422,8 +417,16 @@ const NotificationsPage = () => {
 
         {/* Detailed View Modal */}
         {selectedNotification && (
-          <div className="fixed inset-0 modal flex items-center justify-center z-50">
-            <div className="modal-content w-full max-w-3xl p-6 bg-white rounded-lg shadow-custom">
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50"
+            style={{ background: "rgba(0,0,0,0.5)", animation: "fadeIn 0.2s" }}
+            onClick={() => setSelectedNotification(null)}
+          >
+            <div
+              className="modal-content w-full max-w-3xl p-6 bg-white rounded-lg shadow-custom relative"
+              style={{ animation: "scaleIn 0.3s" }}
+              onClick={e => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-6 border-b border-custom pb-4">
                 <h2 className="text-2xl font-bold text-dark">ព័ត៌មានលម្អិតនៃការបញ្ជាទិញ #{selectedNotification.orderId}</h2>
                 <button
@@ -504,6 +507,10 @@ const NotificationsPage = () => {
                 </div>
               </div>
             </div>
+            <style>{`
+              @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            `}</style>
           </div>
         )}
       </div>

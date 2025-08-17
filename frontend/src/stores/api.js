@@ -164,8 +164,6 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
-<<<<<<< HEAD
-=======
 
 // Profile and User API functions
 export const userAPI = {
@@ -238,7 +236,6 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
->>>>>>> feature/profile
 
 // ========== AUTH API ==========
 export function registerUser(userData) {
