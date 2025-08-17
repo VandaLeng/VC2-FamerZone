@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 class Customer extends Model
 {
     use HasFactory;
@@ -22,4 +23,12 @@ class Customer extends Model
         'avatar',
         'rating',
     ];
+
+    // Accessor to get full avatar URL
+    protected $appends = ['avatar_url'];
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+    }
 }
