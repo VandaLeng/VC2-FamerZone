@@ -173,26 +173,31 @@ const ProductManagement = () => {
       if (response.data.success) {
         // Process products to ensure proper image URLs
         const processedProducts = response.data.data.map(product => {
-          // Fix image URL construction
           let imageUrl = null;
           if (product.image) {
-            // Check if image already contains full URL
-            if (product.image.startsWith('http')) {
+            // If image is already a full URL and contains /items/
+            if (/^https?:\/\//.test(product.image) && product.image.includes('/items/')) {
               imageUrl = product.image;
             } else {
-              // Remove any leading slash or 'storage/' from the path
-              const cleanPath = product.image.replace(/^\/?(storage\/)?/, '');
-              imageUrl = `${API_BASE_URL}/storage/${cleanPath}`;
+              // Normalize path: remove leading slashes and known prefixes
+              let cleanPath = product.image.replace(/^\/?(public\/|storage\/|app\/public\/)?/, '');
+              // Only use images from items/ folder
+              if (cleanPath.startsWith('items/')) {
+                imageUrl = `${API_BASE_URL}/storage/${cleanPath}`;
+              } else {
+                imageUrl = null;
+              }
             }
           }
-          
+          // If imageUrl is not valid, use placeholder
+          if (!imageUrl) {
+            imageUrl = '/placeholder.svg?height=40&width=40';
+          }
           return {
             ...product,
             image: imageUrl
           };
         });
-        
-        console.log('Processed products with image URLs:', processedProducts);
         setProducts(processedProducts);
       }
     } catch (err) {
