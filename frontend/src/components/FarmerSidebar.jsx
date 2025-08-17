@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, ShoppingCart, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, Video } from 'lucide-react';
 
 const FarmerSidebar = ({
   userData,
@@ -71,6 +71,7 @@ const FarmerSidebar = ({
           { id: "customers", label: "ការគ្រប់គ្រងអតិថិជន", icon: Users, path: "/farmer/customers" },
           { id: "products", label: "ការគ្រប់គ្រងផលិតផល", icon: Package, path: "/farmer/products" },
           { id: "categories", label: "ការគ្រប់គ្រងប្រភេទ", icon: LayoutGrid, path: "/farmer/categories" },
+          { id: "video-product", label: "ការគ្រប់គ្រងវីដេអូ", icon: Video, path: "/farmer/video-product" },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;

@@ -15,9 +15,11 @@ const LocationMap = ({
   categories = [],
   onShowDetail
 }) => {
+  // Default to Phnom Penh
   const defaultCenter = [11.5564, 104.9282];
   const center = userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter;
 
+  // Filter to Cambodia only
   const groupedProducts = useMemo(() => {
     const groups = {};
     products.forEach(product => {
@@ -28,6 +30,11 @@ const LocationMap = ({
         province = provinces.find(p => p.id === product.province_id);
       }
       if (!province) return;
+
+      // Show only Cambodia
+      if (province.country && province.country.toLowerCase() !== "cambodia") return;
+
+      // Filter selected province
       if (selectedProvince !== 'all' && province.id !== selectedProvince) return;
 
       const locationKey = `${province.latitude}-${province.longitude}`;
@@ -84,7 +91,7 @@ const LocationMap = ({
     <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
       <MapContainer
         center={center}
-        zoom={8}
+        zoom={7}
         style={{ height: '500px', width: '100%' }}
         bounds={filteredGroups.length > 0 ? bounds : undefined}
         boundsOptions={{ padding: [50, 50] }}
@@ -123,9 +130,6 @@ const LocationMap = ({
                 <h3 className="font-bold text-green-600">
                   {currentLanguage === "kh" ? group.province.nameKh : group.province.province_name}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {group.province.city}, {group.province.country}
-                </p>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   <p className="font-semibold text-sm">
                     {currentTexts.products || 'Products'} ({group.products.length}):

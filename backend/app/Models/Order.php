@@ -10,29 +10,26 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'buyer_id',
-        'address',
+        'user_id',
         'total_price',
-        'status',
+        'date',
+        'address',
+        'status'
+    ];
+
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-
-
-    public function product()
+    public function items()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
-
-    // App\Models\Order.php
-
-   public function items()
-{
-    return $this->hasMany(OrderItem::class);
-}
-
 }

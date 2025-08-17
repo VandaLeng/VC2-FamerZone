@@ -23,7 +23,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
-  const [nearbyRadius, setNearbyRadius] = useState(50);
+  const [nearbyRadius, setNearbyRadius] = useState(500); // Changed from 50 to 500 (All Cambodia)
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -66,7 +66,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       noProductsFound: "រកមិនឃើញផលិតផល",
       orderNow: "បញ្ជាទិញឥឡូវ",
       orderPlaced: "បានបញ្ជាទិញ",
-      orderSuccess: "បញ្ជាទិញបានជោគជ័យ! កសិករនឹងទាក់ទងអ្នកឆាប់ៗ",
+      // orderSuccess: "បញ្ជាទិញបានជោគជ័យ! កសិករនឹងទាក់ទងអ្នកឆាប់ៗ",
       inStock: "មានស្តុក",
       outOfStock: "អស់ស្តុក",
       from: "ពី",
@@ -119,7 +119,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       noProductsFound: "No products found",
       orderNow: "Order Now",
       orderPlaced: "Order Placed",
-      orderSuccess: "Order placed successfully! The farmer will contact you soon",
+      // orderSuccess: "Order placed successfully! The farmer will contact you soon",
       inStock: "In Stock",
       outOfStock: "Out of Stock",
       from: "From",
@@ -180,6 +180,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     setLocationError(null);
 
     try {
+      // First try browser geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
@@ -338,6 +339,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       });
     }
 
+    // Apply sorting
     switch (sortBy) {
       case "price-low":
         filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
@@ -409,7 +411,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     setSelectedCategory("all");
     setSearchQuery("");
     setPriceRange([0, 100]);
-    setNearbyRadius(50);
+    setNearbyRadius(500); // Changed from 50 to 500 (All Cambodia)
     setSortBy("popular");
   };
 
@@ -456,6 +458,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     }
   };
 
+  // Auto-get location on component mount
   useEffect(() => {
     getLocation();
   }, []);
@@ -501,12 +504,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 <>
                   <AlertCircle className="w-4 h-4" />
                   <span className="text-sm">{currentTexts.locationError}</span>
-                </>
-              )}
-              {fetchError && (
-                <>
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{fetchError}</span>
                 </>
               )}
               {userLocation && !locationLoading && (
@@ -622,7 +619,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
 
               <div className="absolute -top-4 -right-4 bg-white rounded-lg p-4 shadow-lg hero-stat">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-yellow-600">{userLocation ? `${nearbyRadius}km` : "∞"}</div>
+                  <div className="text-xl font-bold text-yellow-600">{userLocation ? (nearbyRadius === 500 ? "All" : `${nearbyRadius}km`) : "∞"}</div>
                   <div className="text-xs text-gray-600">Search Radius</div>
                 </div>
               </div>
@@ -657,7 +654,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 icon: Users,
               },
               {
-                number: provinces.length.toString(),
+                number: "25",
                 label: currentTexts.provinces,
                 color: "text-purple-700",
                 bg: "bg-purple-50",
@@ -853,7 +850,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              {currentTexts.nearbyFarmers} ({nearbyRadius}km)
+              {currentTexts.nearbyFarmers} ({nearbyRadius === 500 ? "All Cambodia" : `${nearbyRadius}km`})
             </h2>
             <div className="w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
           </div>
