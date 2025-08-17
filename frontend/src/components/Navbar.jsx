@@ -13,7 +13,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const { cartItems } = useContext(CartContext)
+ const { cartItems, setCartItems } = useContext(CartContext);
   const cartItemCount = cartItems.length
 
   const toggleMobileMenu = () => {
