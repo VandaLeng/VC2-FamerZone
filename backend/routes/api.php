@@ -14,6 +14,8 @@ use App\Http\Controllers\ProvinceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderItemController;
+use App\Models\Order;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +55,9 @@ Route::apiResource('categories', CategoryController::class);
 // Orders (public read access)
 Route::get('/orders', [OrderController::class, 'index']);
 Route::get('/orders/{order}', [OrderController::class, 'show']);
+
+// Order Items
+Route::apiResource('order-items', OrderItemController::class);
 
 // Provinces
 Route::prefix('provinces')->group(function () {
