@@ -13,7 +13,9 @@ class OrderItemController extends Controller
      */
     public function index()
     {
-        $orderItems = OrderItem::with(['order', 'item'])->paginate(10);
+        // Eager load relations 'order' and 'item'
+        $orderItems = OrderItem::with(['order', 'item'])->get();
+
         return response()->json($orderItems);
     }
 
@@ -22,6 +24,7 @@ class OrderItemController extends Controller
      */
     public function store(Request $request)
     {
+        //
     }
 
     /**
@@ -29,6 +32,7 @@ class OrderItemController extends Controller
      */
     public function show(OrderItem $orderItem)
     {
+        //
     }
 
     /**
@@ -36,6 +40,7 @@ class OrderItemController extends Controller
      */
     public function update(Request $request, OrderItem $orderItem)
     {
+        //
     }
 
     /**
@@ -43,5 +48,6 @@ class OrderItemController extends Controller
      */
     public function destroy(OrderItem $orderItem)
     {
+        //
     }
 }

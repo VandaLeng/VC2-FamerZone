@@ -59,6 +59,7 @@ Route::get('/orders/{order}', [OrderController::class, 'show']);
 // Order Items
 Route::apiResource('order-items', OrderItemController::class);
 
+
 // Provinces
 Route::prefix('provinces')->group(function () {
     Route::get('/', [ProvinceController::class, 'index']);
