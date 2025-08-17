@@ -173,26 +173,31 @@ const ProductManagement = () => {
       if (response.data.success) {
         // Process products to ensure proper image URLs
         const processedProducts = response.data.data.map(product => {
-          // Fix image URL construction
           let imageUrl = null;
           if (product.image) {
-            // Check if image already contains full URL
-            if (product.image.startsWith('http')) {
+            // If image is already a full URL and contains /items/
+            if (/^https?:\/\//.test(product.image) && product.image.includes('/items/')) {
               imageUrl = product.image;
             } else {
-              // Remove any leading slash or 'storage/' from the path
-              const cleanPath = product.image.replace(/^\/?(storage\/)?/, '');
-              imageUrl = `${API_BASE_URL}/storage/${cleanPath}`;
+              // Normalize path: remove leading slashes and known prefixes
+              let cleanPath = product.image.replace(/^\/?(public\/|storage\/|app\/public\/)?/, '');
+              // Only use images from items/ folder
+              if (cleanPath.startsWith('items/')) {
+                imageUrl = `${API_BASE_URL}/storage/${cleanPath}`;
+              } else {
+                imageUrl = null;
+              }
             }
           }
-          
+          // If imageUrl is not valid, use placeholder
+          if (!imageUrl) {
+            imageUrl = '/placeholder.svg?height=40&width=40';
+          }
           return {
             ...product,
             image: imageUrl
           };
         });
-        
-        console.log('Processed products with image URLs:', processedProducts);
         setProducts(processedProducts);
       }
     } catch (err) {
@@ -213,19 +218,32 @@ const ProductManagement = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "" || product.category?.id.toString() === filterCategory;
-    const matchesStatus = filterStatus === "" || product.status === filterStatus;
-    const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
-    return matchesSearch && matchesCategory && matchesStatus && matchesProvince;
-  });
+  // Only show products belonging to the current user, sorted by newest first
+  const filteredProducts = products
+    .filter((product) => {
+      if (!currentUser || String(product.user_id) !== String(currentUser.id)) {
+        return false;
+      }
+      const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = filterCategory === "" || product.category?.id?.toString() === filterCategory;
+      const matchesStatus = filterStatus === "" || product.status === filterStatus;
+      const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
+      return matchesSearch && matchesCategory && matchesStatus && matchesProvince;
+    })
+    .sort((a, b) => {
+      // Sort by createdAt descending (newest first)
+      const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+      const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
 
-  const totalProducts = products.length;
-  const activeProducts = products.filter((p) => p.status === "active").length;
-  const outOfStockProducts = products.filter((p) => p.stock === 0).length;
-  const totalRevenue = products.reduce((sum, p) => sum + (p.price * (p.orders || 0)), 0);
+  // Only calculate stats for current user's products
+  const myProducts = products.filter(p => currentUser && String(p.user_id) === String(currentUser.id));
+  const totalProducts = myProducts.length;
+  const activeProducts = myProducts.filter((p) => p.status === "active").length;
+  const outOfStockProducts = myProducts.filter((p) => p.stock === 0).length;
+  const totalRevenue = myProducts.reduce((sum, p) => sum + (p.price * (p.orders || 0)), 0);
 
   const toggleActionsMenu = (productId) => {
     setShowActionsMenu(showActionsMenu === productId ? null : productId);
