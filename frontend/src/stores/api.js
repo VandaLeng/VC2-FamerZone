@@ -164,6 +164,81 @@ export const addressesAPI = {
             }
         }).then((response) => response.data),
 };
+<<<<<<< HEAD
+=======
+
+// Profile and User API functions
+export const userAPI = {
+    // Get current user profile
+    getProfile: () => {
+        return axios.get(`${API_BASE_URL}/profile`, {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    // Update user profile
+    updateProfile: (data) => {
+        return axios.post(`${API_BASE_URL}/profile/update`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Update only profile image
+    updateProfileImage: (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        return axios.post(`${API_BASE_URL}/profile/update-image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Change password
+    changePassword: (passwordData) => {
+        return axios.post(`${API_BASE_URL}/change-password`, passwordData, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    }
+};
+
+// Request interceptor
+api.interceptors.request.use(
+    function(config) {
+        const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
+        console.log('API Request:', method, config.url, config.params);
+        return config;
+    },
+    function(error) {
+        console.error('API Request Error:', error);
+        return Promise.reject(error);
+    }
+);
+
+// Response interceptor
+api.interceptors.response.use(
+    function(response) {
+        console.log('API Response:', response.status, response.data);
+        return response;
+    },
+    function(error) {
+        if (error && error.response) {
+            console.error('API Response Error:', error.response.status, error.response.data);
+        } else {
+            console.error('API Error:', error.message);
+        }
+        return Promise.reject(error);
+    }
+);
+>>>>>>> feature/profile
 
 // ========== AUTH API ==========
 export function registerUser(userData) {
@@ -179,6 +254,8 @@ export function registerUser(userData) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
@@ -205,6 +282,8 @@ export function loginUser(credentials) {
                     role_id: data.user.role_id,
                     role: data.user.role,
                     roles: data.user.roles,
+                    image: data.user.image,
+                    image_url: data.user.image_url,
                 }));
             }
             return data;
