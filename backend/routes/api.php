@@ -131,3 +131,12 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
     Route::get('/buyer/orders', [BuyerController::class, 'orders']);
     Route::get('/buyer/orders/{id}', [BuyerController::class, 'showOrder']);
 });
+
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::get('/customers/{id}', [CustomerController::class, 'show']);
+    Route::put('/customers/{id}', [CustomerController::class, 'update']);
+    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+});
