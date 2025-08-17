@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useContext } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { userAPI } from "../stores/api" // Import your API
+import { CartContext } from "../services/cartContext";
 import "../styles/NavbarStyle.css" 
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout, setUserData }) {
@@ -12,7 +13,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const { cartItems } = useContext(CartContext)
+ const { cartItems, setCartItems } = useContext(CartContext);
   const cartItemCount = cartItems.length
 
   const toggleMobileMenu = () => {
