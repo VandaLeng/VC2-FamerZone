@@ -7,6 +7,7 @@ const FarmerSidebar = ({
   handleLogout,
   isCollapsed,
   setIsCollapsed,
+  notificationCount = 0,
 }) => {
   const location = useLocation();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
@@ -96,7 +97,7 @@ const FarmerSidebar = ({
       {/* Bottom Menu Items */}
       <div className="p-2 space-y-1 border-t border-gray-100">
         {[
-          { id: "notifications", label: "ការជូនដំណឹង", icon: Bell, path: "/farmer/notifications", badge: "2" },
+          { id: "notifications", label: "ការជូនដំណឹង", icon: Bell, path: "/farmer/notifications", badge: notificationCount },
           { id: "settings", label: "ការកំណត់", icon: Settings, path: "/farmer/settings" },
           { id: "logout", label: "ចាកចេញ", icon: LogOut, path: "/", onClick: handleLogout, isButton: true },
         ].map((item) => {
@@ -117,7 +118,7 @@ const FarmerSidebar = ({
             >
               <Icon size={20} className={isActive ? "text-green-800" : isLogout ? "text-red-500" : "text-gray-400"} />
               {!collapsed && <span className="text-base font-medium flex-1">{item.label}</span>}
-              {item.badge && !collapsed && (
+              {item.badge > 0 && !collapsed && (
                 <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600">{item.badge}</span>
               )}
             </button>
@@ -131,7 +132,7 @@ const FarmerSidebar = ({
             >
               <Icon size={20} className={isActive ? "text-green-800" : "text-gray-400"} />
               {!collapsed && <span className="text-base font-medium flex-1">{item.label}</span>}
-              {item.badge && !collapsed && (
+              {item.badge > 0 && !collapsed && (
                 <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600">{item.badge}</span>
               )}
             </Link>
