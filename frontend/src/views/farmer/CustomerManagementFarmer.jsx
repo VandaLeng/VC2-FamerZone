@@ -7,87 +7,33 @@ const FarmerCustomerManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState(null);
-
-  // Sample customer data
-  const sampleCustomers = [
-    {
-      id: 'CUST-001',
-      name: 'Sophea Chan',
-      email: 'sophea@email.com',
-      phone: '+855 12 345 678',
-      location: 'ភ្នំពេញ, កម្ពុជា',
-      joinDate: '2023-08-15',
-      totalOrders: 12,
-      totalSpent: 145.50,
-      lastOrderDate: '2024-01-15',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.5
-    },
-    {
-      id: 'CUST-002',
-      name: 'David Kim',
-      email: 'david@email.com',
-      phone: '+855 87 654 321',
-      location: 'សៀមរាប, កម្ពុជា',
-      joinDate: '2023-10-22',
-      totalOrders: 8,
-      totalSpent: 89.20,
-      lastOrderDate: '2024-01-14',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 5.0
-    },
-    {
-      id: 'CUST-003',
-      name: 'Maria Santos',
-      email: 'maria@email.com',
-      phone: '+855 96 789 012',
-      location: 'បាត់ដំបង, កម្ពុជា',
-      joinDate: '2023-06-10',
-      totalOrders: 25,
-      totalSpent: 320.75,
-      lastOrderDate: '2024-01-13',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.8
-    },
-    {
-      id: 'CUST-004',
-      name: 'John Wilson',
-      email: 'john@email.com',
-      phone: '+855 77 123 456',
-      location: 'កំពត, កម្ពុជា',
-      joinDate: '2023-12-05',
-      totalOrders: 3,
-      totalSpent: 28.90,
-      lastOrderDate: '2023-12-20',
-      status: 'inactive',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.2
-    },
-    {
-      id: 'CUST-005',
-      name: 'Lisa Anderson',
-      email: 'lisa@email.com',
-      phone: '+855 88 987 654',
-      location: 'កែប, កម្ពុជា',
-      joinDate: '2023-11-18',
-      totalOrders: 1,
-      totalSpent: 15.60,
-      lastOrderDate: '2023-11-20',
-      status: 'blocked',
-      avatar: '/api/placeholder/40/40',
-      rating: 3.0
-    }
-  ];
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setCustomers(sampleCustomers);
-    setFilteredCustomers(sampleCustomers);
+    const fetchCustomers = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/customers');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch customers: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Fetched customers:', data); // Debug log
+        setCustomers(data);
+        setFilteredCustomers(data);
+      } catch (error) {
+        console.error('Error fetching customers:', error);
+        setError('មិនអាចទាញទិន្នន័យអតិថិជនបានទេ។ សូមពិនិត្យការតភ្ជាប់។');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCustomers();
   }, []);
 
-  // Filter customers based on status and search term
   useEffect(() => {
     let filtered = customers;
 
@@ -100,7 +46,7 @@ const FarmerCustomerManagement = () => {
         customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         customer.phone.includes(searchTerm) ||
-        customer.location.toLowerCase().includes(searchTerm.toLowerCase())
+        (customer.location && customer.location.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -116,26 +62,41 @@ const FarmerCustomerManagement = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleCustomerAction = (customerId, action) => {
-    if (action === 'block') {
+  const handleCustomerAction = async (customerId, action) => {
+    try {
+      const response = await fetch(`/api/customers/${customerId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: action === 'block' ? 'blocked' : 'active',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update customer status');
+      }
+
+      const updatedCustomer = await response.json();
       setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'blocked' } : customer
+        customer.id === customerId ? updatedCustomer : customer
       ));
-    } else if (action === 'unblock') {
-      setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'active' } : customer
-      ));
+      setActiveDropdown(null);
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      setError('មិនអាចធ្វើបច្ចុប្បន្នភាពស្ថានភាពអតិថិជនបានទេ។');
     }
-    setActiveDropdown(null);
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('km-KH');
   };
 
   const formatCurrency = (amount) => {
-    return `$${amount.toFixed(2)}`;
+    return `$${parseFloat(amount).toFixed(2)}`;
   };
 
   const renderStars = (rating) => {
@@ -193,7 +154,15 @@ const FarmerCustomerManagement = () => {
 
       {/* Content */}
       <div className="mt-4 sm:mt-6">
-        {filteredCustomers.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-base sm:text-lg">កំពុងផ្ទុក...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 text-base sm:text-lg">{error}</p>
+          </div>
+        ) : filteredCustomers.length === 0 ? (
           <div className="text-center py-12">
             <User className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500 text-base sm:text-lg">រកមិនឃើញអតិថិជន</p>
@@ -222,7 +191,7 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-3">
                       <div className="flex items-center space-x-2 sm:space-x-3">
                         <img
-                          src={customer.avatar}
+                          src={customer.avatar || '/api/placeholder/40/40'}
                           alt={customer.name}
                           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200"
                         />
@@ -230,7 +199,7 @@ const FarmerCustomerManagement = () => {
                           <div className="font-medium text-gray-900 text-sm sm:text-base">{customer.name}</div>
                           <div className="text-[10px] sm:text-xs text-gray-500 flex items-center mt-1">
                             <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
-                            ចាប់ពី {formatDate(customer.joinDate)}
+                            ចាប់ពី {formatDate(customer.join_date)}
                           </div>
                           <div className="flex items-center mt-1">
                             {renderStars(customer.rating)}
@@ -258,10 +227,10 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-2">
                       <div className="flex items-center text-[10px] sm:text-sm text-gray-600">
                         <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-gray-400" />
-                        <span className="truncate">{customer.location}</span>
+                        <span className="truncate">{customer.location || 'N/A'}</span>
                       </div>
                       <div className="text-[10px] sm:text-xs text-gray-500 mt-1">
-                        បញ្ជាទិញចុងក្រោយ: {formatDate(customer.lastOrderDate)}
+                        បញ្ជាទិញចុងក្រោយ: {formatDate(customer.last_order_date)}
                       </div>
                     </div>
 
@@ -269,13 +238,13 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-2 sm:col-span-1">
                       <div className="flex items-center">
                         <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 mr-1 sm:mr-2" />
-                        <span className="font-medium text-[#2D5016] text-[10px] sm:text-sm">{customer.totalOrders}</span>
+                        <span className="font-medium text-[#2D5016] text-[10px] sm:text-sm">{customer.total_orders}</span>
                       </div>
                     </div>
 
                     {/* Total Spent */}
                     <div className="col-span-2 sm:col-span-1">
-                      <span className="font-semibold text-[#2D5016] text-[10px] sm:text-sm">{formatCurrency(customer.totalSpent)}</span>
+                      <span className="font-semibold text-[#2D5016] text-[10px] sm:text-sm">{formatCurrency(customer.total_spent)}</span>
                     </div>
 
                     {/* Status */}
@@ -336,7 +305,7 @@ const FarmerCustomerManagement = () => {
                                   className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-red-700 hover:bg-red-50"
                                 >
                                   <UserX className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                                  បិទអតိថិជន
+                                  បិទអតិថិជន
                                 </button>
                               )}
                               
