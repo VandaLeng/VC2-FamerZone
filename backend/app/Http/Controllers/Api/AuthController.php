@@ -76,4 +76,43 @@ class AuthController extends Controller
         }
         return response()->json(['error' => 'No authenticated user'], 401);
     }
+
+    public function updateProfile(Request $request)
+{
+    $user = $request->user();
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'phone' => 'nullable|string|max:20',
+        'province' => 'nullable|string|max:255',
+    ]);
+
+    $user->update($validated);
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'data' => $user
+    ]);
+}
+
+public function updateImage(Request $request)
+{
+    $user = $request->user();
+
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
+
+    $path = $request->file('image')->store('profiles', 'public');
+
+    $user->image = '/storage/' . $path;
+    $user->save();
+
+    return response()->json([
+        'message' => 'Profile image updated successfully',
+        'image_url' => $user->image
+    ]);
+}
+
 }

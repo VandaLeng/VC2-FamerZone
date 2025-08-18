@@ -14,6 +14,8 @@ use App\Http\Controllers\ProvinceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderItemController;
+use App\Models\Order;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +55,10 @@ Route::apiResource('categories', CategoryController::class);
 // Orders (public read access)
 Route::get('/orders', [OrderController::class, 'index']);
 Route::get('/orders/{order}', [OrderController::class, 'show']);
+
+// Order Items
+Route::apiResource('order-items', OrderItemController::class);
+
 
 // Provinces
 Route::prefix('provinces')->group(function () {
@@ -130,4 +136,13 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
     // Buyer specific orders
     Route::get('/buyer/orders', [BuyerController::class, 'orders']);
     Route::get('/buyer/orders/{id}', [BuyerController::class, 'showOrder']);
+});
+
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::get('/customers/{id}', [CustomerController::class, 'show']);
+    Route::put('/customers/{id}', [CustomerController::class, 'update']);
+    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 });
