@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MoreVertical, User, Phone, Mail, MapPin, Calendar, ShoppingBag, Star, MessageCircle, Eye, UserX, Archive } from 'lucide-react';
 import axios from 'axios';
@@ -15,21 +16,40 @@ const FarmerCustomerManagement = () => {
   const fetchCustomers = async () => {
     try {
       setError(null);
-      const response = await axios.get('/api/customers');
-      const data = response.data.data.map(customer => ({
+      const response = await axios.get('http://localhost:8000/api/customers', {
+        headers: {
+          'Accept': 'application/json',
+          // Add Authorization header if needed, e.g., 'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log('API Response:', response.data); // Log the response for debugging
+      const data = response.data.data || response.data; // Fallback if no 'data' key
+      const mappedData = data.map(customer => ({
         ...customer,
         id: customer.id,
         joinDate: customer.join_date,
-        totalOrders: customer.total_orders,
-        totalSpent: customer.total_spent,
+        totalOrders: customer.total_orders || 0,
+        totalSpent: customer.total_spent || 0,
         lastOrderDate: customer.last_order_date,
-        avatar: customer.avatar_url,
+        avatar: customer.avatar || customer.avatar_url || '/api/placeholder/40/40', // Handle both avatar fields
+        name: customer.name || 'Unknown', // Fallback for missing name
+        email: customer.email || 'N/A',
+        phone: customer.phone || 'N/A',
+        location: customer.location || 'N/A',
+        status: customer.status || 'active',
+        rating: customer.rating || 0,
       }));
-      setCustomers(data);
-      setFilteredCustomers(data);
+      setCustomers(mappedData);
+      setFilteredCustomers(mappedData);
     } catch (error) {
-      setError('Failed to fetch customers. Please try again.');
-      console.error('Error fetching customers:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to fetch customers. Please try again.';
+      setError(errorMessage);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers,
+      });
     }
   };
 
@@ -70,22 +90,24 @@ const FarmerCustomerManagement = () => {
       setError(null);
       if (action === 'block' || action === 'unblock') {
         const status = action === 'block' ? 'blocked' : 'active';
-        await axios.put(`/api/customers/${customerId}`, { status });
+        await axios.put(`http://localhost:8000/api/customers/${customerId}`, { status });
         fetchCustomers();
       } else if (action === 'delete') {
         if (window.confirm('Are you sure you want to delete this customer?')) {
-          await axios.delete(`/api/customers/${customerId}`);
+          await axios.delete(`http://localhost:8000/api/customers/${customerId}`);
           fetchCustomers();
         }
       } else if (action === 'viewProfile') {
-        const response = await axios.get(`/api/customers/${customerId}`);
-        alert(`Profile for ${response.data.data.name}:\nEmail: ${response.data.data.email}\nPhone: ${response.data.data.phone}\nLocation: ${response.data.data.location || 'N/A'}\nJoined: ${formatDate(response.data.data.join_date)}\nStatus: ${response.data.data.status}`);
+        const response = await axios.get(`http://localhost:8000/api/customers/${customerId}`);
+        const customer = response.data.data || response.data;
+        alert(`Profile for ${customer.name || 'N/A'}:\nEmail: ${customer.email || 'N/A'}\nPhone: ${customer.phone || 'N/A'}\nLocation: ${customer.location || 'N/A'}\nJoined: ${formatDate(customer.join_date)}\nStatus: ${customer.status || 'N/A'}`);
       } else if (action === 'viewOrders') {
-        const response = await axios.get(`/api/customers/${customerId}/orders`);
-        alert(`Orders for ${response.data.data.name}:\n${response.data.data.orders?.length || 0} orders found.`);
+        const response = await axios.get(`http://localhost:8000/api/customers/${customerId}/orders`);
+        const customer = response.data.data || response.data;
+        alert(`Orders for ${customer.name || 'N/A'}:\n${customer.orders?.length || 0} orders found.`);
       } else if (action === 'sendMessage') {
         if (message) {
-          await axios.post(`/api/customers/${customerId}/message`, { message });
+          await axios.post(`http://localhost:8000/api/customers/${customerId}/message`, { message });
           alert('Message sent successfully!');
           setMessage('');
           setMessageModal(null);
@@ -95,7 +117,8 @@ const FarmerCustomerManagement = () => {
       }
       setActiveDropdown(null);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to perform action. Please try again.');
+      const errorMessage = error.response?.data?.message || 'Failed to perform action. Please try again.';
+      setError(errorMessage);
       console.error('Error performing action:', error);
     }
   };
@@ -232,19 +255,20 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-3">
                       <div className="flex items-center space-x-2 sm:space-x-3">
                         <img
-                          src={customer.avatar || '/api/placeholder/40/40'}
-                          alt={customer.name || 'Customer'}
+                          src={customer.avatar}
+                          alt={customer.name}
                           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200"
+                          onError={(e) => { e.target.src = '/api/placeholder/40/40'; }} // Fallback on image error
                         />
                         <div>
-                          <div className="font-medium text-gray-900 text-sm sm:text-base">{customer.name || 'N/A'}</div>
+                          <div className="font-medium text-gray-900 text-sm sm:text-base">{customer.name}</div>
                           <div className="text-[10px] sm:text-xs text-gray-500 flex items-center mt-1">
                             <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
                             ចាប់ពី {formatDate(customer.joinDate)}
                           </div>
                           <div className="flex items-center mt-1">
                             {renderStars(customer.rating)}
-                            <span className="text-[10px] sm:text-xs text-gray-500 ml-1">({customer.rating || 0})</span>
+                            <span className="text-[10px] sm:text-xs text-gray-500 ml-1">({customer.rating})</span>
                           </div>
                         </div>
                       </div>
@@ -255,11 +279,11 @@ const FarmerCustomerManagement = () => {
                       <div className="space-y-1">
                         <div className="flex items-center text-[10px] sm:text-sm text-gray-600">
                           <Mail className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 sm:mr-2" />
-                          <span className="truncate">{customer.email || 'N/A'}</span>
+                          <span className="truncate">{customer.email}</span>
                         </div>
                         <div className="flex items-center text-[10px] sm:text-sm text-gray-600">
                           <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 sm:mr-2" />
-                          <span>{customer.phone || 'N/A'}</span>
+                          <span>{customer.phone}</span>
                         </div>
                       </div>
                     </div>
@@ -268,7 +292,7 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-2">
                       <div className="flex items-center text-[10px] sm:text-sm text-gray-600">
                         <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-gray-400" />
-                        <span className="truncate">{customer.location || 'N/A'}</span>
+                        <span className="truncate">{customer.location}</span>
                       </div>
                       <div className="text-[10px] sm:text-xs text-gray-500 mt-1">
                         បញ្ជាទិញចុងក្រោយ: {formatDate(customer.lastOrderDate)}
@@ -279,7 +303,7 @@ const FarmerCustomerManagement = () => {
                     <div className="col-span-2 sm:col-span-1">
                       <div className="flex items-center">
                         <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 mr-1 sm:mr-2" />
-                        <span className="font-medium text-[#2D5016] text-[10px] sm:text-sm">{customer.totalOrders || 0}</span>
+                        <span className="font-medium text-[#2D5016] text-[10px] sm:text-sm">{customer.totalOrders}</span>
                       </div>
                     </div>
 
