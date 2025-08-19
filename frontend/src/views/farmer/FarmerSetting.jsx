@@ -1,120 +1,92 @@
 import React, { useState, useEffect } from "react";
 import { Camera, User, Save, Edit } from "lucide-react";
-import api from "axios"; // ✅ use our axios instance
+import axios from "axios";
 
-const FarmerProfileSettings = () => {
-  const [profileData, setProfileData] = useState({
+const FarmerSetting = () => {
+  const [profile, setProfile] = useState({
     name: "",
     email: "",
     phone: "",
-    province: "",
-    profilePhoto: null,
-    role: "",
+    province_id: "",
+    image: null,
   });
   const [provinces, setProvinces] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    fetchProfileData();
+    fetchProfile();
     fetchProvinces();
   }, []);
 
-  // ✅ Get farmer profile
-  const fetchProfileData = async () => {
+  const fetchProfile = async () => {
     try {
-      const response = await api.get("/api/profile");
-      const userData = response.data.data;
-
-      if (userData.role !== "farmer") {
-        setError("អ្នកមិនមែនជាកសិករ ទេ");
-        return;
+      const res = await axios.get("/api/profile"); 
+      if (res.data && res.data.user) {
+        setProfile(res.data.user);
+      } else {
+        setError("Profile data is missing");
       }
-
-      setProfileData({
-        name: userData.name || "",
-        email: userData.email || "",
-        phone: userData.phone || "",
-        province: userData.province || "",
-        profilePhoto: userData.image || null,
-        role: userData.role,
-      });
-      setError(null);
     } catch (err) {
-      setError(
-        err.response?.status === 401
-          ? "មិនមានសិទ្ធិ៖ សូមចូលគណនីម្តងទៀត"
-          : err.response?.data?.message ||
-              "បរាជ័យក្នុងការទាញយកទិន្នន័យប្រវត្តិរូប"
-      );
+      console.error(err);
+      setError(err.response?.data?.message || "Failed to load profile");
     }
   };
 
-  // ✅ Get provinces list
   const fetchProvinces = async () => {
     try {
-      const response = await api.get("/api/provinces");
-      setProvinces(response.data.data || []);
+      const res = await axios.get("/api/provinces");
+      setProvinces(res.data.data || []);
     } catch (err) {
-      console.error("Failed to fetch provinces", err);
+      console.error("Failed to load provinces", err);
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field, value) => {
+    setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ✅ Upload photo
-  const handlePhotoUpload = async (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
+    const formData = new FormData();
+    formData.append("image", file);
 
-      const response = await api.post("/api/profile/image", formData, {
+    try {
+      const res = await axios.post("/api/profile/image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      setProfileData((prev) => ({
-        ...prev,
-        profilePhoto: response.data.image_url,
-      }));
-      setSuccess("រូបថតបានផ្ទុកជោគជ័យ");
-      setError(null);
+      setProfile((prev) => ({ ...prev, image: res.data.image_url }));
+      setSuccess("Image updated successfully");
+      setError("");
     } catch (err) {
-      setError(err.response?.data?.message || "បរាជ័យក្នុងការផ្ទុករូបថត");
+      setError(err.response?.data?.message || "Failed to upload image");
     }
   };
 
-  // ✅ Save changes
   const handleSave = async () => {
     try {
-      await api.put("/api/profile", {
-        name: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        province: profileData.province,
+      await axios.put("/api/profile", {
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        province_id: profile.province_id,
       });
-      setSuccess("ប្រវត្តិរូបបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ");
+      setSuccess("Profile updated successfully");
       setIsEditing(false);
-      setError(null);
-      fetchProfileData();
+      fetchProfile();
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប"
-      );
+      setError(err.response?.data?.message || "Failed to update profile");
     }
   };
 
   const handleCancel = () => {
-    fetchProfileData();
+    fetchProfile();
     setIsEditing(false);
-    setError(null);
-    setSuccess(null);
+    setError("");
+    setSuccess("");
   };
 
   return (
@@ -122,38 +94,24 @@ const FarmerProfileSettings = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-green-600 text-white p-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-2xl font-bold mb-2">
-            ការកំណត់ប្រវត្តិរូបកសិករ
-          </h1>
-          <p className="text-lg">គ្រប់គ្រងព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នក</p>
+          <h1 className="text-2xl font-bold mb-2">កំណត់ប្រវត្តិរូបកសិករ</h1>
+          <p>គ្រប់គ្រងព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នក</p>
         </div>
 
         {/* Alerts */}
-        {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-4">
-            {success}
-          </div>
-        )}
+        {error && <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">{error}</div>}
+        {success && <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-4">{success}</div>}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Profile Photo */}
+          {/* Profile Image */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4 flex items-center text-green-600">
-              <Camera className="w-5 h-5 mr-2" /> រូបថតប្រវត្តិរូប
+              <Camera className="w-5 h-5 mr-2" /> រូបថត
             </h3>
             <div className="text-center">
               <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-2 border-green-600">
-                {profileData.profilePhoto ? (
-                  <img
-                    src={profileData.profilePhoto}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
+                {profile.image ? (
+                  <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
                     <User className="w-10 h-10 text-gray-500" />
@@ -161,14 +119,9 @@ const FarmerProfileSettings = () => {
                 )}
               </div>
               {isEditing && (
-                <label className="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+                <label className="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
                   ផ្ទុករូបថត
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                  />
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
               )}
             </div>
@@ -183,85 +136,59 @@ const FarmerProfileSettings = () => {
               {["name", "email", "phone"].map((field) => (
                 <div key={field}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {field === "name" && "ឈ្មោះពេញ"}
-                    {field === "email" && "អ៊ីមែល"}
-                    {field === "phone" && "លេខទូរស័ព្ទ"}
+                    {field === "name" ? "ឈ្មោះពេញ" : field === "email" ? "អ៊ីមែល" : "លេខទូរស័ព្ទ"}
                   </label>
                   {isEditing ? (
                     <input
                       type={field === "email" ? "email" : "text"}
-                      value={profileData[field]}
-                      onChange={(e) =>
-                        handleInputChange(field, e.target.value)
-                      }
-                      placeholder={
-                        field === "name"
-                          ? "បញ្ចូលឈ្មោះពេញ"
-                          : field === "email"
-                          ? "បញ្ចូលអ៊ីមែល"
-                          : "បញ្ចូលលេខទូរស័ព្ទ"
-                      }
+                      value={profile[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
                       className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   ) : (
-                    <p className="p-2 bg-gray-100 rounded-lg">
-                      {profileData[field] || "មិនបានផ្តល់"}
-                    </p>
+                    <p className="p-2 bg-gray-100 rounded-lg">{profile[field] || "មិនបានផ្តល់"}</p>
                   )}
                 </div>
               ))}
 
-              {/* Province Dropdown */}
+              {/* Province */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ខេត្ត/ទីក្រុង
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">ខេត្ត/ទីក្រុង</label>
                 {isEditing ? (
                   <select
-                    value={profileData.province}
-                    onChange={(e) =>
-                      handleInputChange("province", e.target.value)
-                    }
+                    value={profile.province_id}
+                    onChange={(e) => handleChange("province_id", e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">-- ជ្រើសរើសខេត្ត --</option>
                     {provinces.map((prov) => (
-                      <option key={prov.id} value={prov.name}>
+                      <option key={prov.id} value={prov.id}>
                         {prov.name}
                       </option>
                     ))}
                   </select>
                 ) : (
                   <p className="p-2 bg-gray-100 rounded-lg">
-                    {profileData.province || "មិនបានផ្តល់"}
+                    {provinces.find((p) => p.id === profile.province_id)?.name || "មិនបានផ្តល់"}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Action buttons */}
+            {/* Buttons */}
             <div className="flex justify-end gap-4 mt-6">
               {isEditing ? (
                 <>
-                  <button
-                    onClick={handleCancel}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
+                  <button onClick={handleCancel} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                     បោះបង់
                   </button>
-                  <button
-                    onClick={handleSave}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center"
-                  >
+                  <button onClick={handleSave} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
                     <Save className="w-5 h-5 mr-2" />
                     រក្សាទុក
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center"
-                >
+                <button onClick={() => setIsEditing(true)} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
                   <Edit className="w-5 h-5 mr-2" />
                   កែប្រែ
                 </button>
@@ -274,4 +201,4 @@ const FarmerProfileSettings = () => {
   );
 };
 
-export default FarmerProfileSettings;
+export default FarmerSetting;

@@ -152,4 +152,8 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
     // Provinces
-    Route::get('/provinces', [ProvinceController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [FarmerProfileController::class, 'show']);
+    Route::put('/profile', [FarmerProfileController::class, 'update']);
+    Route::post('/profile/image', [FarmerProfileController::class, 'uploadImage']);
+});
