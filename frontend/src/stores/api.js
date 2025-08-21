@@ -1,3 +1,5 @@
+// File: api.js
+
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -21,6 +23,56 @@ const getAuthToken = () => {
 const getAuthHeaders = () => {
     const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// ========== PROFILE API ==========
+export const profileAPI = {
+    // Get current user profile
+    getProfile: () => {
+        return api.get('/profile', {
+            headers: getAuthHeaders()
+        }).then((response) => response.data);
+    },
+
+    // Update user profile
+    updateProfile: (data) => {
+        return api.put('/profile', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Update profile image
+    updateProfileImage: (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        return api.post('/profile/image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Change password
+    changePassword: (passwordData) => {
+        return api.post('/change-password', passwordData, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    }
+};
+
+// ========== PROVINCES API ==========
+export const provincesAPI = {
+    getAll: () => {
+        return api.get('/provinces').then((response) => response.data);
+    }
 };
 
 // ========== VIDEO API ==========
@@ -165,46 +217,26 @@ export const addressesAPI = {
         }).then((response) => response.data),
 };
 
-// Profile and User API functions
+// Profile and User API functions (keep for backward compatibility)
 export const userAPI = {
     // Get current user profile
     getProfile: () => {
-        return axios.get(`${API_BASE_URL}/profile`, {
-            headers: getAuthHeaders()
-        }).then((response) => response.data);
+        return profileAPI.getProfile();
     },
 
     // Update user profile
     updateProfile: (data) => {
-        return axios.post(`${API_BASE_URL}/profile/update`, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                ...getAuthHeaders()
-            }
-        }).then((response) => response.data);
+        return profileAPI.updateProfile(data);
     },
 
     // Update only profile image
     updateProfileImage: (imageFile) => {
-        const formData = new FormData();
-        formData.append('image', imageFile);
-        
-        return axios.post(`${API_BASE_URL}/profile/update-image`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                ...getAuthHeaders()
-            }
-        }).then((response) => response.data);
+        return profileAPI.updateProfileImage(imageFile);
     },
 
     // Change password
     changePassword: (passwordData) => {
-        return axios.post(`${API_BASE_URL}/change-password`, passwordData, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders()
-            }
-        }).then((response) => response.data);
+        return profileAPI.changePassword(passwordData);
     }
 };
 
@@ -230,6 +262,14 @@ api.interceptors.response.use(
     function(error) {
         if (error && error.response) {
             console.error('API Response Error:', error.response.status, error.response.data);
+
+            // Handle 401 Unauthorized
+            if (error.response.status === 401) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_data');
+                // Redirect to login if needed
+                window.location.href = '/login';
+            }
         } else {
             console.error('API Error:', error.message);
         }
@@ -244,23 +284,37 @@ export function registerUser(userData) {
             const data = response.data;
             if (data.access_token) {
                 localStorage.setItem('auth_token', data.access_token);
-                localStorage.setItem('user_data', JSON.stringify({
+
+                // Store user data with proper role information
+                const userDataToStore = {
                     id: data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     role_id: data.user.role_id,
-                    role: data.user.role,
-                    roles: data.user.roles,
+                    role: data.user.role || (data.user.roles && data.user.roles.length > 0 ? data.user.roles[0].name : userData.role),
+                    roles: data.user.roles || [],
+                    phone: data.user.phone,
+                    province_id: data.user.province_id,
+                    province: data.user.province ? data.user.province.name : null,
                     image: data.user.image,
                     image_url: data.user.image_url,
-                }));
+                };
+
+                localStorage.setItem('user_data', JSON.stringify(userDataToStore));
+                console.log('✅ User registered and data stored:', userDataToStore);
             }
             return data;
         })
         .catch(function(error) {
             let message = 'Registration failed';
-            if (error.response && error.response.data && error.response.data.message) {
-                message = error.response.data.message;
+            if (error.response && error.response.data) {
+                if (error.response.data.message) {
+                    message = error.response.data.message;
+                } else if (error.response.data.errors) {
+                    const errors = error.response.data.errors;
+                    const firstError = Object.values(errors)[0];
+                    message = Array.isArray(firstError) ? firstError[0] : firstError;
+                }
             }
             throw new Error(message);
         });
@@ -272,23 +326,35 @@ export function loginUser(credentials) {
             const data = response.data;
             if (data.access_token) {
                 localStorage.setItem('auth_token', data.access_token);
-                localStorage.setItem('user_data', JSON.stringify({
+
+                // Store user data with proper role information
+                const userDataToStore = {
                     id: data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     role_id: data.user.role_id,
-                    role: data.user.role,
-                    roles: data.user.roles,
+                    role: data.user.role || (data.user.roles && data.user.roles.length > 0 ? data.user.roles[0].name : null),
+                    roles: data.user.roles || [],
+                    phone: data.user.phone,
+                    province_id: data.user.province_id,
+                    province: data.user.province ? data.user.province.name : null,
                     image: data.user.image,
                     image_url: data.user.image_url,
-                }));
+                };
+
+                localStorage.setItem('user_data', JSON.stringify(userDataToStore));
+                console.log('✅ User logged in and data stored:', userDataToStore);
             }
             return data;
         })
         .catch(function(error) {
             let message = 'Login failed';
-            if (error.response && error.response.data && error.response.data.error) {
-                message = error.response.data.error;
+            if (error.response && error.response.data) {
+                if (error.response.data.error) {
+                    message = error.response.data.error;
+                } else if (error.response.data.message) {
+                    message = error.response.data.message;
+                }
             }
             throw new Error(message);
         });

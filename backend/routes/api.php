@@ -10,9 +10,7 @@ use App\Http\Controllers\API\BuyerController;
 use App\Http\Controllers\API\VideoProductController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\OrderController;
-// use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\Api\ProvinceController;
-
 use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -62,20 +60,21 @@ Route::get('/orders/{order}', [OrderController::class, 'show']);
 // Order Items
 Route::apiResource('order-items', OrderItemController::class);
 
-
 // Provinces
 Route::prefix('provinces')->group(function () {
     Route::get('/', [ProvinceController::class, 'index']);
     Route::get('/{id}', [ProvinceController::class, 'show']);
 });
-// Route::get('/provinces', [ProvinceController::class, 'index']);
 
 // Authenticated User Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    
+    // ✅ Profile Management Routes
+    Route::get('/profile', [UserController::class, 'getProfile']);
     Route::put('/profile', [UserController::class, 'updateProfile']);
     Route::post('/profile/image', [UserController::class, 'updateImage']);
-    Route::post('/users/change-password', [UserController::class, 'changePassword']);
+    Route::post('/change-password', [UserController::class, 'changePassword']);
     
     // Orders for authenticated users
     Route::post('/orders', [OrderController::class, 'store']);
@@ -142,14 +141,9 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
     Route::get('/buyer/orders/{id}', [BuyerController::class, 'showOrder']);
 });
 
-
-
-    // Customers
-    Route::get('/customers', [CustomerController::class, 'index']);
-    Route::post('/customers', [CustomerController::class, 'store']);
-    Route::get('/customers/{id}', [CustomerController::class, 'show']);
-    Route::put('/customers/{id}', [CustomerController::class, 'update']);
-    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
-
-    // Provinces
-    Route::get('/provinces', [ProvinceController::class, 'index']);
+// Customers
+Route::get('/customers', [CustomerController::class, 'index']);
+Route::post('/customers', [CustomerController::class, 'store']);
+Route::get('/customers/{id}', [CustomerController::class, 'show']);
+Route::put('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
