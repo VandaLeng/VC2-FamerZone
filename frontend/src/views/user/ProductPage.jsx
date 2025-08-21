@@ -180,6 +180,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     setLocationError(null);
 
     try {
+      // First try browser geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
@@ -338,6 +339,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
       });
     }
 
+    // Apply sorting
     switch (sortBy) {
       case "price-low":
         filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
@@ -456,6 +458,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
     }
   };
 
+  // Auto-get location on component mount
   useEffect(() => {
     getLocation();
   }, []);
@@ -501,12 +504,6 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 <>
                   <AlertCircle className="w-4 h-4" />
                   <span className="text-sm">{currentTexts.locationError}</span>
-                </>
-              )}
-              {fetchError && (
-                <>
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{fetchError}</span>
                 </>
               )}
               {userLocation && !locationLoading && (
@@ -657,7 +654,7 @@ export default function ProductsPage({ currentLanguage = "en" }) {
                 icon: Users,
               },
               {
-                number: provinces.length.toString(),
+                number: "25",
                 label: currentTexts.provinces,
                 color: "text-purple-700",
                 bg: "bg-purple-50",

@@ -23,6 +23,7 @@ import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
+import VideoProductManagement from "./views/farmer/VideoProductManagement";
 // Api
 import { logoutUser } from "./stores/api";
 
@@ -99,6 +100,7 @@ function App() {
             <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
             <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
             <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
+            <Route path="/farmer/video-product" element={<VideoProductManagement currentLanguage={currentLanguage} />} />
           </Routes>
         </FarmerLayout>
       </ProductProvider>

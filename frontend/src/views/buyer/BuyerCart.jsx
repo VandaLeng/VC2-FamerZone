@@ -14,7 +14,7 @@ function BuyerCart({ currentLanguage = "en" }) {
       total: "សរុប",
       remove: "លុប",
       clearCart: "សម្អាតរទេះ",
-      checkout: "បន្តទៅបង់ប្រាក់",
+      checkout: "ដាក់បញ្ជាទិញ",
       backToShop: "ត្រលប់ទៅទិញទំនិញ",
       itemsInCart: (count) => `អ្នកមាន <span class="font-semibold text-green-600">${count}</span> ធាតុក្នុងរទេះរបស់អ្នក`,
       emptyCartPrompt: "សូមបន្ថែមទំនិញទៅក្នុងរទេះរបស់អ្នក",

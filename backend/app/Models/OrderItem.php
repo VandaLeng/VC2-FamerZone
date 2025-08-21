@@ -9,18 +9,18 @@ class OrderItem extends Model
 {
     use HasFactory;
 
+    protected $table = 'order_item'; // Explicitly set the table name
+
     protected $fillable = [
         'order_id',
         'item_id',
         'quantity',
         'price',
-        'subtotal',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
         'price' => 'decimal:2',
-        'subtotal' => 'decimal:2',
     ];
 
     /**
@@ -28,7 +28,7 @@ class OrderItem extends Model
      */
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     /**
