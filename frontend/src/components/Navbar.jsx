@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { userAPI } from "../stores/api" // Import your API
-import "../styles/NavbarStyle.css" 
+import "../styles/NavbarStyle.css"
 
 export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn, userData, handleLogout, setUserData }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -64,10 +64,10 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
 
     try {
       setIsImageUploading(true)
-      
+
       // Call API to update profile image
       const response = await userAPI.updateProfileImage(file)
-      
+
       if (response.success) {
         // Update user data in parent component
         const updatedUserData = {
@@ -75,15 +75,15 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
           image: response.user.image,
           image_url: response.user.image_url
         }
-        
+
         // Update localStorage
         localStorage.setItem('user_data', JSON.stringify(updatedUserData))
-        
+
         // Update parent component state
         if (setUserData) {
           setUserData(updatedUserData)
         }
-        
+
         // Show success message
         alert(currentLanguage === 'kh' ? 'រូបភាពបានកែប្រែបានជោគជ័យ' : 'Profile image updated successfully!')
       }
@@ -152,10 +152,13 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
   const userInitial = userData?.name ? userData.name.charAt(0).toUpperCase() : "U"
   const userName = userData?.name || "User"
   const userEmail = userData?.email || "user@example.com"
+  // const userImageUrl = userData?.image_url || null
   const userImageUrl = userData?.image_url || null
+  
+
 
   // Mock cart item count - replace with your actual cart state
-  const cartItemCount = 3 
+  const cartItemCount = 3
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-100">
@@ -254,8 +257,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                   <div className="relative">
                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-transparent group-hover:border-green-200 transition-all duration-200">
                       {userImageUrl ? (
-                        <img 
-                          src={userImageUrl} 
+                        <img
+                          src={userImageUrl}
                           alt={userName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -264,7 +267,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                           }}
                         />
                       ) : null}
-                      <span 
+                      <span
                         className={`text-green-600 font-semibold text-sm ${userImageUrl ? 'hidden' : 'flex'}`}
                         style={{ display: userImageUrl ? 'none' : 'flex' }}
                       >
@@ -290,8 +293,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                         <div className="relative group">
                           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity duration-200">
                             {userImageUrl ? (
-                              <img 
-                                src={userImageUrl} 
+                              <img
+                                src={userImageUrl}
                                 alt={userName}
                                 className="w-full h-full object-cover"
                                 onClick={handleImageClick}
@@ -301,7 +304,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                                 }}
                               />
                             ) : null}
-                            <span 
+                            <span
                               className={`text-green-600 font-semibold cursor-pointer ${userImageUrl ? 'hidden' : 'flex'}`}
                               onClick={handleImageClick}
                               style={{ display: userImageUrl ? 'none' : 'flex' }}
@@ -310,7 +313,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                             </span>
                           </div>
                           {/* Upload overlay */}
-                          <div 
+                          <div
                             className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
                             onClick={handleImageClick}
                           >
@@ -523,8 +526,8 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                       <div className="relative group">
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity duration-200">
                           {userImageUrl ? (
-                            <img 
-                              src={userImageUrl} 
+                            <img
+                              src={userImageUrl}
                               alt={userName}
                               className="w-full h-full object-cover"
                               onClick={handleImageClick}
@@ -534,7 +537,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                               }}
                             />
                           ) : null}
-                          <span 
+                          <span
                             className={`text-green-600 font-semibold cursor-pointer ${userImageUrl ? 'hidden' : 'flex'}`}
                             onClick={handleImageClick}
                             style={{ display: userImageUrl ? 'none' : 'flex' }}
