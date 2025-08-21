@@ -1,5 +1,4 @@
-// File: api.js
-
+// api.js
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -44,7 +43,7 @@ export const profileAPI = {
         }).then((response) => response.data);
     },
 
-    // Update profile image
+    // Update profile image - FIXED to handle FormData correctly
     updateProfileImage: (imageFile) => {
         const formData = new FormData();
         formData.append('image', imageFile);

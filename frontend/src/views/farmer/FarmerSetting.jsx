@@ -48,12 +48,13 @@ const FarmerProfileSettings = () => {
           return;
         }
 
+        // Ensure province data is correctly set
         setProfileData({
           name: userData.name || "",
           email: userData.email || "",
           phone: userData.phone || "",
-          province: userData.province || "",
-          province_id: userData.province_id || "",
+          province: userData.province?.name || userData.province || "",
+          province_id: userData.province_id ? String(userData.province_id) : "",
           profilePhoto: userData.image_url || null,
           role: userData.role || "",
         });
@@ -74,30 +75,47 @@ const FarmerProfileSettings = () => {
     }
   };
 
-  // ✅ Get provinces list
+  // ✅ Get provinces list with error handling
   const fetchProvinces = async () => {
     try {
       const response = await provincesAPI.getAll();
       console.log("Provinces response:", response);
-      setProvinces(response.data || response || []);
+      if (response.data && Array.isArray(response.data)) {
+        setProvinces(response.data);
+      } else {
+        setProvinces([]);
+        setError("ទិន្នន័យខេត្តមិនមាន");
+      }
     } catch (err) {
-      console.error("Failed to fetch provinces", err);
+      console.error("Failed to fetch provinces:", err);
+      setError("បរាជ័យក្នុងការទាញយកបញ្ជីខេត្ត");
     }
   };
 
+  // ✅ Handle input changes, including province_id
   const handleInputChange = (field, value) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
-    // Clear errors when user starts typing
+    setProfileData((prev) => {
+      const updatedData = { ...prev, [field]: value };
+
+      if (field === "province_id") {
+        const selectedProvince = provinces.find((prov) => String(prov.id) === value);
+        updatedData.province = selectedProvince ? selectedProvince.name : "";
+      }
+
+      return updatedData;
+    });
     if (error) setError(null);
     if (success) setSuccess(null);
   };
 
-  // ✅ Upload photo
+  // ✅ Upload photo with proper file input handling
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      setError("សូមជ្រើសរើសរូបថត");
+      return;
+    }
 
-    // Validate file size (2MB)
     if (file.size > 2 * 1024 * 1024) {
       setError("រូបថតត្រូវតែតិចជាង 2MB");
       return;
@@ -107,7 +125,10 @@ const FarmerProfileSettings = () => {
       setImageUploading(true);
       setError(null);
 
-      const response = await profileAPI.updateProfileImage(file);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await profileAPI.updateProfileImage(formData);
       console.log("Image upload response:", response);
 
       if (response.status === "success") {
@@ -116,8 +137,8 @@ const FarmerProfileSettings = () => {
           profilePhoto: response.data.image_url,
         }));
         setSuccess("រូបថតបានផ្ទុកជោគជ័យ");
-        
-        // Update localStorage user data
+
+        // Update localStorage
         const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
         userData.image_url = response.data.image_url;
         localStorage.setItem("user_data", JSON.stringify(userData));
@@ -136,7 +157,7 @@ const FarmerProfileSettings = () => {
   const handleSave = async () => {
     try {
       setError(null);
-      
+
       const updateData = {
         name: profileData.name,
         email: profileData.email,
@@ -152,16 +173,16 @@ const FarmerProfileSettings = () => {
       if (response.status === "success") {
         setSuccess("ប្រវត្តិរូបបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ");
         setIsEditing(false);
-        
-        // Update localStorage user data
+
+        // Update localStorage
         const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
         userData.name = response.data.name;
         userData.email = response.data.email;
         userData.phone = response.data.phone;
         userData.province_id = response.data.province_id;
+        userData.province = response.data.province?.name || response.data.province || "";
         localStorage.setItem("user_data", JSON.stringify(userData));
-        
-        // Refresh profile data
+
         await fetchProfileData();
       } else {
         setError("មិនអាចធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបបានទេ");
@@ -276,6 +297,9 @@ const FarmerProfileSettings = () => {
                     src={profileData.profilePhoto}
                     alt="Profile"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = "/placeholder-profile.png";
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -288,13 +312,17 @@ const FarmerProfileSettings = () => {
                   </div>
                 )}
               </div>
-              
-              <label className="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200 inline-flex items-center">
+
+              <label
+                htmlFor="profile-photo-upload"
+                className="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200 inline-flex items-center"
+              >
                 <Camera className="w-4 h-4 mr-2" />
                 {imageUploading ? "កំពុងផ្ទុក..." : "ផ្ទុករូបថត"}
                 <input
+                  id="profile-photo-upload"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif"
                   onChange={handlePhotoUpload}
                   className="hidden"
                   disabled={imageUploading}
@@ -312,7 +340,7 @@ const FarmerProfileSettings = () => {
             <h3 className="text-lg font-semibold mb-4 flex items-center text-green-600">
               <User className="w-5 h-5 mr-2" /> ព័ត៌មានផ្ទាល់ខ្លួន
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Name */}
               <div>
@@ -386,15 +414,21 @@ const FarmerProfileSettings = () => {
                     className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   >
                     <option value="">-- ជ្រើសរើសខេត្ត --</option>
-                    {provinces.map((prov) => (
-                      <option key={prov.id} value={prov.id}>
-                        {prov.name}
+                    {provinces.length > 0 ? (
+                      provinces.map((prov) => (
+                        <option key={prov.id} value={String(prov.id)}>
+                          {prov.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        គ្មានខេត្តអាចរកបាន
                       </option>
-                    ))}
+                    )}
                   </select>
                 ) : (
                   <p className="p-3 bg-gray-50 rounded-lg border">
-                    {profileData.province || "មិនបានផ្តល់"}
+                    {profileData.province || "គ្មានខេត្តត្រូវបានជ្រើសរើស"}
                   </p>
                 )}
               </div>
@@ -456,7 +490,7 @@ const FarmerProfileSettings = () => {
             <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-600">
               <Lock className="w-5 h-5 mr-2" /> ផ្លាស់ប្តូរលេខសម្ងាត់
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -465,12 +499,14 @@ const FarmerProfileSettings = () => {
                 <input
                   type="password"
                   value={passwordData.current_password}
-                  onChange={(e) => setPasswordData({...passwordData, current_password: e.target.value})}
+                  onChange={(e) =>
+                    setPasswordData({ ...passwordData, current_password: e.target.value })
+                  }
                   placeholder="បញ្ចូលលេខសម្ងាត់បច្ចុប្បន្ន"
                   className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   លេខសម្ងាត់ថ្មី <span className="text-red-500">*</span>
@@ -478,12 +514,14 @@ const FarmerProfileSettings = () => {
                 <input
                   type="password"
                   value={passwordData.password}
-                  onChange={(e) => setPasswordData({...passwordData, password: e.target.value})}
+                  onChange={(e) =>
+                    setPasswordData({ ...passwordData, password: e.target.value })
+                  }
                   placeholder="បញ្ចូលលេខសម្ងាត់ថ្មី"
                   className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   បញ្ជាក់លេខសម្ងាត់ថ្មី <span className="text-red-500">*</span>
@@ -491,13 +529,15 @@ const FarmerProfileSettings = () => {
                 <input
                   type="password"
                   value={passwordData.password_confirmation}
-                  onChange={(e) => setPasswordData({...passwordData, password_confirmation: e.target.value})}
+                  onChange={(e) =>
+                    setPasswordData({ ...passwordData, password_confirmation: e.target.value })
+                  }
                   placeholder="បញ្ជាក់លេខសម្ងាត់ថ្មី"
                   className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end gap-4 mt-4">
               <button
                 onClick={() => {
@@ -514,7 +554,11 @@ const FarmerProfileSettings = () => {
               </button>
               <button
                 onClick={handlePasswordChange}
-                disabled={!passwordData.current_password || !passwordData.password || !passwordData.password_confirmation}
+                disabled={
+                  !passwordData.current_password ||
+                  !passwordData.password ||
+                  !passwordData.password_confirmation
+                }
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
                 <Lock className="w-4 h-4 mr-2" />
