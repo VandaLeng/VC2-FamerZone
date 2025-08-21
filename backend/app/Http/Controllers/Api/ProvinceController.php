@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;   // ✅ add this line
 use App\Models\Province;
 use Illuminate\Http\Request;
 
@@ -10,11 +11,14 @@ class ProvinceController extends Controller
     public function index()
     {
         $provinces = Province::all();
+
         return response()->json([
             'success' => true,
-            'data' => $this->formatProvinces($provinces)
-        ], 200);
+            'data' => $provinces
+        ]);
     }
+
+
 
     private function formatProvince($province)
     {

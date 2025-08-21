@@ -12,8 +12,15 @@ class CustomerController extends Controller
     // 🔹 Get all customers
     public function index()
     {
-        $customers = Customer::latest()->get();
-        return response()->json(['success' => true, 'data' => $customers]);
+        $customers = Customer::latest()->get()->map(function ($customer) {
+            $customer->avatar_url = $customer->avatar ? Storage::url($customer->avatar) : null;
+            return $customer;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $customers
+        ]);
     }
 
     // 🔹 Create a new customer
@@ -34,6 +41,7 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::create($validated);
+        $customer->avatar_url = $customer->avatar ? Storage::url($customer->avatar) : null;
 
         return response()->json([
             'success' => true,
@@ -46,30 +54,38 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = Customer::find($id);
+
         if (!$customer) {
             return response()->json(['success' => false, 'message' => 'Customer not found'], 404);
         }
-        return response()->json(['success' => true, 'data' => $customer]);
+
+        $customer->avatar_url = $customer->avatar ? Storage::url($customer->avatar) : null;
+
+        return response()->json([
+            'success' => true,
+            'data' => $customer
+        ]);
     }
 
     // 🔹 Update customer
     public function update(Request $request, $id)
     {
         $customer = Customer::find($id);
+
         if (!$customer) {
             return response()->json(['success' => false, 'message' => 'Customer not found'], 404);
         }
 
         $validated = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|email|unique:customers,email,' . $id,
-            'phone'    => 'sometimes|string',
-            'location' => 'sometimes|string|max:255',
-            'status'   => 'sometimes|in:active,inactive,blocked',
-            'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'customer_id' => 'sometimes|required|unique:customers,customer_id,' . $id,
+            'name'        => 'sometimes|required|string|max:255',
+            'email'       => 'sometimes|required|email|unique:customers,email,' . $id,
+            'phone'       => 'sometimes|required|string',
+            'location'    => 'sometimes|nullable|string|max:255',
+            'status'      => 'sometimes|required|in:active,inactive,blocked',
+            'avatar'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        // Handle avatar upload
         if ($request->hasFile('avatar')) {
             if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
                 Storage::disk('public')->delete($customer->avatar);
@@ -78,6 +94,7 @@ class CustomerController extends Controller
         }
 
         $customer->update($validated);
+        $customer->avatar_url = $customer->avatar ? Storage::url($customer->avatar) : null;
 
         return response()->json([
             'success' => true,
@@ -90,6 +107,7 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $customer = Customer::find($id);
+
         if (!$customer) {
             return response()->json(['success' => false, 'message' => 'Customer not found'], 404);
         }
@@ -100,7 +118,10 @@ class CustomerController extends Controller
 
         $customer->delete();
 
-        return response()->json(['success' => true, 'message' => 'Customer deleted successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer deleted successfully'
+        ]);
     }
 
     // 🔹 Filter customers
@@ -118,8 +139,14 @@ class CustomerController extends Controller
             $query->where('status', $request->status);
         }
 
-        $customers = $query->get();
+        $customers = $query->get()->map(function ($customer) {
+            $customer->avatar_url = $customer->avatar ? Storage::url($customer->avatar) : null;
+            return $customer;
+        });
 
-        return response()->json(['success' => true, 'data' => $customers]);
+        return response()->json([
+            'success' => true,
+            'data' => $customers
+        ]);
     }
 }
