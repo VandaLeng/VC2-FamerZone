@@ -109,6 +109,19 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
     Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
     Route::post('/users/{id}/upload-image', [UserController::class, 'uploadImage']);
+    // Image routes
+    Route::post('/users/image', [UserController::class, 'updateImage']);  // Update profile image
+    Route::delete('/users/image', [UserController::class, 'deleteImage']); // Delete profile image
+    
+    // Assign/remove roles
+    Route::post('/users/{id}/assign-role', [UserController::class, 'assignRole']);
+    Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
+    
+    // Permissions
+    Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
+    
+    // Change password
+    Route::post('/users/change-password', [UserController::class, 'changePassword']);
 });
 
 // Farmer Routes
