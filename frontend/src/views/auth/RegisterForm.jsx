@@ -1,8 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../stores/api";
-import provinces from "../../services/provinces";
+import { registerUser, provincesAPI } from "../../stores/api";
 
 export default function RegisterForm({ currentLanguage = "en", onClose, setIsLoggedIn, setUserData }) {
   const [formData, setFormData] = useState({
@@ -18,7 +17,33 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [provinces, setProvinces] = useState([]);
   const navigate = useNavigate();
+
+  // ✅ Fetch provinces on component mount - FIXED
+  useEffect(() => {
+    fetchProvinces();
+  }, []);
+
+  // ✅ Fetch provinces from API - FIXED
+  const fetchProvinces = async () => {
+    try {
+      const response = await provincesAPI.getAll();
+      console.log("Provinces response in register:", response);
+      
+      if (response.data && Array.isArray(response.data)) {
+        setProvinces(response.data);
+      } else if (response.provinces && Array.isArray(response.provinces)) {
+        setProvinces(response.provinces);
+      } else {
+        console.warn("No valid provinces data found");
+        setProvinces([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch provinces:", err);
+      setProvinces([]);
+    }
+  };
 
   const texts = {
     kh: {
@@ -129,6 +154,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ Handle form submission - FIXED
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -148,16 +174,24 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
 
       if (data && data.access_token) {
         localStorage.setItem("auth_token", data.access_token);
-        localStorage.setItem("user_data", JSON.stringify(data.user));
 
+        // FIXED: Store complete user data including province info
         const userData = {
           id: data.user.id,
           name: data.user.name || formData.name,
           email: data.user.email || formData.email,
           role: data.user.role || formData.role,
+          role_id: data.user.role_id,
           phone: data.user.phone || formData.phone,
-          province: data.user.province || null,
+          province_id: data.user.province_id || formData.province_id,
+          province: data.user.province ? 
+            (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) 
+            : null,
+          image: data.user.image,
+          image_url: data.user.image_url,
         };
+
+        localStorage.setItem("user_data", JSON.stringify(userData));
 
         setIsLoggedIn(true);
         setUserData(userData);
@@ -501,11 +535,17 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
                   className="w-full pl-10 pr-4 py-4 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all duration-200 border-gray-200 hover:border-gray-300"
                 >
                   <option value="">{currentTexts.provincePlaceholder}</option>
-                  {provinces.map((prov) => (
-                    <option key={prov.id} value={prov.id}>
-                      {currentLanguage === "kh" ? prov.nameKh : prov.name}
+                  {provinces.length > 0 ? (
+                    provinces.map((prov) => (
+                      <option key={prov.id} value={prov.id}>
+                        {prov.province_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      {currentLanguage === "kh" ? "គ្មានខេត្តអាចរកបាន" : "No provinces available"}
                     </option>
-                  ))}
+                  )}
                 </select>
               </div>
               {errors.province_id && <p className="mt-1 text-sm text-red-600">{errors.province_id}</p>}
