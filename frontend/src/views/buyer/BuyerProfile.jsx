@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { User, Phone, Mail, MapPin, Heart, Star, Edit3, Camera, Shield, Package, Award, CreditCard, Save, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { User, Phone, Mail, MapPin, Heart, Star, Edit3, Camera, Shield, Package, Award, CreditCard, Save, X, Upload, Loader } from 'lucide-react';
+import { userAPI } from '../../stores/api'; // Import your API
 
 const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Language texts
   const texts = {
@@ -31,7 +34,10 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
       excellentReviews: "ការវាយតម្លៃល្អប្រសើរ",
       noFavorites: "អ្នកមិនទាន់មានផលិតផលចូលចិត្តនៅឡើយទេ",
       startShopping: "ចាប់ផ្តើមទិញទំនិញ",
-      farmer: "កសិករ"
+      farmer: "កសិករ",
+      uploadImage: "ផ្ទុករូបភាព",
+      changePhoto: "ផ្លាស់ប្តូររូបភាព",
+      uploading: "កំពុងផ្ទុក..."
     },
     en: {
       profile: "Profile",
@@ -57,7 +63,10 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
       excellentReviews: "Excellent Reviews",
       noFavorites: "You haven't added any favorites yet",
       startShopping: "Start Shopping",
-      farmer: "Farmer"
+      farmer: "Farmer",
+      uploadImage: "Upload Image",
+      changePhoto: "Change Photo",
+      uploading: "Uploading..."
     }
   };
 
@@ -74,10 +83,92 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
     totalOrders: userData?.totalOrders || 15,
     favoriteProducts: userData?.favoriteProducts || 8,
     averageRating: userData?.averageRating || 4.9,
-    profileImage: userData?.profileImage || null,
+    profileImage: userData?.profileImage || userData?.image_url || null,
     isVerified: userData?.isVerified || true,
     trustLevel: userData?.trustLevel || "high"
   });
+
+  // Load user profile on component mount
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const response = await userAPI.getProfile();
+      if (response && response.user) {
+        setBuyerData(prev => ({
+          ...prev,
+          name: response.user.name || prev.name,
+          email: response.user.email || prev.email,
+          phone: response.user.phone || prev.phone,
+          address: response.user.address || prev.address,
+          bio: response.user.bio || prev.bio,
+          profileImage: response.user.image_url || response.user.image || prev.profileImage,
+          // Add other fields from API if available
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+    }
+  };
+
+  // Handle profile image upload
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    setImageUploading(true);
+
+    try {
+      // Upload image using API
+      const response = await userAPI.updateProfileImage(file);
+      
+      if (response && response.user && response.user.image_url) {
+        // Update local state with new image URL
+        setBuyerData(prev => ({
+          ...prev,
+          profileImage: response.user.image_url
+        }));
+        
+        // Update localStorage if needed
+        const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+        userData.image_url = response.user.image_url;
+        localStorage.setItem('user_data', JSON.stringify(userData));
+        
+        alert('Profile image updated successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setImageUploading(false);
+      // Clear the input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Trigger file input
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   // Sample favorites data
   const favorites = [
@@ -119,24 +210,51 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
     }
   ];
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    // API call would go here
+  const handleSaveProfile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('name', buyerData.name);
+      formData.append('phone', buyerData.phone);
+      formData.append('address', buyerData.address);
+      formData.append('bio', buyerData.bio);
+
+      const response = await userAPI.updateProfile(formData);
+      
+      if (response && response.user) {
+        setBuyerData(prev => ({
+          ...prev,
+          ...response.user
+        }));
+        alert('Profile updated successfully!');
+      }
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      alert('Failed to update profile. Please try again.');
+    }
   };
 
   const handleRemoveFavorite = (productId) => {
-    // Handle removing from favorites
     console.log('Remove favorite:', productId);
   };
 
   const handleAddToCart = (product) => {
-    // Handle add to cart
     console.log('Add to cart:', product);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 py-6">
+        
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
         
         {/* Profile Header */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
@@ -145,7 +263,11 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
               <div className="relative">
                 <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-lg">
                   {buyerData.profileImage ? (
-                    <img src={buyerData.profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover" />
+                    <img 
+                      src={buyerData.profileImage} 
+                      alt="Profile" 
+                      className="w-24 h-24 rounded-full object-cover" 
+                    />
                   ) : (
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
                       <span className="text-3xl font-bold text-green-600">
@@ -154,8 +276,19 @@ const BuyerProfile = ({ currentLanguage = 'en', userData = {} }) => {
                     </div>
                   )}
                 </div>
-                <button className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-lg hover:shadow-xl transition-shadow">
-                  <Camera className="w-4 h-4 text-gray-600" />
+                
+                {/* Upload button with loading state */}
+                <button
+                  onClick={triggerFileInput}
+                  disabled={imageUploading}
+                  className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={currentTexts.changePhoto}
+                >
+                  {imageUploading ? (
+                    <Loader className="w-4 h-4 text-gray-600 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4 text-gray-600" />
+                  )}
                 </button>
               </div>
               

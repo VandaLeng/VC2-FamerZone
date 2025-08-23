@@ -90,7 +90,7 @@ export const addressesAPI = {
         }).then((response) => response.data),
 };
 
-// Profile and User API functions
+// Profile and User API functions - UPDATED WITH BETTER IMAGE HANDLING
 export const userAPI = {
     // Get current user profile
     getProfile: () => {
@@ -99,9 +99,21 @@ export const userAPI = {
         }).then((response) => response.data);
     },
 
-    // Update user profile
+    // Update user profile (text fields only)
     updateProfile: (data) => {
-        return axios.post(`${API_BASE_URL}/profile/update`, data, {
+        // If data is already FormData, use it directly
+        // If it's an object, convert to FormData
+        let formData = data;
+        if (!(data instanceof FormData)) {
+            formData = new FormData();
+            Object.keys(data).forEach(key => {
+                if (data[key] !== null && data[key] !== undefined) {
+                    formData.append(key, data[key]);
+                }
+            });
+        }
+
+        return axios.post(`${API_BASE_URL}/profile/update`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 ...getAuthHeaders()
@@ -109,12 +121,43 @@ export const userAPI = {
         }).then((response) => response.data);
     },
 
-    // Update only profile image
+    // Update only profile image - IMPROVED VERSION
     updateProfileImage: (imageFile) => {
+        if (!imageFile) {
+            return Promise.reject(new Error('No image file provided'));
+        }
+
         const formData = new FormData();
         formData.append('image', imageFile);
         
+        // Add method override for Laravel if needed
+        formData.append('_method', 'POST');
+        
         return axios.post(`${API_BASE_URL}/profile/update-image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Update profile with image - COMBINED UPDATE
+    updateProfileWithImage: (profileData, imageFile) => {
+        const formData = new FormData();
+        
+        // Add profile data
+        Object.keys(profileData).forEach(key => {
+            if (profileData[key] !== null && profileData[key] !== undefined) {
+                formData.append(key, profileData[key]);
+            }
+        });
+        
+        // Add image if provided
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        
+        return axios.post(`${API_BASE_URL}/profile/update`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 ...getAuthHeaders()
@@ -127,6 +170,23 @@ export const userAPI = {
         return axios.post(`${API_BASE_URL}/change-password`, passwordData, {
             headers: {
                 'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            }
+        }).then((response) => response.data);
+    },
+
+    // Upload profile image (alternative endpoint)
+    uploadImage: (imageFile) => {
+        if (!imageFile) {
+            return Promise.reject(new Error('No image file provided'));
+        }
+
+        const formData = new FormData();
+        formData.append('profile_image', imageFile);
+        
+        return axios.post(`${API_BASE_URL}/upload-profile-image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
                 ...getAuthHeaders()
             }
         }).then((response) => response.data);

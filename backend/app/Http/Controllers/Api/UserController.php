@@ -311,13 +311,7 @@ class UserController extends Controller
             $image->storeAs('public/users', $imageName);
 
             $user->image = $imageName;
-            $user->save();
-
-            return response()->json([
-                'message' => 'Image updated successfully',
-                'image_url' => url('storage/users/' . $imageName),
-                'user' => $user,
-            ]);
+        
         }
 
         return response()->json(['message' => 'No image uploaded'], 400);
