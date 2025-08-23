@@ -13,7 +13,6 @@ use App\Http\Controllers\Api\OrderController;
 // use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\Api\ProvinceController;
 
-use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
@@ -84,7 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{id}', [OrderController::class, 'update']);
     Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
-
 });
 
 
@@ -151,12 +149,12 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
 
 
 
-    // Customers
-    Route::get('/customers', [CustomerController::class, 'index']);
-    Route::post('/customers', [CustomerController::class, 'store']);
-    Route::get('/customers/{id}', [CustomerController::class, 'show']);
-    Route::put('/customers/{id}', [CustomerController::class, 'update']);
-    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+// Customers
+Route::get('/customers', [CustomerController::class, 'index']);
+Route::post('/customers', [CustomerController::class, 'store']);
+Route::get('/customers/{id}', [CustomerController::class, 'show']);
+Route::put('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
-    // Provinces
-    Route::get('/provinces', [ProvinceController::class, 'index']);
+// Provinces
+Route::get('/provinces', [ProvinceController::class, 'index']);

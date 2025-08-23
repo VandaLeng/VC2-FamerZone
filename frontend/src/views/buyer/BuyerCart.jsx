@@ -1,9 +1,31 @@
+
 import React, { useContext } from "react";
 import { CartContext } from "../../services/cartContext";
 import { Minus, Plus, X, ShoppingBag, ArrowLeft, Truck, Shield, RotateCcw, ShoppingCart } from "lucide-react";
 
 function BuyerCart({ currentLanguage = "en" }) {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
+
+  // Currency conversion rate (same as ProductCard)
+  const usdToRielRate = 4100;
+
+  // Format price function (adapted from ProductCard)
+  const formatPrice = (priceUSD) => {
+    const priceRiel = Math.round(priceUSD * usdToRielRate);
+    if (currentLanguage === "kh") {
+      return {
+        price: priceRiel.toLocaleString(),
+        currency: "៛",
+        currencyName: "រៀល"
+      };
+    } else {
+      return {
+        price: priceUSD.toFixed(2),
+        currency: "$",
+        currencyName: "USD"
+      };
+    }
+  };
 
   const texts = {
     kh: {
@@ -19,7 +41,7 @@ function BuyerCart({ currentLanguage = "en" }) {
       itemsInCart: (count) => `អ្នកមាន <span class="font-semibold text-green-600">${count}</span> ធាតុក្នុងរទេះរបស់អ្នក`,
       emptyCartPrompt: "សូមបន្ថែមទំនិញទៅក្នុងរទេះរបស់អ្នក",
       shopNow: "ចាប់ផ្តើមទិញទំនិញ",
-      weight: "ទម្ងន់",
+      weight: "មាន",
       farmer: "កសិករ",
       outOfStock: "អស់ពីស្តុក",
       discountSaved: (amount) => `សន្សំបាន ${amount.toLocaleString()} ៛`,
@@ -34,7 +56,7 @@ function BuyerCart({ currentLanguage = "en" }) {
       freeDelivery: "ដឹកជញ្ជូនឥតគិតថ្លៃ",
       freeDeliveryOver: "លើសពី ៥០,០០០៛",
       qualityGuarantee: "ធានាគុណភាព",
-      freshProducts: "ទំនិញស្រស់ថ្មី ១០០%",
+      freshProducts: "ទំនិញស្រស់ថ្មី ១ៀ០%",
       easyReturns: "ងាយស្រួលប្តូរ",
       returnPeriod: "ក្នុងរយៈពេល ២៤ម៉ោង",
       continueShopping: "បន្តទិញទំនិញ"
@@ -76,15 +98,22 @@ function BuyerCart({ currentLanguage = "en" }) {
 
   const currentTexts = texts[currentLanguage];
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 50000 ? 0 : 3000;
-  const discount = cartItems.reduce((sum, item) => {
+  // Calculate totals in USD
+  const subtotalUSD = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shippingUSD = subtotalUSD > 50000 / usdToRielRate ? 0 : 3000 / usdToRielRate;
+  const discountUSD = cartItems.reduce((sum, item) => {
     if (item.originalPrice > item.price) {
       return sum + ((item.originalPrice - item.price) * item.quantity);
     }
     return sum;
   }, 0);
-  const total = subtotal + shipping;
+  const totalUSD = subtotalUSD + shippingUSD;
+
+  // Format totals
+  const formattedSubtotal = formatPrice(subtotalUSD);
+  const formattedShipping = formatPrice(shippingUSD);
+  const formattedDiscount = formatPrice(discountUSD);
+  const formattedTotal = formatPrice(totalUSD);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -127,113 +156,128 @@ function BuyerCart({ currentLanguage = "en" }) {
               </div>
               
               <div className="divide-y divide-gray-100">
-                {cartItems.map((item) => (
-                  <div key={item.id} className={`p-6 ${!item.inStock ? 'bg-gray-50' : ''}`}>
-                    <div className="flex items-start space-x-4">
-                      {/* Product Image */}
-                      <div className="flex-shrink-0 relative">
-                        <img
-                          src={item.image_url || item.image || "/placeholder.svg?height=100&width=100"}
-                          alt={currentLanguage === "kh" ? item.nameKh || item.name : item.name}
-                          className="w-20 h-20 object-cover rounded-xl"
-                        />
-                        {item.discount > 0 && (
-                          <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            -{item.discount}%
-                          </div>
-                        )}
-                        {!item.inStock && (
-                          <div className="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-xl flex items-center justify-center">
-                            <span className="text-white text-xs font-medium">{currentTexts.outOfStock}</span>
-                          </div>
-                        )}
-                      </div>
+                {cartItems.map((item) => {
+                  const formattedItemPrice = formatPrice(item.price);
+                  const formattedItemTotal = formatPrice(item.price * item.quantity);
+                  const formattedOriginalPrice = item.originalPrice > item.price ? formatPrice(item.originalPrice) : null;
+                  const formattedDiscountSaved = item.originalPrice > item.price ? formatPrice((item.originalPrice - item.price) * item.quantity) : null;
 
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                              {currentLanguage === "kh" ? item.nameKh || item.name : item.name}
-                            </h3>
-                            <p className="text-sm text-gray-500 mb-2">{item.nameEn || item.name}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                              <span className="flex items-center">
-                                <span className="font-medium">{currentTexts.weight}:</span>
-                                <span className="ml-1">{item.weight || "N/A"}</span>
-                              </span>
-                              <span className="flex items-center">
-                                <span className="font-medium">{currentTexts.farmer}:</span>
-                                <span className="ml-1">{item.farmer || "N/A"}</span>
-                              </span>
+                  // Farmer name logic (aligned with ProductCard)
+                  const farmer = item.user || item.farmer || {};
+                  const farmerName = currentLanguage === "kh"
+                    ? farmer.nameKh || farmer.name || "Unknown Farmer"
+                    : farmer.name || farmer.nameKh || "Unknown Farmer";
+
+                  // Weight logic (aligned with ProductCard)
+                  const weightDisplay = item.unit ? `${item.stock || item.quantity}${item.unit}` : "N/A";
+
+                  // Determine available stock (use stock or a large default for bulk items)
+                  const availableStock = item.stock || 100; // Default to 100 if stock is undefined
+                  const isInStock = item.quantity <= availableStock;
+
+                  return (
+                    <div key={item.id} className={`p-6 ${!isInStock ? 'bg-gray-50' : ''}`}>
+                      <div className="flex items-start space-x-4">
+                        {/* Product Image */}
+                        <div className="flex-shrink-0 relative">
+                          <img
+                            src={item.image_url || item.image || "/placeholder.svg?height=100&width=100"}
+                            alt={currentLanguage === "kh" ? item.nameKh || item.name : item.name}
+                            className="w-20 h-20 object-cover rounded-xl"
+                          />
+                          {item.discount > 0 && (
+                            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                              -{item.discount}%
                             </div>
-                            
-                            {/* Price */}
-                            <div className="flex items-center space-x-2 mb-3">
-                              <span className="text-lg font-bold text-green-600">
-                                {item.price.toLocaleString()} ៛
-                              </span>
-                              {item.originalPrice > item.price && (
-                                <span className="text-sm text-gray-400 line-through">
-                                  {item.originalPrice.toLocaleString()} ៛
+                          )}
+                          {!isInStock && (
+                            <div className="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-xl flex items-center justify-center">
+                              <span className="text-white text-xs font-medium">{currentTexts.outOfStock}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                {currentLanguage === "kh" ? item.nameKh || item.name : item.name}
+                              </h3>
+                              <p className="text-sm text-gray-500 mb-2">{item.nameEn || item.name}</p>
+                              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                <span className="flex items-center">
+                                  <span className="font-medium">{currentTexts.weight}:</span>
+                                  <span className="ml-1">{weightDisplay}</span>
                                 </span>
+                                <span className="flex items-center">
+                                  <span className="font-medium">{currentTexts.farmer}:</span>
+                                  <span className="ml-1">{farmerName}</span>
+                                </span>
+                              </div>
+                              
+                              {/* Price */}
+                              <div className="flex items-center space-x-2 mb-3">
+                                <span className="text-lg font-bold text-green-600">
+                                  {formattedItemPrice.price} {formattedItemPrice.currency}
+                                </span>
+                                {formattedOriginalPrice && (
+                                  <span className="text-sm text-gray-400 line-through">
+                                    {formattedOriginalPrice.price} {formattedOriginalPrice.currency}
+                                  </span>
+                                )}
+                              </div>
+
+                              {!isInStock && (
+                                <div className="flex items-center text-red-600 text-sm mb-3">
+                                  <X className="h-4 w-4 mr-1" />
+                                  <span>{currentTexts.outOfStock}</span>
+                                </div>
                               )}
                             </div>
 
-                            {!item.inStock && (
-                              <div className="flex items-center text-red-600 text-sm mb-3">
-                                <X className="h-4 w-4 mr-1" />
-                                <span>{currentTexts.outOfStock}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Remove Button */}
-                          <button
-                            onClick={() => removeFromCart(item.id)}
-                            className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                          >
-                            <X className="h-5 w-5" />
-                          </button>
-                        </div>
-
-                        {/* Quantity Controls */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
+                            {/* Remove Button */}
                             <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              disabled={!item.inStock}
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              onClick={() => removeFromCart(item.id)}
+                              className="text-gray-400 hover:text-red-500 transition-colors p-1"
                             >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="font-medium text-gray-900 min-w-[2rem] text-center">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              disabled={!item.inStock}
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <Plus className="h-4 w-4" />
+                              <X className="h-5 w-5" />
                             </button>
                           </div>
-                          
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-gray-900">
-                              {(item.price * item.quantity).toLocaleString()} ៛
-                            </p>
-                            {item.originalPrice > item.price && (
-                              <p className="text-sm text-green-600">
-                                {currentTexts.discountSaved((item.originalPrice - item.price) * item.quantity)}
+
+                          {/* Quantity Controls */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="number"
+                                min="1"
+                                max={availableStock}
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const newQuantity = Math.min(Math.max(1, parseInt(e.target.value) || 1), availableStock);
+                                  updateQuantity(item.id, newQuantity);
+                                }}
+                                className="w-20 p-1 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                                disabled={!isInStock}
+                              />
+                            </div>
+                            
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-gray-900">
+                                {formattedItemTotal.price} {formattedItemTotal.currency}
                               </p>
-                            )}
+                              {formattedDiscountSaved && (
+                                <p className="text-sm text-green-600">
+                                  {currentTexts.discountSaved(formattedDiscountSaved.price)} {formattedDiscountSaved.currency}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {cartItems.length === 0 && (
@@ -261,29 +305,59 @@ function BuyerCart({ currentLanguage = "en" }) {
                   {/* Subtotal */}
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{currentTexts.subtotal(cartItems.reduce((sum, item) => sum + item.quantity, 0))}</span>
-                    <span className="font-medium">{subtotal.toLocaleString()} ៛</span>
+                    <div className="text-right">
+                      <span className="font-medium">{formattedSubtotal.price} {formattedSubtotal.currency}</span>
+                      <div className="text-sm text-green-600">
+                        {formatPrice(subtotalUSD).currency === "៛" ? 
+                          `$${subtotalUSD.toFixed(2)}` : 
+                          `${(subtotalUSD * usdToRielRate).toLocaleString()} ៛`}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Discount */}
-                  {discount > 0 && (
+                  {discountUSD > 0 && (
                     <div className="flex justify-between items-center text-green-600">
                       <span>{currentTexts.discount}</span>
-                      <span className="font-medium">-{discount.toLocaleString()} ៛</span>
+                      <div className="text-right">
+                        <span className="font-medium">-{formattedDiscount.price} {formattedDiscount.currency}</span>
+                        <div className="text-sm">
+                          {formatPrice(discountUSD).currency === "៛" ? 
+                            `-$${discountUSD.toFixed(2)}` : 
+                            `-${(discountUSD * usdToRielRate).toLocaleString()} ៛`}
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {/* Shipping */}
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{currentTexts.shipping}</span>
-                    <span className={`font-medium ${shipping === 0 ? 'text-green-600' : ''}`}>
-                      {shipping === 0 ? currentTexts.freeShipping : `${shipping.toLocaleString()} ៛`}
-                    </span>
+                    <div className="text-right">
+                      <span className={`font-medium ${shippingUSD === 0 ? 'text-green-600' : ''}`}>
+                        {shippingUSD === 0 ? currentTexts.freeShipping : `${formattedShipping.price} ${formattedShipping.currency}`}
+                      </span>
+                      {shippingUSD !== 0 && (
+                        <div className="text-sm text-green-600">
+                          {formatPrice(shippingUSD).currency === "៛" ? 
+                            `$${shippingUSD.toFixed(2)}` : 
+                            `${(shippingUSD * usdToRielRate).toLocaleString()} ៛`}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold text-gray-900">{currentTexts.totalAll}</span>
-                      <span className="text-xl font-bold text-green-600">{total.toLocaleString()} ៛</span>
+                      <div className="text-right">
+                        <span className="text-xl font-bold text-green-600">{formattedTotal.price} {formattedTotal.currency}</span>
+                        <div className="text-sm text-green-600">
+                          {formatPrice(totalUSD).currency === "៛" ? 
+                            `$${totalUSD.toFixed(2)}` : 
+                            `${(totalUSD * usdToRielRate).toLocaleString()} ៛`}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
