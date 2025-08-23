@@ -419,7 +419,7 @@ const FarmerProfileSettings = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ឈ្មោះពេញ <span className="text-red-500">*</span>
-                </label>
+                </label>  
                 {isEditing ? (
                   <input
                     type="text"
