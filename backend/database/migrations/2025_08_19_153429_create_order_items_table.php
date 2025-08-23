@@ -16,8 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->integer('quantity')->default(1);
-            $table->decimal('price', 10, 2); // Price at the time of order
-            $table->decimal('subtotal', 10, 2); // quantity * price
+            $table->decimal('price', 10, 2); 
             $table->timestamps();
 
             // Indexes for better performance

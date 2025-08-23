@@ -112,15 +112,32 @@ const CategoryManagement = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(CATEGORIES_ENDPOINT);
-      const transformedCategories = response.data.data.map((category) => ({
-        id: category.id,
-        name: category.name,
-        description: category.description || '',
-        productCount: category.productCount || 0,
-        createdAt: category.created_at,
-        status: category.status,
-        image_url: category.image_url,
-      }));
+      // Get all products/items for current user
+      let myProducts = [];
+      try {
+        const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+        const itemsRes = await axios.get(`${API_BASE_URL.replace(/\/api$/, '')}/api/items`, {
+          headers: { Authorization: token ? `Bearer ${token}` : undefined },
+        });
+        const userId = localStorage.getItem("user_id") || (localStorage.getItem("user_data") ? JSON.parse(localStorage.getItem("user_data")).id : null);
+        myProducts = itemsRes.data.data.filter(item => String(item.user_id) === String(userId));
+      } catch (e) {
+        // If items fetch fails, fallback to zero counts
+        myProducts = [];
+      }
+      const transformedCategories = response.data.data.map((category) => {
+        // Count only current user's products for this category
+        const count = myProducts.filter(item => String(item.category_id) === String(category.id)).length;
+        return {
+          id: category.id,
+          name: category.name,
+          description: category.description || '',
+          productCount: count,
+          createdAt: category.created_at,
+          status: category.status,
+          image_url: category.image_url,
+        };
+      });
       setCategories(transformedCategories);
       setError(null);
     } catch (err) {
