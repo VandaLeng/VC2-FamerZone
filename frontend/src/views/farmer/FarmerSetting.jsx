@@ -1,3 +1,4 @@
+// File: FarmerProfileSettings.jsx
 import React, { useState, useEffect } from "react";
 import { Camera, User, Save, Edit, Lock } from "lucide-react";
 import { profileAPI, provincesAPI } from "../../stores/api";
@@ -48,13 +49,32 @@ const FarmerProfileSettings = () => {
           return;
         }
 
-        // Ensure province data is correctly set
+        // Handle province data properly - FIXED
+        let provinceName = "";
+        let provinceId = "";
+        
+        if (userData.province) {
+          if (typeof userData.province === 'object' && userData.province.province_name) {
+            provinceName = userData.province.province_name;
+            provinceId = userData.province.id ? String(userData.province.id) : String(userData.province_id || "");
+          } else if (typeof userData.province === 'string') {
+            provinceName = userData.province;
+            provinceId = String(userData.province_id || "");
+          }
+        } else if (userData.province_id) {
+          provinceId = String(userData.province_id);
+          // Find province name from provinces list if available
+          const foundProvince = provinces.find(p => String(p.id) === String(userData.province_id));
+          provinceName = foundProvince ? foundProvince.province_name : "";
+        }
+
+        // Set profile data with proper province handling - FIXED
         setProfileData({
           name: userData.name || "",
           email: userData.email || "",
           phone: userData.phone || "",
-          province: userData.province?.name || userData.province || "",
-          province_id: userData.province_id ? String(userData.province_id) : "",
+          province: provinceName,
+          province_id: provinceId,
           profilePhoto: userData.image_url || null,
           role: userData.role || "",
         });
@@ -75,13 +95,15 @@ const FarmerProfileSettings = () => {
     }
   };
 
-  // ✅ Get provinces list with error handling
+  // ✅ Get provinces list with error handling - FIXED
   const fetchProvinces = async () => {
     try {
       const response = await provincesAPI.getAll();
       console.log("Provinces response:", response);
       if (response.data && Array.isArray(response.data)) {
         setProvinces(response.data);
+      } else if (response.provinces && Array.isArray(response.provinces)) {
+        setProvinces(response.provinces);
       } else {
         setProvinces([]);
         setError("ទិន្នន័យខេត្តមិនមាន");
@@ -92,14 +114,14 @@ const FarmerProfileSettings = () => {
     }
   };
 
-  // ✅ Handle input changes, including province_id
+  // ✅ Handle input changes, including province_id - FIXED
   const handleInputChange = (field, value) => {
     setProfileData((prev) => {
       const updatedData = { ...prev, [field]: value };
 
       if (field === "province_id") {
         const selectedProvince = provinces.find((prov) => String(prov.id) === value);
-        updatedData.province = selectedProvince ? selectedProvince.name : "";
+        updatedData.province = selectedProvince ? selectedProvince.province_name : "";
       }
 
       return updatedData;
@@ -108,7 +130,7 @@ const FarmerProfileSettings = () => {
     if (success) setSuccess(null);
   };
 
-  // ✅ Upload photo with proper file input handling
+  // ✅ Upload photo with proper file input handling - FIXED
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -121,14 +143,20 @@ const FarmerProfileSettings = () => {
       return;
     }
 
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      setError("សូមជ្រើសរើសរូបថតប្រភេទ JPG, PNG, ឬ GIF");
+      return;
+    }
+
     try {
       setImageUploading(true);
       setError(null);
 
-      const formData = new FormData();
-      formData.append("image", file);
+      console.log("Uploading file:", file.name, file.type, file.size);
 
-      const response = await profileAPI.updateProfileImage(formData);
+      const response = await profileAPI.updateProfileImage(file);
       console.log("Image upload response:", response);
 
       if (response.status === "success") {
@@ -138,8 +166,9 @@ const FarmerProfileSettings = () => {
         }));
         setSuccess("រូបថតបានផ្ទុកជោគជ័យ");
 
-        // Update localStorage
+        // Update localStorage with new image URL - FIXED
         const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+        userData.image = response.data.image;
         userData.image_url = response.data.image_url;
         localStorage.setItem("user_data", JSON.stringify(userData));
       } else {
@@ -147,22 +176,39 @@ const FarmerProfileSettings = () => {
       }
     } catch (err) {
       console.error("Image upload error:", err);
-      setError(err.response?.data?.message || "បរាជ័យក្នុងការផ្ទុករូបថត");
+      setError(
+        err.response?.data?.message || 
+        err.message || 
+        "បរាជ័យក្នុងការផ្ទុករូបថត"
+      );
     } finally {
       setImageUploading(false);
+      // Clear the file input
+      e.target.value = '';
     }
   };
 
-  // ✅ Save profile changes
+  // ✅ Save profile changes - FIXED
   const handleSave = async () => {
     try {
       setError(null);
 
+      // Validate required fields
+      if (!profileData.name.trim()) {
+        setError("សូមបញ្ចូលឈ្មោះ");
+        return;
+      }
+
+      if (!profileData.email.trim()) {
+        setError("សូមបញ្ចូលអ៊ីមែល");
+        return;
+      }
+
       const updateData = {
-        name: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        province_id: profileData.province_id,
+        name: profileData.name.trim(),
+        email: profileData.email.trim(),
+        phone: profileData.phone?.trim() || null,
+        province_id: profileData.province_id || null,
       };
 
       console.log("Updating profile with:", updateData);
@@ -174,15 +220,25 @@ const FarmerProfileSettings = () => {
         setSuccess("ប្រវត្តិរូបបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ");
         setIsEditing(false);
 
-        // Update localStorage
+        // Update localStorage with new data - FIXED
         const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
         userData.name = response.data.name;
         userData.email = response.data.email;
         userData.phone = response.data.phone;
         userData.province_id = response.data.province_id;
-        userData.province = response.data.province?.name || response.data.province || "";
+        
+        // Handle province data properly - FIXED
+        if (response.data.province) {
+          if (typeof response.data.province === 'object') {
+            userData.province = response.data.province.province_name;
+          } else {
+            userData.province = response.data.province;
+          }
+        }
+        
         localStorage.setItem("user_data", JSON.stringify(userData));
 
+        // Refresh profile data
         await fetchProfileData();
       } else {
         setError("មិនអាចធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបបានទេ");
@@ -198,6 +254,16 @@ const FarmerProfileSettings = () => {
 
   // ✅ Handle password change
   const handlePasswordChange = async () => {
+    if (!passwordData.current_password) {
+      setError("សូមបញ្ចូលលេខសម្ងាត់បច្ចុប្បន្ន");
+      return;
+    }
+
+    if (!passwordData.password) {
+      setError("សូមបញ្ចូលលេខសម្ងាត់ថ្មី");
+      return;
+    }
+
     if (passwordData.password !== passwordData.password_confirmation) {
       setError("លេខសម្ងាត់ថ្មីមិនត្រូវគ្នា");
       return;
@@ -210,14 +276,20 @@ const FarmerProfileSettings = () => {
 
     try {
       setError(null);
-      await profileAPI.changePassword(passwordData);
-      setSuccess("លេខសម្ងាត់បានផ្លាស់ប្តូរជោគជ័យ");
-      setPasswordData({
-        current_password: "",
-        password: "",
-        password_confirmation: "",
-      });
-      setIsChangingPassword(false);
+      const response = await profileAPI.changePassword(passwordData);
+      console.log("Password change response:", response);
+      
+      if (response.status === "success") {
+        setSuccess("លេខសម្ងាត់បានផ្លាស់ប្តូរជោគជ័យ");
+        setPasswordData({
+          current_password: "",
+          password: "",
+          password_confirmation: "",
+        });
+        setIsChangingPassword(false);
+      } else {
+        setError(response.message || "មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ");
+      }
     } catch (err) {
       console.error("Password change error:", err);
       setError(
@@ -298,6 +370,7 @@ const FarmerProfileSettings = () => {
                     alt="Profile"
                     className="w-full h-full object-cover"
                     onError={(e) => {
+                      console.log("Image failed to load:", profileData.profilePhoto);
                       e.target.src = "/placeholder-profile.png";
                     }}
                   />
@@ -315,21 +388,21 @@ const FarmerProfileSettings = () => {
 
               <label
                 htmlFor="profile-photo-upload"
-                className="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200 inline-flex items-center"
+                className={`cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200 inline-flex items-center ${imageUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Camera className="w-4 h-4 mr-2" />
                 {imageUploading ? "កំពុងផ្ទុក..." : "ផ្ទុករូបថត"}
                 <input
                   id="profile-photo-upload"
                   type="file"
-                  accept="image/jpeg,image/png,image/gif"
+                  accept="image/jpeg,image/png,image/gif,image/jpg"
                   onChange={handlePhotoUpload}
                   className="hidden"
                   disabled={imageUploading}
                 />
               </label>
               <p className="text-xs text-gray-500 mt-2">
-                ទំហំអតិបរមា៖ 2MB<br />
+               <br />
                 ប្រភេទ៖ JPG, PNG, GIF
               </p>
             </div>
@@ -402,7 +475,7 @@ const FarmerProfileSettings = () => {
                 )}
               </div>
 
-              {/* Province */}
+              {/* Province - FIXED */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ខេត្ត/ទីក្រុង
@@ -417,7 +490,7 @@ const FarmerProfileSettings = () => {
                     {provinces.length > 0 ? (
                       provinces.map((prov) => (
                         <option key={prov.id} value={String(prov.id)}>
-                          {prov.name}
+                          {prov.province_name}
                         </option>
                       ))
                     ) : (

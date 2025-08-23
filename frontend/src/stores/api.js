@@ -1,4 +1,4 @@
-// api.js
+// File: api.js
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -43,10 +43,23 @@ export const profileAPI = {
         }).then((response) => response.data);
     },
 
-    // Update profile image - FIXED to handle FormData correctly
+    // Update profile image - FIXED to handle File object correctly
     updateProfileImage: (imageFile) => {
         const formData = new FormData();
-        formData.append('image', imageFile);
+
+        // Handle different input types
+        if (imageFile instanceof File) {
+            formData.append('image', imageFile);
+        } else if (imageFile instanceof FormData) {
+            return api.post('/profile/image', imageFile, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    ...getAuthHeaders()
+                }
+            }).then((response) => response.data);
+        } else {
+            throw new Error('Invalid file format');
+        }
 
         return api.post('/profile/image', formData, {
             headers: {
@@ -67,10 +80,19 @@ export const profileAPI = {
     }
 };
 
-// ========== PROVINCES API ==========
+// ========== PROVINCES API - FIXED ==========
 export const provincesAPI = {
     getAll: () => {
-        return api.get('/provinces').then((response) => response.data);
+        return api.get('/provinces').then((response) => {
+            // Handle different response structures
+            if (response.data && response.data.data) {
+                return { data: response.data.data };
+            } else if (response.data && Array.isArray(response.data)) {
+                return { data: response.data };
+            } else {
+                return response.data;
+            }
+        });
     }
 };
 
@@ -276,7 +298,7 @@ api.interceptors.response.use(
     }
 );
 
-// ========== AUTH API ==========
+// ========== AUTH API - FIXED ==========
 export function registerUser(userData) {
     return api.post('/register', userData)
         .then(function(response) {
@@ -284,7 +306,7 @@ export function registerUser(userData) {
             if (data.access_token) {
                 localStorage.setItem('auth_token', data.access_token);
 
-                // Store user data with proper role information
+                // Store user data with proper role and province information - FIXED
                 const userDataToStore = {
                     id: data.user.id,
                     name: data.user.name,
@@ -294,7 +316,10 @@ export function registerUser(userData) {
                     roles: data.user.roles || [],
                     phone: data.user.phone,
                     province_id: data.user.province_id,
-                    province: data.user.province ? data.user.province.name : null,
+                    // FIXED: Handle province data properly
+                    province: data.user.province ?
+                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) :
+                        null,
                     image: data.user.image,
                     image_url: data.user.image_url,
                 };
@@ -326,7 +351,7 @@ export function loginUser(credentials) {
             if (data.access_token) {
                 localStorage.setItem('auth_token', data.access_token);
 
-                // Store user data with proper role information
+                // Store user data with proper role and province information - FIXED
                 const userDataToStore = {
                     id: data.user.id,
                     name: data.user.name,
@@ -336,7 +361,10 @@ export function loginUser(credentials) {
                     roles: data.user.roles || [],
                     phone: data.user.phone,
                     province_id: data.user.province_id,
-                    province: data.user.province ? data.user.province.name : null,
+                    // FIXED: Handle province data properly
+                    province: data.user.province ?
+                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) :
+                        null,
                     image: data.user.image,
                     image_url: data.user.image_url,
                 };

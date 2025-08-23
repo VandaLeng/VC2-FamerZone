@@ -230,7 +230,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Password changed successfully']);
     }
 
-    // ✅ Get authenticated user's profile with province info
+    // ✅ Get authenticated user's profile with province info - FIXED
     public function getProfile(Request $request)
     {
         $user = $request->user();
@@ -242,6 +242,12 @@ class UserController extends Controller
             $roleName = $user->roles->first()->name;
         }
         
+        // FIXED: Handle province data properly
+        $provinceName = null;
+        if ($user->province) {
+            $provinceName = $user->province->province_name;
+        }
+        
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -251,7 +257,7 @@ class UserController extends Controller
                 'phone' => $user->phone,
                 'role' => $roleName,
                 'role_id' => $user->role_id,
-                'province' => $user->province ? $user->province->name : null,
+                'province' => $provinceName,
                 'province_id' => $user->province_id,
                 'image' => $user->image,
                 'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
@@ -261,7 +267,7 @@ class UserController extends Controller
         ]);
     }
 
-    // ✅ Update authenticated user's profile
+    // ✅ Update authenticated user's profile - FIXED
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -320,6 +326,12 @@ class UserController extends Controller
             $roleName = $user->roles->first()->name;
         }
 
+        // FIXED: Handle province data properly
+        $provinceName = null;
+        if ($user->province) {
+            $provinceName = $user->province->province_name;
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Profile updated successfully',
@@ -330,7 +342,7 @@ class UserController extends Controller
                 'phone' => $user->phone,
                 'role' => $roleName,
                 'role_id' => $user->role_id,
-                'province' => $user->province ? $user->province->name : null,
+                'province' => $provinceName,
                 'province_id' => $user->province_id,
                 'image' => $user->image,
                 'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
@@ -340,7 +352,7 @@ class UserController extends Controller
         ]);
     }
 
-    // ✅ Update only profile image
+    // ✅ Update only profile image - FIXED
     public function updateImage(Request $request)
     {
         $request->validate([
