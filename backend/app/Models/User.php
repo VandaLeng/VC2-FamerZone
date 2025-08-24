@@ -19,9 +19,11 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'province_id', // <-- use province_id
+        'province_id', // <-- use province_id as string to match Province model
         'role_id',
+        'role', // Add role field for easier access
         'image',
+        'image_url',
     ];
 
     protected $hidden = [
@@ -37,7 +39,7 @@ class User extends Authenticatable
     protected $appends = ['image_url'];
 
     /**
-     * A user has one role.
+     * A user has one role (via Spatie).
      */
     public function role()
     {
@@ -45,11 +47,11 @@ class User extends Authenticatable
     }
 
     /**
-     * A user belongs to a province.
+     * A user belongs to a province - FIXED.
      */
     public function province()
     {
-        return $this->belongsTo(Province::class, 'province_id');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
     /**
@@ -68,11 +70,38 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'user_id', 'id');
     }
 
+    /**
+     * Generate image URL - FIXED
+     */
     public function getImageUrlAttribute()
     {
+        // If image_url is already set, return it
+        if ($this->attributes['image_url']) {
+            return $this->attributes['image_url'];
+        }
+        
+        // If image exists and is not default, generate URL
         if ($this->image && $this->image !== 'default.jpg') {
             return url('storage/users/' . $this->image);
         }
-        return url('storage/users/default.jpg');
+        
+        return null;
+    }
+
+    /**
+     * Boot method to set default role
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (!$user->role) {
+                $user->role = 'buyer';
+            }
+            if (!$user->image) {
+                $user->image = 'default.jpg';
+            }
+        });
     }
 }
