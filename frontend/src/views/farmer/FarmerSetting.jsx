@@ -22,8 +22,8 @@ const FarmerProfileSettings = () => {
   // Password state
   const [passwordData, setPasswordData] = useState({
     current_password: "",
-    new_password: "", // Changed from password
-    new_password_confirmation: "", // Changed from password_confirmation
+    new_password: "",
+    new_password_confirmation: "",
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState({
@@ -206,7 +206,7 @@ const FarmerProfileSettings = () => {
     setError(null);
     setSuccess(null);
 
-    // Enhanced validation
+    // Client-side validation
     if (!passwordData.current_password.trim()) {
       setError("សូមបញ្ចូលលេខសម្ងាត់បច្ចុប្បន្ន");
       return;
@@ -258,10 +258,11 @@ const FarmerProfileSettings = () => {
     } catch (err) {
       console.error("Password change error:", err);
       const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.errors?.new_password?.[0] ||
-        err.response?.data?.errors?.current_password?.[0] ||
-        "មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ។ សូមពិនិត្យលេខសម្ងាត់បច្ចុប្បន្ន។";
+        err.response?.data?.errors?.current_password?.[0] === "The current password is incorrect"
+          ? "លេខសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ"
+          : err.response?.data?.errors?.new_password?.[0]
+          ? `លេខសម្ងាត់ថ្មីមិនត្រឹមត្រូវ: ${err.response.data.errors.new_password[0]}`
+          : err.response?.data?.message || "មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ។ សូមពិនិត្យលេខសម្ងាត់បច្ចុប្បន្ន។";
       setError(errorMessage);
     }
   };
