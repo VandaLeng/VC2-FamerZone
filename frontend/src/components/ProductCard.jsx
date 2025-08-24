@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp } from 'lucide-react';
+import { MapPin, Star, Heart, Phone, MessageCircle, TrendingUp, Package } from 'lucide-react';
 import { CartContext } from '../services/cartContext';
 
 function ProductCard({
@@ -59,6 +59,37 @@ function ProductCard({
   const isInStock = product.stock > 0;
   const isInCart = cartItems.some(item => item.id === product.id);
 
+  // Currency conversion (1 USD = 4100 Riel approximately)
+  const usdToRielRate = 4100;
+  const priceUSD = product.price || 0;
+  const priceRiel = Math.round(priceUSD * usdToRielRate);
+
+  // Format price based on language
+  const formatPrice = () => {
+    if (currentLanguage === "kh") {
+      return {
+        price: priceRiel.toLocaleString(),
+        currency: "៛", // Riel symbol
+        currencyName: "រៀល"
+      };
+    } else {
+      return {
+        price: priceUSD.toFixed(2),
+        currency: "$",
+        currencyName: "USD"
+      };
+    }
+  };
+
+  const formattedPrice = formatPrice();
+
+  // Format stock with unit
+  const formatStock = () => {
+    const stockText = currentLanguage === "kh" ? "ស្តុក" : "Stock";
+    const stockValue = `${product.stock}${product.unit || ""}`;
+    return `${stockText}: ${stockValue}`;
+  };
+
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return "/placeholder.svg?height=300&width=300";
     if (imageUrl.startsWith('http')) {
@@ -92,15 +123,16 @@ function ProductCard({
               {product.is_popular && (
                 <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                   <TrendingUp className="w-3 h-3 inline mr-1" />
-                  Popular
+                  {currentLanguage === "kh" ? "ពេញនិយម" : "Popular"}
                 </span>
               )}
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
+                className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 ${
                   isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
                 }`}
               >
-                {isInStock ? (currentTexts.inStock || "In Stock") : (currentTexts.outOfStock || "Out of Stock")}
+                <Package className="w-3 h-3" />
+                {product.stock}{product.unit || ""}
               </span>
               {showDistance && product.distance && (
                 <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
@@ -123,17 +155,23 @@ function ProductCard({
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{productName}</h3>
-                {/* Removed product description from list view */}
 
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-indigo-600">{currentTexts.category || "Category"}:</span>
+                  <span className="text-sm font-medium text-indigo-600">
+                    {currentLanguage === "kh" ? "ប្រភេទ" : "Category"}:
+                  </span>
                   <span className="text-sm text-gray-700">{categoryName}</span>
+                </div>
+
+                <div className="flex items-center gap-2 mb-1">
+                  <Package className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">{product.stock}{product.unit || ""}</span>
                 </div>
 
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-green-600" />
                   <span className="text-sm font-medium text-green-700">
-                    {currentTexts.from || "From"} {provinceName}
+                    {currentLanguage === "kh" ? "មកពី" : "From"} {provinceName}
                   </span>
                 </div>
 
@@ -141,34 +179,22 @@ function ProductCard({
                   {statusText}
                 </span>
 
-                <div className="mb-3 text-sm text-gray-600">
-                  {currentTexts.orders || "Orders"}: {product.orders || 0}
-                </div>
-
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
                   <span className="text-sm text-gray-600">
-                    {product.rating || 0} ({product.reviews || 0} {currentTexts.reviews || "reviews"})
+                    {product.rating || 0} ({product.reviews || 0} {currentLanguage === "kh" ? "ការវាយតម្លៃ" : "reviews"})
                   </span>
                 </div>
               </div>
 
               <div className="text-right">
                 <div className="text-2xl font-bold text-green-700">
-                  ${product.price || 0}
-                  <span className="text-gray-500 text-sm">/{product.unit || "unit"}</span>
+                  ៛{priceRiel.toLocaleString()}
+                </div>
+                <div className="text-lg font-medium text-green-600">
+                  ${priceUSD.toFixed(2)}
                 </div>
                 {showDistance && product.distance && (
-                  <div className="text-sm text-blue-600 font-medium">
+                  <div className="text-sm text-blue-600 font-medium mt-2">
                     {product.distance.toFixed(1)} km away
                   </div>
                 )}
@@ -214,8 +240,8 @@ function ProductCard({
                   disabled={!isInStock || isInCart}
                 >
                   {isInCart
-                    ? (currentTexts.orderPlaced || "In Cart")
-                    : (currentTexts.orderNow || "Order Now")}
+                    ? (currentLanguage === "kh" ? "នៅក្នុងកន្រ្តក" : "In Cart")
+                    : (currentLanguage === "kh" ? "បញ្ជាទិញឥឡូវ" : "Order Now")}
                 </button>
               </div>
             </div>
@@ -244,15 +270,16 @@ function ProductCard({
           {(product.is_popular || product.isPopular) && (
             <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 popular-badge">
               <TrendingUp className="w-3 h-3" />
-              Popular
+              {currentLanguage === "kh" ? "ពេញនិយម" : "Popular"}
             </span>
           )}
           <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-lg ${
+            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 ${
               isInStock ? "bg-green-600 text-white" : "bg-red-500 text-white"
             } stock-badge`}
           >
-            {isInStock ? (currentTexts.inStock || "In Stock") : (currentTexts.outOfStock || "Out of Stock")}
+            <Package className="w-3 h-3" />
+            {formatStock()}
           </span>
           {showDistance && product.distance && (
             <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
@@ -275,39 +302,35 @@ function ProductCard({
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-bold text-gray-800 flex-1 pr-2 line-clamp-1">{productName}</h3>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 star" />
-            <span className="text-sm font-semibold text-gray-700">{product.rating || 0}</span>
+            <Package className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-semibold text-gray-700">{product.stock}{product.unit || ""}</span>
           </div>
         </div>
 
-        {/* Removed product description from grid view */}
-
         <div className="text-sm text-gray-600 mb-1">
-          <strong>{currentTexts.category || "Category"}:</strong> {categoryName}
+          <strong>{currentLanguage === "kh" ? "ប្រភេទ" : "Category"}:</strong> {categoryName}
         </div>
 
         <div className="text-sm text-gray-600 mb-1">
-          <strong>{currentTexts.status || "Status"}:</strong>{" "}
+          <strong>{currentLanguage === "kh" ? "ស្ថានភាព" : "Status"}:</strong>{" "}
           <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold text-white ${statusColor}`}>
             {statusText}
           </span>
         </div>
 
-        <div className="text-sm text-gray-600 mb-3">
-          <strong>{currentTexts.orders || "Orders"}:</strong> {product.orders || 0}
-        </div>
-
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1">
             <MapPin className="w-3 h-3 text-green-600" />
-            <span className="text-sm text-gray-600">{currentTexts.from || "From"}</span>
+            <span className="text-sm text-gray-600">{currentLanguage === "kh" ? "មកពី" : "From"}</span>
             <span className="text-sm font-medium text-green-700">{provinceName}</span>
           </div>
           <div className="text-right price-display">
-            <span className="text-lg font-bold text-green-700">
-              ${product.price || 0}
-            </span>
-            <span className="text-gray-500 text-sm">/{product.unit || "unit"}</span>
+            <div className="text-lg font-bold text-green-700">
+              ៛{priceRiel.toLocaleString()}
+            </div>
+            <div className="text-sm font-medium text-green-600">
+              ${priceUSD.toFixed(2)}
+            </div>
           </div>
         </div>
 
@@ -346,8 +369,8 @@ function ProductCard({
             disabled={!isInStock || isInCart}
           >
             {isInCart
-              ? (currentTexts.orderPlaced || "In Cart")
-              : (currentTexts.orderNow || "Order Now")}
+              ? (currentLanguage === "kh" ? "នៅក្នុងកន្រ្តក" : "In Cart")
+              : (currentLanguage === "kh" ? "បញ្ជាទិញឥឡូវ" : "Order Now")}
           </button>
         </div>
       </div>

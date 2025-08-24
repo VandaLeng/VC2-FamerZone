@@ -1,9 +1,11 @@
 <?php
+// File: UserController.php
 
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +17,7 @@ class UserController extends Controller
     {
         $search = $request->query('search');
 
-        $users = User::with('roles')
+        $users = User::with('roles', 'province')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%$search%")
                     ->orWhere('email', 'like', "%$search%");
@@ -25,7 +27,6 @@ class UserController extends Controller
 
         return response()->json($users);
     }
-
 
     public function store(Request $request)
     {
@@ -69,26 +70,24 @@ class UserController extends Controller
 
     function update(Request $request, $id)
     {
-        // Try to find the user, return 404 if not found
         try {
             $user = User::findOrFail($id);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        // Validate the request
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
             'role' => 'nullable|string|exists:roles,name',
             'phone' => 'nullable|string|max:20',
-            'province' => 'nullable|string|max:255',
+            'province_id' => 'nullable|exists:provinces,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Fill only provided values, keep existing for missing fields
-        $user->fill($request->only(['name', 'email', 'phone', 'province']));
+        $user->fill($request->only(['name', 'email', 'phone', 'province_id']));
 
         // Update password if provided
         if ($request->filled('password')) {
@@ -122,15 +121,9 @@ class UserController extends Controller
         // Return updated data
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user->load('roles')->append('image_url')
+            'user' => $user->load('roles', 'province')->append('image_url')
         ]);
     }
-
-
-
-
-
-
 
     public function destroy($id)
     {
@@ -237,6 +230,44 @@ class UserController extends Controller
         return response()->json(['message' => 'Password changed successfully']);
     }
 
+    // ✅ Get authenticated user's profile with province info - FIXED
+    public function getProfile(Request $request)
+    {
+        $user = $request->user();
+        $user->load(['roles', 'province']);
+        
+        // Get the primary role name
+        $roleName = null;
+        if ($user->roles->isNotEmpty()) {
+            $roleName = $user->roles->first()->name;
+        }
+        
+        // FIXED: Handle province data properly
+        $provinceName = null;
+        if ($user->province) {
+            $provinceName = $user->province->province_name;
+        }
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role' => $roleName,
+                'role_id' => $user->role_id,
+                'province' => $provinceName,
+                'province_id' => $user->province_id,
+                'image' => $user->image,
+                'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]
+        ]);
+    }
+
+    // ✅ Update authenticated user's profile - FIXED
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -244,12 +275,32 @@ class UserController extends Controller
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|nullable|string|min:6|confirmed',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'address' => 'sometimes|nullable|string|max:255',
             'phone' => 'sometimes|nullable|string|max:20',
+            'province_id' => 'sometimes|nullable|exists:provinces,id',
+            'current_password' => 'sometimes|required_with:password|string',
+            'password' => 'sometimes|nullable|string|min:6|confirmed',
         ]);
 
+        // Check current password if new password is provided
+        if ($request->filled('password')) {
+            if (!$request->filled('current_password')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Current password is required when changing password'
+                ], 400);
+            }
+            
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Current password is incorrect'
+                ], 403);
+            }
+            
+            $user->password = Hash::make($request->password);
+        }
+
+        // Update other fields
         if ($request->has('name')) {
             $user->name = $request->name;
         }
@@ -258,40 +309,50 @@ class UserController extends Controller
             $user->email = $request->email;
         }
 
-        if ($request->has('address')) {
-            $user->address = $request->address;
-        }
-
         if ($request->has('phone')) {
             $user->phone = $request->phone;
         }
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-
-            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
-                Storage::delete('public/users/' . $user->image);
-            }
-
-            $image->storeAs('public/users', $imageName);
-            $user->image = $imageName;
+        if ($request->has('province_id')) {
+            $user->province_id = $request->province_id;
         }
 
         $user->save();
+        $user->load(['roles', 'province']);
 
-        $user->load('roles', 'permissions');
+        // Get the primary role name
+        $roleName = null;
+        if ($user->roles->isNotEmpty()) {
+            $roleName = $user->roles->first()->name;
+        }
+
+        // FIXED: Handle province data properly
+        $provinceName = null;
+        if ($user->province) {
+            $provinceName = $user->province->province_name;
+        }
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Profile updated successfully',
-            'user' => $user,
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role' => $roleName,
+                'role_id' => $user->role_id,
+                'province' => $provinceName,
+                'province_id' => $user->province_id,
+                'image' => $user->image,
+                'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]
         ]);
     }
 
+    // ✅ Update only profile image - FIXED
     public function updateImage(Request $request)
     {
         $request->validate([
@@ -304,32 +365,28 @@ class UserController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
+            // Delete old image if exists
             if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
                 Storage::delete('public/users/' . $user->image);
             }
 
             $image->storeAs('public/users', $imageName);
-
             $user->image = $imageName;
             $user->save();
 
             return response()->json([
-                'message' => 'Image updated successfully',
-                'image_url' => url('storage/users/' . $imageName),
-                'user' => $user,
+                'status' => 'success',
+                'message' => 'Profile image updated successfully',
+                'data' => [
+                    'image' => $imageName,
+                    'image_url' => url('storage/users/' . $imageName)
+                ]
             ]);
         }
 
-        return response()->json(['message' => 'No image uploaded'], 400);
-    }
-
-    // New method to fetch authenticated user's profile
-    public function getProfile(Request $request)
-    {
-        $user = $request->user();
-        $user->load('roles');
         return response()->json([
-            'data' => $user
-        ]);
+            'status' => 'error',
+            'message' => 'No image file provided'
+        ], 400);
     }
 }

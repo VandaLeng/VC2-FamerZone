@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { MoreVertical, User, Phone, Mail, MapPin, Calendar, ShoppingBag, Star, MessageCircle, Eye, UserX, Archive } from 'lucide-react';
+import axios from 'axios';
 
 const FarmerCustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
@@ -7,87 +9,54 @@ const FarmerCustomerManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [messageModal, setMessageModal] = useState(null);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
 
-  // Sample customer data
-  const sampleCustomers = [
-    {
-      id: 'CUST-001',
-      name: 'Sophea Chan',
-      email: 'sophea@email.com',
-      phone: '+855 12 345 678',
-      location: 'ភ្នំពេញ, កម្ពុជា',
-      joinDate: '2023-08-15',
-      totalOrders: 12,
-      totalSpent: 145.50,
-      lastOrderDate: '2024-01-15',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.5
-    },
-    {
-      id: 'CUST-002',
-      name: 'David Kim',
-      email: 'david@email.com',
-      phone: '+855 87 654 321',
-      location: 'សៀមរាប, កម្ពុជា',
-      joinDate: '2023-10-22',
-      totalOrders: 8,
-      totalSpent: 89.20,
-      lastOrderDate: '2024-01-14',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 5.0
-    },
-    {
-      id: 'CUST-003',
-      name: 'Maria Santos',
-      email: 'maria@email.com',
-      phone: '+855 96 789 012',
-      location: 'បាត់ដំបង, កម្ពុជា',
-      joinDate: '2023-06-10',
-      totalOrders: 25,
-      totalSpent: 320.75,
-      lastOrderDate: '2024-01-13',
-      status: 'active',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.8
-    },
-    {
-      id: 'CUST-004',
-      name: 'John Wilson',
-      email: 'john@email.com',
-      phone: '+855 77 123 456',
-      location: 'កំពត, កម្ពុជា',
-      joinDate: '2023-12-05',
-      totalOrders: 3,
-      totalSpent: 28.90,
-      lastOrderDate: '2023-12-20',
-      status: 'inactive',
-      avatar: '/api/placeholder/40/40',
-      rating: 4.2
-    },
-    {
-      id: 'CUST-005',
-      name: 'Lisa Anderson',
-      email: 'lisa@email.com',
-      phone: '+855 88 987 654',
-      location: 'កែប, កម្ពុជា',
-      joinDate: '2023-11-18',
-      totalOrders: 1,
-      totalSpent: 15.60,
-      lastOrderDate: '2023-11-20',
-      status: 'blocked',
-      avatar: '/api/placeholder/40/40',
-      rating: 3.0
+  const fetchCustomers = async () => {
+    try {
+      setError(null);
+      const response = await axios.get('http://localhost:8000/api/customers', {
+        headers: {
+          'Accept': 'application/json',
+          // Add Authorization header if needed, e.g., 'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log('API Response:', response.data); // Log the response for debugging
+      const data = response.data.data || response.data; // Fallback if no 'data' key
+      const mappedData = data.map(customer => ({
+        ...customer,
+        id: customer.id,
+        joinDate: customer.join_date,
+        totalOrders: customer.total_orders || 0,
+        totalSpent: customer.total_spent || 0,
+        lastOrderDate: customer.last_order_date,
+        avatar: customer.avatar || customer.avatar_url || '/api/placeholder/40/40', // Handle both avatar fields
+        name: customer.name || 'Unknown', // Fallback for missing name
+        email: customer.email || 'N/A',
+        phone: customer.phone || 'N/A',
+        location: customer.location || 'N/A',
+        status: customer.status || 'active',
+        rating: customer.rating || 0,
+      }));
+      setCustomers(mappedData);
+      setFilteredCustomers(mappedData);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to fetch customers. Please try again.';
+      setError(errorMessage);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers,
+      });
     }
-  ];
+  };
 
   useEffect(() => {
-    setCustomers(sampleCustomers);
-    setFilteredCustomers(sampleCustomers);
+    fetchCustomers();
   }, []);
 
-  // Filter customers based on status and search term
   useEffect(() => {
     let filtered = customers;
 
@@ -97,10 +66,10 @@ const FarmerCustomerManagement = () => {
 
     if (searchTerm) {
       filtered = filtered.filter(customer =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.phone.includes(searchTerm) ||
-        customer.location.toLowerCase().includes(searchTerm.toLowerCase())
+        (customer.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (customer.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (customer.phone || '').includes(searchTerm) ||
+        (customer.location || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -111,36 +80,62 @@ const FarmerCustomerManagement = () => {
     const colors = {
       active: 'bg-green-100 text-green-800',
       inactive: 'bg-yellow-100 text-yellow-800',
-      blocked: 'bg-red-100 text-red-800'
+      blocked: 'bg-red-100 text-red-800',
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleCustomerAction = (customerId, action) => {
-    if (action === 'block') {
-      setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'blocked' } : customer
-      ));
-    } else if (action === 'unblock') {
-      setCustomers(customers.map(customer =>
-        customer.id === customerId ? { ...customer, status: 'active' } : customer
-      ));
+  const handleCustomerAction = async (customerId, action) => {
+    try {
+      setError(null);
+      if (action === 'block' || action === 'unblock') {
+        const status = action === 'block' ? 'blocked' : 'active';
+        await axios.put(`http://localhost:8000/api/customers/${customerId}`, { status });
+        fetchCustomers();
+      } else if (action === 'delete') {
+        if (window.confirm('Are you sure you want to delete this customer?')) {
+          await axios.delete(`http://localhost:8000/api/customers/${customerId}`);
+          fetchCustomers();
+        }
+      } else if (action === 'viewProfile') {
+        const response = await axios.get(`http://localhost:8000/api/customers/${customerId}`);
+        const customer = response.data.data || response.data;
+        alert(`Profile for ${customer.name || 'N/A'}:\nEmail: ${customer.email || 'N/A'}\nPhone: ${customer.phone || 'N/A'}\nLocation: ${customer.location || 'N/A'}\nJoined: ${formatDate(customer.join_date)}\nStatus: ${customer.status || 'N/A'}`);
+      } else if (action === 'viewOrders') {
+        const response = await axios.get(`http://localhost:8000/api/customers/${customerId}/orders`);
+        const customer = response.data.data || response.data;
+        alert(`Orders for ${customer.name || 'N/A'}:\n${customer.orders?.length || 0} orders found.`);
+      } else if (action === 'sendMessage') {
+        if (message) {
+          await axios.post(`http://localhost:8000/api/customers/${customerId}/message`, { message });
+          alert('Message sent successfully!');
+          setMessage('');
+          setMessageModal(null);
+        } else {
+          alert('Please enter a message before sending.');
+        }
+      }
+      setActiveDropdown(null);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to perform action. Please try again.';
+      setError(errorMessage);
+      console.error('Error performing action:', error);
     }
-    setActiveDropdown(null);
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('km-KH');
+    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('km-KH');
   };
 
   const formatCurrency = (amount) => {
-    return `$${amount.toFixed(2)}`;
+    return `$${parseFloat(amount || 0).toFixed(2)}`;
   };
 
   const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = (rating || 0) % 1 !== 0;
     const stars = [];
 
     for (let i = 0; i < fullStars; i++) {
@@ -161,10 +156,15 @@ const FarmerCustomerManagement = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-4 sm:p-6 rounded-xl shadow-sm">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">ការគ្រប់គ្រងអតិថិជន</h1>
-        
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1">
@@ -190,6 +190,39 @@ const FarmerCustomerManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Message Modal */}
+      {messageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4">ផ្ញើសារ</h2>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Enter your message..."
+              rows="4"
+            />
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setMessageModal(null);
+                  setMessage('');
+                }}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                បោះបង់
+              </button>
+              <button
+                onClick={() => handleCustomerAction(messageModal, 'sendMessage')}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg"
+              >
+                ផ្ញើ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="mt-4 sm:mt-6">
@@ -225,6 +258,7 @@ const FarmerCustomerManagement = () => {
                           src={customer.avatar}
                           alt={customer.name}
                           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200"
+                          onError={(e) => { e.target.src = '/api/placeholder/40/40'; }} // Fallback on image error
                         />
                         <div>
                           <div className="font-medium text-gray-900 text-sm sm:text-base">{customer.name}</div>
@@ -299,32 +333,41 @@ const FarmerCustomerManagement = () => {
                           <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                             <div className="py-1">
                               <button
-                                onClick={() => setActiveDropdown(null)}
+                                onClick={() => {
+                                  handleCustomerAction(customer.id, 'viewProfile');
+                                  setActiveDropdown(null);
+                                }}
                                 className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100"
                               >
                                 <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                                 មើលប្រវត្តិរូប
                               </button>
-                              
                               <button
-                                onClick={() => setActiveDropdown(null)}
+                                onClick={() => {
+                                  handleCustomerAction(customer.id, 'viewOrders');
+                                  setActiveDropdown(null);
+                                }}
                                 className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-blue-700 hover:bg-blue-50"
                               >
                                 <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                                 មើលបញ្ជាទិញ
                               </button>
-                              
                               <button
-                                onClick={() => setActiveDropdown(null)}
+                                onClick={() => {
+                                  setMessageModal(customer.id);
+                                  setActiveDropdown(null);
+                                }}
                                 className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-green-700 hover:bg-green-50"
                               >
                                 <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                                 ផ្ញើសារ
                               </button>
-                              
                               {customer.status === 'blocked' ? (
                                 <button
-                                  onClick={() => handleCustomerAction(customer.id, 'unblock')}
+                                  onClick={() => {
+                                    handleCustomerAction(customer.id, 'unblock');
+                                    setActiveDropdown(null);
+                                  }}
                                   className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-green-700 hover:bg-green-50"
                                 >
                                   <User className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
@@ -332,20 +375,25 @@ const FarmerCustomerManagement = () => {
                                 </button>
                               ) : (
                                 <button
-                                  onClick={() => handleCustomerAction(customer.id, 'block')}
+                                  onClick={() => {
+                                    handleCustomerAction(customer.id, 'block');
+                                    setActiveDropdown(null);
+                                  }}
                                   className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-red-700 hover:bg-red-50"
                                 >
                                   <UserX className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                                  បិទអតိថិជន
+                                  បិទអតិថិជន
                                 </button>
                               )}
-                              
                               <button
-                                onClick={() => setActiveDropdown(null)}
-                                className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => {
+                                  handleCustomerAction(customer.id, 'delete');
+                                  setActiveDropdown(null);
+                                }}
+                                className="flex items-center w-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-red-700 hover:bg-red-50"
                               >
                                 <Archive className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                                រក្សាទុកអតិថិជន
+                                លុបអតិថិជន
                               </button>
                             </div>
                           </div>
@@ -360,7 +408,7 @@ const FarmerCustomerManagement = () => {
         )}
       </div>
 
-      {/* Custom CSS for mobile enhancements */}
+      {/* Custom CSS */}
       <style jsx>{`
         .bg-modern-green { 
           background-color: #DCFCE7; 
@@ -368,11 +416,9 @@ const FarmerCustomerManagement = () => {
         .hover\\:bg-modern-green:hover { 
           background-color: #DCFCE7; 
         }
-        /* Ensure touch scrolling is smooth */
         .touch-auto {
           -webkit-overflow-scrolling: touch;
         }
-        /* Adjust table width for mobile */
         @media (max-width: 640px) {
           .min-w-[640px] {
             min-width: 100%;
