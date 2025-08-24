@@ -243,41 +243,44 @@ class UserController extends Controller
         ]);
     }
 
-    // Update profile image
     public function updateImage(Request $request)
-    {
-        $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+{
+    $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
 
-        $user = $request->user();
+    $user = $request->user();
 
-        if ($request->hasFile('image')) {
-            if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
-                Storage::delete('public/users/' . $user->image);
-            }
-
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/users', $imageName);
-
-           
-            $user->image = $imageName;
-            $user->save();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Profile image updated successfully',
-                'data' => [
-                    'image' => $imageName,
-                    'image_url' => url('storage/users/' . $imageName)
-                ]
-            ]);
+    if ($request->hasFile('image')) {
+        if ($user->image && $user->image !== 'default.jpg' && Storage::exists('public/users/' . $user->image)) {
+            \Log::info("Deleting old image: public/users/{$user->image}");
+            Storage::delete('public/users/' . $user->image);
         }
 
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $imagePath = $image->storeAs('public/users', $imageName);
+        \Log::info("New image stored at: {$imagePath}");
+
+        $user->image = $imageName;
+        $user->save();
+
+        $imageUrl = url('storage/users/' . $imageName);
+        \Log::info("Generated image URL: {$imageUrl}");
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'No image file provided'
-        ], 400);
+            'status' => 'success',
+            'message' => 'Profile image updated successfully',
+            'data' => [
+                'image' => $imageName,
+                'image_url' => $imageUrl
+            ]
+        ]);
     }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'No image file provided'
+    ], 400);
+}
 
     // Delete profile image
     public function deleteImage(Request $request)

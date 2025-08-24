@@ -1,6 +1,5 @@
-// File: FarmerProfileSettings.jsx
 import React, { useState, useEffect } from "react";
-import { Camera, User, Save, Edit, Lock } from "lucide-react";
+import { Camera, User, Save, Edit, Lock, Eye, EyeOff } from "lucide-react";
 import { profileAPI, provincesAPI } from "../../stores/api";
 
 const FarmerProfileSettings = () => {
@@ -23,12 +22,17 @@ const FarmerProfileSettings = () => {
   // Password state
   const [passwordData, setPasswordData] = useState({
     current_password: "",
-    password: "",
-    password_confirmation: "",
+    new_password: "", // Changed from password
+    new_password_confirmation: "", // Changed from password_confirmation
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    current_password: false,
+    new_password: false,
+    new_password_confirmation: false,
+  });
 
-  // Fetch provinces first, then profile
+  // Fetch provinces and profile data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,13 +44,14 @@ const FarmerProfileSettings = () => {
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("បរាជ័យក្នុងការទាញយកទិន្នន័យ");
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  // Fetch profile using provinces list
+  // Fetch profile data
   const fetchProfileData = async (provinceList = []) => {
     try {
       setIsLoading(true);
@@ -130,19 +135,21 @@ const FarmerProfileSettings = () => {
 
     try {
       setImageUploading(true);
-      const response = await profileAPI.updateProfileImage(file);
-      if (response.status === "success") {
+      const response = await profileAPI.updateImage(file);
+      console.log("Upload response:", response);
+      if (response.status === "success" && response.data?.image_url) {
         setProfileData((prev) => ({
           ...prev,
           profilePhoto: response.data.image_url,
         }));
         setSuccess("រូបថតបានផ្ទុកជោគជ័យ");
       } else {
-        setError("មិនអាចផ្ទុករូបថតបានទេ");
+        setError("មិនអាចផ្ទុករូបថតបានទេ: URL មិនត្រឹមត្រូវ");
+        console.error("Invalid response:", response);
       }
     } catch (err) {
-      console.error(err);
-      setError("បរាជ័យក្នុងការផ្ទុករូបថត");
+      console.error("Image upload error:", err);
+      setError(err.response?.data?.message || "បរាជ័យក្នុងការផ្ទុករូបថត");
     } finally {
       setImageUploading(false);
       e.target.value = "";
@@ -178,41 +185,88 @@ const FarmerProfileSettings = () => {
         setError("មិនអាចធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបបានទេ");
       }
     } catch (err) {
-      console.error(err);
-      setError("បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប");
+      console.error("Profile update error:", err);
+      setError(
+        err.response?.data?.message ||
+          "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូប"
+      );
     }
+  };
+
+  // Toggle show/hide password
+  const toggleShowPassword = (field) => {
+    setShowPasswords((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
   };
 
   // Password change
   const handlePasswordChange = async () => {
-    if (!passwordData.current_password || !passwordData.password) return;
+    setError(null);
+    setSuccess(null);
 
-    if (passwordData.password !== passwordData.password_confirmation) {
+    // Enhanced validation
+    if (!passwordData.current_password.trim()) {
+      setError("សូមបញ្ចូលលេខសម្ងាត់បច្ចុប្បន្ន");
+      return;
+    }
+    if (!passwordData.new_password.trim()) {
+      setError("សូមបញ្ចូលលេខសម្ងាត់ថ្មី");
+      return;
+    }
+    if (!passwordData.new_password_confirmation.trim()) {
+      setError("សូមបញ្ជាក់លេខសម្ងាត់ថ្មី");
+      return;
+    }
+    if (passwordData.new_password !== passwordData.new_password_confirmation) {
       setError("លេខសម្ងាត់ថ្មីមិនត្រូវគ្នា");
       return;
     }
-
-    if (passwordData.password.length < 6) {
+    if (passwordData.new_password.length < 6) {
       setError("លេខសម្ងាត់ថ្មីត្រូវមានយ៉ាងហោចណាស់ ៦ តួរអក្សរ");
+      return;
+    }
+    if (/\s/.test(passwordData.new_password)) {
+      setError("លេខសម្ងាត់មិនអាចមានដកឃ្លា");
       return;
     }
 
     try {
-      setError(null);
-      const response = await profileAPI.changePassword(passwordData);
+      const response = await profileAPI.changePassword({
+        current_password: passwordData.current_password.trim(),
+        new_password: passwordData.new_password.trim(),
+        new_password_confirmation: passwordData.new_password_confirmation.trim(),
+      });
+
       if (response.status === "success") {
         setSuccess("លេខសម្ងាត់បានផ្លាស់ប្តូរជោគជ័យ");
-        setPasswordData({ current_password: "", password: "", password_confirmation: "" });
+        setPasswordData({
+          current_password: "",
+          new_password: "",
+          new_password_confirmation: "",
+        });
+        setShowPasswords({
+          current_password: false,
+          new_password: false,
+          new_password_confirmation: false,
+        });
         setIsChangingPassword(false);
       } else {
         setError(response.message || "មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ");
       }
     } catch (err) {
-      console.error(err);
-      setError("មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ");
+      console.error("Password change error:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.new_password?.[0] ||
+        err.response?.data?.errors?.current_password?.[0] ||
+        "មិនអាចផ្លាស់ប្តូរលេខសម្ងាត់បានទេ។ សូមពិនិត្យលេខសម្ងាត់បច្ចុប្បន្ន។";
+      setError(errorMessage);
     }
   };
 
+  // Cancel editing
   const handleCancel = () => {
     fetchProfileData(provinces);
     setIsEditing(false);
@@ -220,7 +274,9 @@ const FarmerProfileSettings = () => {
     setSuccess(null);
   };
 
-  if (isLoading) return <div>កំពុងទាញយកទិន្នន័យ...</div>;
+  if (isLoading) {
+    return <div className="text-center p-4">កំពុងទាញយកទិន្នន័យ...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -246,7 +302,7 @@ const FarmerProfileSettings = () => {
         {/* Profile Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Photo */}
-          <div className="bg-white p-6 rounded shadow">
+          <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4 flex items-center text-green-600">
               <Camera className="w-5 h-5 mr-2" /> រូបថត
             </h3>
@@ -257,7 +313,12 @@ const FarmerProfileSettings = () => {
                     src={profileData.profilePhoto}
                     alt="Profile"
                     className="w-full h-full object-cover"
-                    onError={(e) => (e.target.src = "/placeholder-profile.png")}
+                    onError={(e) => {
+                      console.error("Image load failed. URL:", profileData.profilePhoto, e);
+                      setError("មិនអាចផ្ទុករូបថតបានទេ។ សូមព្យាយាមម្តងទៀត។");
+                      e.target.src = "/images/default.jpg";
+                    }}
+                    onLoad={() => console.log("Image loaded successfully:", profileData.profilePhoto)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -292,7 +353,7 @@ const FarmerProfileSettings = () => {
           </div>
 
           {/* Info */}
-          <div className="lg:col-span-2 bg-white p-6 rounded shadow">
+          <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4 flex items-center text-green-600">
               <User className="w-5 h-5 mr-2" /> ព័ត៌មានផ្ទាល់ខ្លួន
             </h3>
@@ -300,57 +361,65 @@ const FarmerProfileSettings = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Name */}
               <div>
-                <label className="block mb-1">ឈ្មោះពេញ *</label>
+                <label className="block mb-1 font-medium">ឈ្មោះពេញ *</label>
                 {isEditing ? (
                   <input
                     type="text"
                     value={profileData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
                   />
                 ) : (
-                  <p className="p-3 bg-gray-50 rounded border">{profileData.name || "មិនបានផ្តល់"}</p>
+                  <p className="p-3 bg-gray-50 rounded border">
+                    {profileData.name || "មិនបានផ្តល់"}
+                  </p>
                 )}
               </div>
 
               {/* Email */}
               <div>
-                <label className="block mb-1">អ៊ីមែល *</label>
+                <label className="block mb-1 font-medium">អ៊ីមែល *</label>
                 {isEditing ? (
                   <input
                     type="email"
                     value={profileData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                    required
                   />
                 ) : (
-                  <p className="p-3 bg-gray-50 rounded border">{profileData.email || "មិនបានផ្តល់"}</p>
+                  <p className="p-3 bg-gray-50 rounded border">
+                    {profileData.email || "មិនបានផ្តល់"}
+                  </p>
                 )}
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block mb-1">ទូរស័ព្ទ</label>
+                <label className="block mb-1 font-medium">ទូរស័ព្ទ</label>
                 {isEditing ? (
                   <input
                     type="text"
                     value={profileData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
                   />
                 ) : (
-                  <p className="p-3 bg-gray-50 rounded border">{profileData.phone || "មិនបានផ្តល់"}</p>
+                  <p className="p-3 bg-gray-50 rounded border">
+                    {profileData.phone || "មិនបានផ្តល់"}
+                  </p>
                 )}
               </div>
 
               {/* Province */}
               <div>
-                <label className="block mb-1">ខេត្ត</label>
+                <label className="block mb-1 font-medium">ខេត្ត</label>
                 {isEditing ? (
                   <select
                     value={profileData.province_id}
                     onChange={(e) => handleInputChange("province_id", e.target.value)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
                   >
                     <option value="">-- ជ្រើសរើសខេត្ត --</option>
                     {provinces.map((prov) => (
@@ -360,7 +429,9 @@ const FarmerProfileSettings = () => {
                     ))}
                   </select>
                 ) : (
-                  <p className="p-3 bg-gray-50 rounded border">{profileData.province || "មិនបានផ្តល់"}</p>
+                  <p className="p-3 bg-gray-50 rounded border">
+                    {profileData.province || "មិនបានផ្តល់"}
+                  </p>
                 )}
               </div>
             </div>
@@ -370,13 +441,13 @@ const FarmerProfileSettings = () => {
               {isEditing ? (
                 <>
                   <button
-                    className="bg-green-600 text-white py-2 px-4 rounded flex items-center"
+                    className="bg-green-600 text-white py-2 px-4 rounded flex items-center hover:bg-green-700 transition"
                     onClick={handleSave}
                   >
                     <Save className="w-4 h-4 mr-2" /> រក្សាទុក
                   </button>
                   <button
-                    className="bg-gray-400 text-white py-2 px-4 rounded flex items-center"
+                    className="bg-gray-400 text-white py-2 px-4 rounded flex items-center hover:bg-gray-500 transition"
                     onClick={handleCancel}
                   >
                     <Edit className="w-4 h-4 mr-2" /> ចោល
@@ -384,7 +455,7 @@ const FarmerProfileSettings = () => {
                 </>
               ) : (
                 <button
-                  className="bg-green-600 text-white py-2 px-4 rounded flex items-center"
+                  className="bg-green-600 text-white py-2 px-4 rounded flex items-center hover:bg-green-700 transition"
                   onClick={() => setIsEditing(true)}
                 >
                   <Edit className="w-4 h-4 mr-2" /> កែប្រែ
@@ -395,55 +466,114 @@ const FarmerProfileSettings = () => {
         </div>
 
         {/* Password Change */}
-        <div className="bg-white p-6 rounded shadow mt-6">
+        <div className="bg-white p-6 rounded-lg shadow mt-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center text-green-600">
             <Lock className="w-5 h-5 mr-2" /> ផ្លាស់ប្តូរលេខសម្ងាត់
           </h3>
           {isChangingPassword ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="password"
-                placeholder="លេខសម្ងាត់បច្ចុប្បន្ន"
-                value={passwordData.current_password}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({
-                    ...prev,
-                    current_password: e.target.value,
-                  }))
-                }
-                className="w-full p-3 border rounded"
-              />
-              <input
-                type="password"
-                placeholder="លេខសម្ងាត់ថ្មី"
-                value={passwordData.password}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({ ...prev, password: e.target.value }))
-                }
-                className="w-full p-3 border rounded"
-              />
-              <input
-                type="password"
-                placeholder="បញ្ជាក់លេខសម្ងាត់ថ្មី"
-                value={passwordData.password_confirmation}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({
-                    ...prev,
-                    password_confirmation: e.target.value,
-                  }))
-                }
-                className="w-full p-3 border rounded"
-              />
+              <div className="relative">
+                <label className="block mb-1 font-medium">លេខសម្ងាត់បច្ចុប្បន្ន</label>
+                <input
+                  type={showPasswords.current_password ? "text" : "password"}
+                  placeholder="លេខសម្ងាត់បច្ចុប្បន្ន"
+                  value={passwordData.current_password}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      current_password: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => toggleShowPassword("current_password")}
+                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.current_password ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <label className="block mb-1 font-medium">លេខសម្ងាត់ថ្មី</label>
+                <input
+                  type={showPasswords.new_password ? "text" : "password"}
+                  placeholder="លេខសម្ងាត់ថ្មី"
+                  value={passwordData.new_password}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      new_password: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => toggleShowPassword("new_password")}
+                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.new_password ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <label className="block mb-1 font-medium">បញ្ជាក់លេខសម្ងាត់ថ្មី</label>
+                <input
+                  type={showPasswords.new_password_confirmation ? "text" : "password"}
+                  placeholder="បញ្ជាក់លេខសម្ងាត់ថ្មី"
+                  value={passwordData.new_password_confirmation}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      new_password_confirmation: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-green-600 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => toggleShowPassword("new_password_confirmation")}
+                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswords.new_password_confirmation ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
               <div className="md:col-span-3 flex gap-2 mt-2">
                 <button
-                  className="bg-green-600 text-white py-2 px-4 rounded flex items-center"
+                  className="bg-green-600 text-white py-2 px-4 rounded flex items-center hover:bg-green-700 transition"
                   onClick={handlePasswordChange}
                 >
                   <Save className="w-4 h-4 mr-2" /> រក្សាទុក
                 </button>
                 <button
-                  className="bg-gray-400 text-white py-2 px-4 rounded flex items-center"
-                  onClick={() => setIsChangingPassword(false)}
+                  className="bg-gray-400 text-white py-2 px-4 rounded flex items-center hover:bg-gray-500 transition"
+                  onClick={() => {
+                    setIsChangingPassword(false);
+                    setPasswordData({
+                      current_password: "",
+                      new_password: "",
+                      new_password_confirmation: "",
+                    });
+                    setShowPasswords({
+                      current_password: false,
+                      new_password: false,
+                      new_password_confirmation: false,
+                    });
+                    setError(null);
+                    setSuccess(null);
+                  }}
                 >
                   <Edit className="w-4 h-4 mr-2" /> ចោល
                 </button>
@@ -451,7 +581,7 @@ const FarmerProfileSettings = () => {
             </div>
           ) : (
             <button
-              className="bg-green-600 text-white py-2 px-4 rounded flex items-center"
+              className="bg-green-600 text-white py-2 px-4 rounded flex items-center hover:bg-green-700 transition"
               onClick={() => setIsChangingPassword(true)}
             >
               <Edit className="w-4 h-4 mr-2" /> ផ្លាស់ប្តូរលេខសម្ងាត់

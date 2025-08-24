@@ -109,9 +109,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/users/{id}/remove-role', [UserController::class, 'removeRole']);
     Route::post('/users/{id}/assign-permission', [UserController::class, 'assignPermission']);
     Route::post('/users/{id}/upload-image', [UserController::class, 'uploadImage']);
+    Route::delete('/users/{id}/image', [UserController::class, 'deleteImage']);
     // Image routes
-    Route::post('/users/image', [UserController::class, 'updateImage']);  // Update profile image
-    Route::delete('/users/image', [UserController::class, 'deleteImage']); // Delete profile image
+    // Route::post('/users/image', [UserController::class, 'updateImage']);  // Update profile image
+    // Route::delete('/users/image', [UserController::class, 'deleteImage']); // Delete profile image
     
     // Assign/remove roles
     Route::post('/users/{id}/assign-role', [UserController::class, 'assignRole']);
@@ -160,3 +161,12 @@ Route::post('/customers', [CustomerController::class, 'store']);
 Route::get('/customers/{id}', [CustomerController::class, 'show']);
 Route::put('/customers/{id}', [CustomerController::class, 'update']);
 Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [UserController::class, 'getProfile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/profile/image', [UserController::class, 'updateImage']);
+    Route::delete('/profile/image', [UserController::class, 'deleteImage']);
+    Route::put('/password', [UserController::class, 'changePassword']);
+});
