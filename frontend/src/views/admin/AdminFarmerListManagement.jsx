@@ -53,22 +53,6 @@ const FarmerListManagement = () => {
     }
   };
 
-  const handleSelectFarmer = (farmerId) => {
-    setSelectedFarmers(prev => 
-      prev.includes(farmerId) 
-        ? prev.filter(id => id !== farmerId)
-        : [...prev, farmerId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedFarmers(
-      selectedFarmers.length === sortedFarmers.length 
-        ? [] 
-        : sortedFarmers.map(farmer => farmer.id)
-    );
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdowns = document.querySelectorAll('.relative');
@@ -143,14 +127,6 @@ const FarmerListManagement = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
-                      checked={selectedFarmers.length === sortedFarmers.length && sortedFarmers.length > 0}
-                      onChange={handleSelectAll}
-                    />
-                  </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Farmer</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Contact</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Location</th>
@@ -164,14 +140,6 @@ const FarmerListManagement = () => {
               <tbody className="divide-y divide-gray-200">
                 {sortedFarmers.map((farmer) => (
                   <tr key={farmer.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
-                        checked={selectedFarmers.includes(farmer.id)}
-                        onChange={() => handleSelectFarmer(farmer.id)}
-                      />
-                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
