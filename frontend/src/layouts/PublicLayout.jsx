@@ -19,7 +19,7 @@ const PublicLayout = ({
   const location = useLocation();
   
   // List of routes where Footer should not be displayed
-  const noFooterRoutes = ['/profile', '/orders', '/settings', '/dashboard', '/cart'];
+  const noFooterRoutes = ['/profile', '/orders', '/settings', '/dashboard', '/cart', '/register', '/login'];
   
   // Check if current route is in noFooterRoutes
   const showFooter = !noFooterRoutes.includes(location.pathname);

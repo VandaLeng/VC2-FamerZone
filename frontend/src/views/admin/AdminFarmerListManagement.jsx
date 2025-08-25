@@ -200,10 +200,6 @@ const FarmerListManagement = () => {
               <p className="text-gray-600 mt-1">Manage and monitor all registered farmers on FramerZone</p>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </button>
               <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                 Add Farmer
               </button>

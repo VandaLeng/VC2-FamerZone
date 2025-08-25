@@ -224,14 +224,6 @@ const AdminProductManagement = () => {
               <p className="text-gray-600 mt-1">Review, approve and manage farmers' product listings</p>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                <Download size={20} />
-                <span>Export</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <Upload size={20} />
-                <span>Import</span>
-              </button>
               <button className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                 <Plus size={20} />
                 <span>Add Product</span>
@@ -301,20 +293,6 @@ const AdminProductManagement = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <Filter size={16} />
-                <span>Advanced Filters</span>
-              </button>
-              <button className="flex items-center space-x-2 px-4 py-2 text-yellow-700 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors">
-                <Clock size={16} />
-                <span>Review Queue</span>
-              </button>
-              <button 
-                onClick={() => setViewMode(viewMode === 'grid' ? 'table' : 'grid')}
-                className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <MoreVertical size={16} />
-              </button>
               <button className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <RefreshCw size={16} />
               </button>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-  Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye, 
+import {
+  Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye,
   Users, UserCheck, UserX, UserPlus, AlertCircle, CheckCircle, Clock,
   Download, Upload, RefreshCw, Star, Grid, List, Archive,
   Mail, Phone, MapPin, Calendar, Shield, Ban, Unlock,
@@ -143,35 +143,35 @@ const AdminUserManagement = () => {
   ];
 
   const stats = [
-    { 
-      title: 'Total Users', 
-      value: '1,247', 
-      change: '+12%', 
-      color: 'text-blue-600', 
+    {
+      title: 'Total Users',
+      value: '1,247',
+      change: '+12%',
+      color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       icon: Users
     },
-    { 
-      title: 'Active Farmers', 
-      value: '203', 
-      change: '+8%', 
-      color: 'text-green-600', 
+    {
+      title: 'Active Farmers',
+      value: '203',
+      change: '+8%',
+      color: 'text-green-600',
       bgColor: 'bg-green-50',
       icon: UserCheck
     },
-    { 
-      title: 'Active Customers', 
-      value: '1,044', 
-      change: '+15%', 
-      color: 'text-purple-600', 
+    {
+      title: 'Active Customers',
+      value: '1,044',
+      change: '+15%',
+      color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       icon: Users
     },
-    { 
-      title: 'Pending Approval', 
-      value: '23', 
-      change: '+5', 
-      color: 'text-orange-600', 
+    {
+      title: 'Pending Approval',
+      value: '23',
+      change: '+5',
+      color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       icon: Clock
     }
@@ -192,12 +192,12 @@ const AdminUserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.phone.includes(searchQuery);
+      user.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.phone.includes(searchQuery);
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
     const matchesRole = filterRole === 'all' || user.role === filterRole;
-    
+
     return matchesSearch && matchesStatus && matchesRole;
   });
 
@@ -220,8 +220,8 @@ const AdminUserManagement = () => {
 
         <div className="flex items-center space-x-4 mb-4">
           <div className="relative">
-            <img 
-              src={user.avatar} 
+            <img
+              src={user.avatar}
               alt={user.name}
               className="w-16 h-16 rounded-2xl object-cover"
             />
@@ -316,57 +316,71 @@ const AdminUserManagement = () => {
     </div>
   );
 
-  const TableRow = ({ user }) => (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-            <span className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white ${statusConfig[user.status].dot}`}></span>
-          </div>
-          <div>
-            <div className="font-medium text-gray-900 flex items-center space-x-2">
-              <span>{user.nameEn}</span>
-              {user.verified && <Shield size={14} className="text-blue-500" />}
+  const TableRow = ({ user }) => {
+    const [openMenu, setOpenMenu] = useState(false);
+
+    return (
+      <tr className="hover:bg-gray-50 transition-colors relative">
+        <td className="px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+              <span className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white ${statusConfig[user.status].dot}`}></span>
             </div>
-            <div className="text-sm text-gray-500">{user.name}</div>
+            <div>
+              <div className="font-medium text-gray-900 flex items-center space-x-2">
+                <span>{user.nameEn}</span>
+                {user.verified && <Shield size={14} className="text-blue-500" />}
+              </div>
+              <div className="text-sm text-gray-500">{user.name}</div>
+            </div>
           </div>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleConfig[user.role].color}`}>
-          <span className="mr-1">{roleConfig[user.role].icon}</span>
-          {roleConfig[user.role].label}
-        </span>
-      </td>
-      <td className="px-6 py-4">
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[user.status].color}`}>
-          <span className={`w-2 h-2 rounded-full mr-1 ${statusConfig[user.status].dot}`}></span>
-          {statusConfig[user.status].label}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-900">{user.email}</td>
-      <td className="px-6 py-4 text-sm text-gray-900">{user.locationEn}</td>
-      <td className="px-6 py-4 text-sm text-gray-900">{new Date(user.joinDate).toLocaleDateString()}</td>
-      <td className="px-6 py-4 text-sm text-gray-900">{new Date(user.lastActive).toLocaleDateString()}</td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <Eye size={16} className="text-gray-400" />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <MessageSquare size={16} className="text-gray-400" />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <Edit size={16} className="text-gray-400" />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+        </td>
+        <td className="px-6 py-4">
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleConfig[user.role].color}`}>
+            <span className="mr-1">{roleConfig[user.role].icon}</span>
+            {roleConfig[user.role].label}
+          </span>
+        </td>
+        <td className="px-6 py-4">
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[user.status].color}`}>
+            <span className={`w-2 h-2 rounded-full mr-1 ${statusConfig[user.status].dot}`}></span>
+            {statusConfig[user.status].label}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-900">{user.email}</td>
+        <td className="px-6 py-4 text-sm text-gray-900">{user.locationEn}</td>
+        <td className="px-6 py-4 text-sm text-gray-900">{new Date(user.joinDate).toLocaleDateString()}</td>
+        <td className="px-6 py-4 text-sm text-gray-900">{new Date(user.lastActive).toLocaleDateString()}</td>
+        <td className="px-6 py-4 relative">
+          <button
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
             <MoreVertical size={16} className="text-gray-400" />
           </button>
-        </div>
-      </td>
-    </tr>
-  );
+
+          {openMenu && (
+            <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-lg border border-gray-200 z-10">
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-gray-700">
+                <Eye size={16} /> <span>View</span>
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-gray-700">
+                <MessageSquare size={16} /> <span>Message</span>
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-gray-700">
+                <Edit size={16} /> <span>Edit</span>
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-red-600">
+                <Ban size={16} /> <span>Suspend</span>
+              </button>
+            </div>
+          )}
+        </td>
+      </tr>
+    );
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -382,14 +396,6 @@ const AdminUserManagement = () => {
               <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                 <Download size={20} />
                 <span>Export Users</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <Send size={20} />
-                <span>Send Broadcast</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                <UserPlus size={20} />
-                <span>Invite User</span>
               </button>
             </div>
           </div>
@@ -432,7 +438,7 @@ const AdminUserManagement = () => {
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none w-full sm:w-80"
                 />
               </div>
-              
+
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -444,7 +450,7 @@ const AdminUserManagement = () => {
                 <option value="suspended">Suspended</option>
                 <option value="inactive">Inactive</option>
               </select>
-              
+
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
@@ -467,20 +473,16 @@ const AdminUserManagement = () => {
                 <option value="location">Sort by Location</option>
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <Activity size={16} />
-                <span>User Analytics</span>
-              </button>
               <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                <button 
+                <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 ${viewMode === 'grid' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                 >
                   <Grid size={16} />
                 </button>
-                <button 
+                <button
                   onClick={() => setViewMode('table')}
                   className={`p-2 ${viewMode === 'table' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                 >
@@ -509,7 +511,7 @@ const AdminUserManagement = () => {
                   </span>
                 )}
               </div>
-              
+
               {selectedUsers.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <button className="flex items-center space-x-2 px-3 py-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
@@ -528,7 +530,7 @@ const AdminUserManagement = () => {
               )}
             </div>
           </div>
-          
+
           <div className="p-6">
             {viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -559,7 +561,7 @@ const AdminUserManagement = () => {
                 </table>
               </div>
             )}
-            
+
             {filteredUsers.length === 0 && (
               <div className="text-center py-12">
                 <Users size={48} className="mx-auto text-gray-300 mb-4" />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-  Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye, 
+import {
+  Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye,
   FolderOpen, TrendingUp, AlertCircle, CheckCircle, Clock,
   Download, Upload, RefreshCw, Star, Grid, List, Archive,
   Users, Package, Tag, ArrowUp, ArrowDown, BarChart3, Layers
@@ -115,35 +115,35 @@ const AdminCategoryManagement = () => {
   ];
 
   const stats = [
-    { 
-      title: 'Total Categories', 
-      value: '6', 
-      change: '+2', 
-      color: 'text-blue-600', 
+    {
+      title: 'Total Categories',
+      value: '6',
+      change: '+2',
+      color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       icon: FolderOpen
     },
-    { 
-      title: 'Active Categories', 
-      value: '5', 
-      change: '+1', 
-      color: 'text-green-600', 
+    {
+      title: 'Active Categories',
+      value: '5',
+      change: '+1',
+      color: 'text-green-600',
       bgColor: 'bg-green-50',
       icon: CheckCircle
     },
-    { 
-      title: 'Total Products', 
-      value: '683', 
-      change: '+45', 
-      color: 'text-purple-600', 
+    {
+      title: 'Total Products',
+      value: '683',
+      change: '+45',
+      color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       icon: Package
     },
-    { 
-      title: 'Active Farmers', 
-      value: '203', 
-      change: '+12', 
-      color: 'text-orange-600', 
+    {
+      title: 'Active Farmers',
+      value: '203',
+      change: '+12',
+      color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       icon: Users
     }
@@ -157,10 +157,10 @@ const AdminCategoryManagement = () => {
 
   const filteredCategories = categories.filter(category => {
     const matchesSearch = category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         category.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         category.description.toLowerCase().includes(searchQuery.toLowerCase());
+      category.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      category.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || category.status === filterStatus;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -269,49 +269,63 @@ const AdminCategoryManagement = () => {
     </div>
   );
 
-  const TableRow = ({ category }) => (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg flex items-center justify-center text-lg">
-            {category.icon}
+  const TableRow = ({ category }) => {
+    const [openMenu, setOpenMenu] = useState(false);
+
+    return (
+      <tr className="hover:bg-gray-50 transition-colors relative">
+        <td className="px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg flex items-center justify-center text-lg">
+              {category.icon}
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">{category.nameEn}</div>
+              <div className="text-sm text-gray-500">{category.name}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-medium text-gray-900">{category.nameEn}</div>
-            <div className="text-sm text-gray-500">{category.name}</div>
+        </td>
+        <td className="px-6 py-4">
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[category.status].color}`}>
+            <span className={`w-2 h-2 rounded-full mr-1 ${statusConfig[category.status].dot}`}></span>
+            {statusConfig[category.status].label}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-900">{category.productCount}</td>
+        <td className="px-6 py-4 text-sm text-gray-900">{category.farmerCount}</td>
+        <td className="px-6 py-4 text-sm text-gray-900">{(category.totalSales / 1000000).toFixed(1)}M ៛</td>
+        <td className="px-6 py-4">
+          <div className={`flex items-center space-x-1 text-sm font-medium ${category.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+            {category.growth.startsWith('+') ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+            <span>{category.growth}</span>
           </div>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[category.status].color}`}>
-          <span className={`w-2 h-2 rounded-full mr-1 ${statusConfig[category.status].dot}`}></span>
-          {statusConfig[category.status].label}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-900">{category.productCount}</td>
-      <td className="px-6 py-4 text-sm text-gray-900">{category.farmerCount}</td>
-      <td className="px-6 py-4 text-sm text-gray-900">{(category.totalSales / 1000000).toFixed(1)}M ៛</td>
-      <td className="px-6 py-4">
-        <div className={`flex items-center space-x-1 text-sm font-medium ${category.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-          {category.growth.startsWith('+') ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-          <span>{category.growth}</span>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <Eye size={16} className="text-gray-400" />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <Edit size={16} className="text-gray-400" />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+        </td>
+        <td className="px-6 py-4 relative">
+          <button
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
             <MoreVertical size={16} className="text-gray-400" />
           </button>
-        </div>
-      </td>
-    </tr>
-  );
+
+          {openMenu && (
+            <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-lg border border-gray-200 z-10">
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-gray-700">
+                <Eye size={16} /> <span>View</span>
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-gray-700">
+                <Edit size={16} /> <span>Edit</span>
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2 text-red-600">
+                <Trash2 size={16} /> <span>Deactivate</span>
+              </button>
+            </div>
+          )}
+        </td>
+      </tr>
+    );
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -324,15 +338,7 @@ const AdminCategoryManagement = () => {
               <p className="text-gray-600 mt-1">Organize and manage product categories for farmers</p>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                <Download size={20} />
-                <span>Export Categories</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <Upload size={20} />
-                <span>Import Categories</span>
-              </button>
-              <button 
+              <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
@@ -380,7 +386,7 @@ const AdminCategoryManagement = () => {
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none w-full sm:w-80"
                 />
               </div>
-              
+
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -391,7 +397,7 @@ const AdminCategoryManagement = () => {
                 <option value="draft">Draft</option>
                 <option value="archived">Archived</option>
               </select>
-              
+
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -404,20 +410,16 @@ const AdminCategoryManagement = () => {
                 <option value="created">Sort by Date</option>
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <BarChart3 size={16} />
-                <span>Analytics</span>
-              </button>
               <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                <button 
+                <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 ${viewMode === 'grid' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                 >
                   <Grid size={16} />
                 </button>
-                <button 
+                <button
                   onClick={() => setViewMode('table')}
                   className={`p-2 ${viewMode === 'table' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
                 >
@@ -446,7 +448,7 @@ const AdminCategoryManagement = () => {
                   </span>
                 )}
               </div>
-              
+
               {selectedCategories.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <button className="flex items-center space-x-2 px-3 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
@@ -461,7 +463,7 @@ const AdminCategoryManagement = () => {
               )}
             </div>
           </div>
-          
+
           <div className="p-6">
             {viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -491,13 +493,13 @@ const AdminCategoryManagement = () => {
                 </table>
               </div>
             )}
-            
+
             {sortedCategories.length === 0 && (
               <div className="text-center py-12">
                 <FolderOpen size={48} className="mx-auto text-gray-300 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No categories found</h3>
                 <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
-                <button 
+                <button
                   onClick={() => setShowAddModal(true)}
                   className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
