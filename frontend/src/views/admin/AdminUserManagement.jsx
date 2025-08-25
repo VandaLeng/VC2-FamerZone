@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye,
   Users, UserCheck, UserX, UserPlus, AlertCircle, CheckCircle, Clock,
-  Download, Upload, RefreshCw, Star, Grid, List, Archive,
+  Download, Upload, RefreshCw, Star, Archive,
   Mail, Phone, MapPin, Calendar, Shield, Ban, Unlock,
   TrendingUp, Activity, Award, Settings, Send, MessageSquare
 } from 'lucide-react';
@@ -12,7 +12,6 @@ const AdminUserManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterRole, setFilterRole] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('joinDate');
 
   // Mock data for users
@@ -201,120 +200,20 @@ const AdminUserManagement = () => {
     return matchesSearch && matchesStatus && matchesRole;
   });
 
-  const UserCard = ({ user }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group">
-      <div className="relative p-6">
-        <div className="absolute top-4 right-4">
-          <div className="flex items-center space-x-2">
-            {user.verified && (
-              <div className="flex items-center space-x-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                <Shield size={12} />
-                <span>Verified</span>
-              </div>
-            )}
-            <button className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-              <MoreVertical size={16} className="text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="relative">
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="w-16 h-16 rounded-2xl object-cover"
-            />
-            <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${statusConfig[user.status].dot}`}></span>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-1">
-              <h3 className="text-lg font-semibold text-gray-900">{user.nameEn}</h3>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[user.status].color}`}>
-                {statusConfig[user.status].label}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600 font-medium">{user.name}</p>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleConfig[user.role].color}`}>
-                <span className="mr-1">{roleConfig[user.role].icon}</span>
-                {roleConfig[user.role].label}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Mail size={14} className="text-gray-400" />
-            <span>{user.email}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Phone size={14} className="text-gray-400" />
-            <span>{user.phone}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <MapPin size={14} className="text-gray-400" />
-            <span>{user.locationEn} ({user.location})</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Calendar size={14} className="text-gray-400" />
-            <span>Joined {new Date(user.joinDate).toLocaleDateString()}</span>
-          </div>
-        </div>
-
-        {user.role === 'farmer' ? (
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-green-600">{user.totalProducts}</div>
-              <div className="text-xs text-gray-500">Products</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-blue-600">{user.completedOrders}</div>
-              <div className="text-xs text-gray-500">Orders</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-purple-600">{user.rating}</div>
-              <div className="text-xs text-gray-500">Rating</div>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-green-600">{user.totalOrders || 0}</div>
-              <div className="text-xs text-gray-500">Orders</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-blue-600">{((user.totalSpent || 0) / 1000).toFixed(0)}K</div>
-              <div className="text-xs text-gray-500">Spent (៛)</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-purple-600">{user.loyaltyPoints || 0}</div>
-              <div className="text-xs text-gray-500">Points</div>
-            </div>
-          </div>
-        )}
-
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-          <span>Last active: {new Date(user.lastActive).toLocaleDateString()}</span>
-          {user.role === 'farmer' && (
-            <span>Response: {user.responseTime}</span>
-          )}
-        </div>
-
-        <div className="flex space-x-2">
-          <button className="flex-1 bg-green-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-green-700 transition-colors">
-            <Eye size={14} className="inline mr-1" />
-            View Profile
-          </button>
-          <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-            <MessageSquare size={14} className="inline mr-1" />
-            Message
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return a.nameEn.localeCompare(b.nameEn);
+      case 'joinDate':
+        return new Date(b.joinDate) - new Date(a.joinDate);
+      case 'lastActive':
+        return new Date(b.lastActive) - new Date(a.lastActive);
+      case 'location':
+        return a.locationEn.localeCompare(b.locationEn);
+      default:
+        return 0;
+    }
+  });
 
   const TableRow = ({ user }) => {
     const [openMenu, setOpenMenu] = useState(false);
@@ -380,7 +279,6 @@ const AdminUserManagement = () => {
       </tr>
     );
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -475,20 +373,6 @@ const AdminUserManagement = () => {
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                >
-                  <Grid size={16} />
-                </button>
-                <button
-                  onClick={() => setViewMode('table')}
-                  className={`p-2 ${viewMode === 'table' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                >
-                  <List size={16} />
-                </button>
-              </div>
               <button className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <RefreshCw size={16} />
               </button>
@@ -503,7 +387,7 @@ const AdminUserManagement = () => {
               <div className="flex items-center space-x-4">
                 <h2 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
                   <Users size={20} />
-                  <span>Platform Users ({filteredUsers.length})</span>
+                  <span>Platform Users ({sortedUsers.length})</span>
                 </h2>
                 {selectedUsers.length > 0 && (
                   <span className="text-sm text-gray-500">
@@ -532,37 +416,29 @@ const AdminUserManagement = () => {
           </div>
 
           <div className="p-6">
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredUsers.map((user) => (
-                  <UserCard key={user.id} user={user} />
-                ))}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredUsers.map((user) => (
-                      <TableRow key={user.id} user={user} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sortedUsers.map((user) => (
+                    <TableRow key={user.id} user={user} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            {filteredUsers.length === 0 && (
+            {sortedUsers.length === 0 && (
               <div className="text-center py-12">
                 <Users size={48} className="mx-auto text-gray-300 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
