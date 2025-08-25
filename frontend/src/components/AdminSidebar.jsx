@@ -15,6 +15,20 @@ const AdminSidebar = ({
     setIsCollapsed(!isCollapsed);
   };
 
+  const handleLogoutClick = () => {
+    if (handleLogout) {
+      console.log("Attempting to log out...");
+      try {
+        handleLogout();
+        console.log("Logout function called successfully.");
+      } catch (error) {
+        console.error("Logout failed:", error.message || "Unknown error");
+      }
+    } else {
+      console.error("handleLogout prop is not provided or is undefined.");
+    }
+  };
+
   return (
     <div
       className={`bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out ${
@@ -79,19 +93,19 @@ const AdminSidebar = ({
             id: "products", 
             label: "Manage Products", 
             icon: Package, 
-            path: "/admin/products",
+            path: "/admin/product_list",
           },
           { 
             id: "categories", 
             label: "Manage Categories", 
             icon: LayoutGrid, 
-            path: "/admin/categories",
+            path: "/admin/category_list",
           },
           { 
             id: "users", 
             label: "Manage Users", 
             icon: Users, 
-            path: "/admin/users",
+            path: "/admin/user_list",
           },
         ].map((item) => {
           const Icon = item.icon;
@@ -164,7 +178,7 @@ const AdminSidebar = ({
             label: "Logout", 
             icon: LogOut, 
             path: "/", 
-            onClick: handleLogout, 
+            onClick: handleLogoutClick, 
             isButton: true 
           },
         ].map((item) => {

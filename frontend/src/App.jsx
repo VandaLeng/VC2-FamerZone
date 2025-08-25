@@ -27,8 +27,11 @@ import FarmerSettings from "./views/farmer/FarmerSetting";
 import VideoProductManagement from "./views/farmer/VideoProductManagement";
 
 // Admin System
-import AdminDashboard from "./views/admin/AdminDashboard"; // New AdminDashboard import
-import AdminFarmerListManagement from "./views/admin/AdminFarmerListManagement"; // New AdminDashboard import
+import AdminDashboard from "./views/admin/AdminDashboard"; 
+import AdminFarmerListManagement from "./views/admin/AdminFarmerListManagement"; 
+import AdminProductManagement from "./views/admin/AdminProductManagement"; 
+import AdminCategoryManagement from "./views/admin/AdminCategoryManagement"; 
+import AdminUserManagement from "./views/admin/AdminUserManagement"; 
 
 // Api
 import { logoutUser } from "./stores/api";
@@ -108,7 +111,9 @@ function App() {
           <Routes>
             <Route path="/admin/dashboard" element={<AdminDashboard currentLanguage={currentLanguage} userData={userData} />} />
             <Route path="/admin/farmer_list" element={<AdminFarmerListManagement currentLanguage={currentLanguage} userData={userData} />} />
-            
+            <Route path="/admin/product_list" element={<AdminProductManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/category_list" element={<AdminCategoryManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/user_list" element={<AdminUserManagement currentLanguage={currentLanguage} userData={userData} />} />
           </Routes>
         </AdminLayout>
       </ProductProvider>

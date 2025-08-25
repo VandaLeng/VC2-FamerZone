@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, MoreVertical, Eye, Edit, Trash2, MapPin, Phone, Mail, Calendar, Package, TrendingUp, AlertCircle, CheckCircle, Clock, Download } from 'lucide-react';
 
 const FarmerListManagement = () => {
@@ -8,6 +8,7 @@ const FarmerListManagement = () => {
   const [selectedFarmers, setSelectedFarmers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  const [dropdownStates, setDropdownStates] = useState({}); // Object to track dropdown states per farmer ID
 
   // Mock data for farmers
   const farmers = [
@@ -169,6 +170,24 @@ const FarmerListManagement = () => {
         : sortedFarmers.map(farmer => farmer.id)
     );
   };
+
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdowns = document.querySelectorAll('.relative');
+      let shouldCloseAll = true;
+      dropdowns.forEach((dropdown) => {
+        if (dropdown.contains(event.target)) {
+          shouldCloseAll = false;
+        }
+      });
+      if (shouldCloseAll) {
+        setDropdownStates({});
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -422,7 +441,7 @@ const FarmerListManagement = () => {
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Products</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Sales</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Rating</th>
+                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Rating</th> */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Join Date</th>
                     <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">Actions</th>
                   </tr>
@@ -477,7 +496,7 @@ const FarmerListManagement = () => {
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-gray-900">{farmer.totalSales}</div>
                       </td>
-                      <td className="px-6 py-4">
+                      {/* <td className="px-6 py-4">
                         <div className="flex items-center space-x-1">
                           <div className="flex text-yellow-400">
                             {[1,2,3,4,5].map((star) => (
@@ -486,21 +505,55 @@ const FarmerListManagement = () => {
                           </div>
                           <span className="text-sm text-gray-600">({farmer.rating})</span>
                         </div>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">{farmer.joinDate}</div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                            <Eye className="w-4 h-4" />
+                        <div className="relative">
+                          <button
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDropdownStates(prev => ({ ...prev, [farmer.id]: !prev[farmer.id] }));
+                            }}
+                          >
+                            <MoreVertical className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {dropdownStates[farmer.id] && (
+                            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                              <button
+                                className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-t-md transition-colors flex items-center space-x-2"
+                                onClick={() => {
+                                  // Handle View action
+                                  setDropdownStates(prev => ({ ...prev, [farmer.id]: false }));
+                                }}
+                              >
+                                <Eye className="w-4 h-4" />
+                                <span>View</span>
+                              </button>
+                              <button
+                                className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 transition-colors flex items-center space-x-2"
+                                onClick={() => {
+                                  // Handle Edit action
+                                  setDropdownStates(prev => ({ ...prev, [farmer.id]: false }));
+                                }}
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                className="w-full text-left p-2 text-red-600 hover:bg-red-100 rounded-b-md transition-colors flex items-center space-x-2"
+                                onClick={() => {
+                                  // Handle Delete action
+                                  setDropdownStates(prev => ({ ...prev, [farmer.id]: false }));
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
