@@ -229,7 +229,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
               )}
             </a>
             {/* Language Toggle */}
-            <button
+            {/* <button
               onClick={toggleLanguage}
               className="flex items-center space-x-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 text-sm font-medium text-gray-600 hover:text-green-600"
             >
@@ -242,7 +242,7 @@ export default function Navbar({ currentLanguage, setCurrentLanguage, isLoggedIn
                 />
               </svg>
               <span>{currentLanguage === "kh" ? "EN" : "ខ្មែរ"}</span>
-            </button>
+            </button> */}
 
             {/* User Profile or Login/Register Buttons */}
             {isLoggedIn && userData ? (
