@@ -4,407 +4,170 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // ✅ Added for logging
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Item;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
     }
 
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        try {
-            $user = Auth::user();
-            
-            if (!$user) {
-                return response()->json([
-                    'message' => 'Unauthorized',
-                ], 401);
-            }
+        $orders = Order::with(['user', 'items'])->latest()->get();
 
-            $orders = Order::where('user_id', $user->id)
-                ->with([
-                    'items' => function($query) {
-                        $query->with([
-                            'item' => function($itemQuery) {
-                                $itemQuery->with(['user', 'category', 'province']);
-                            }
-                        ]);
-                    }
-                ])
-                ->latest()
-                ->get();
-
-            $transformedOrders = $orders->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'total_price' => (float) $order->total_price,
-                    'status' => $order->status,
-                    'address' => $order->address,
-                    'created_at' => $order->created_at->toISOString(),
-                    'updated_at' => $order->updated_at->toISOString(),
-                    'items' => $order->items->map(function ($orderItem) {
-                        $item = $orderItem->item;
-                        return [
-                            'id' => $orderItem->id,
-                            'quantity' => $orderItem->quantity,
-                            'price' => (float) $orderItem->price,
-                            'subtotal' => (float) $orderItem->subtotal,
-                            'product' => $item ? [
-                                'id' => $item->id,
-                                'name' => $item->name ?? 'Product Name',
-                                'description' => $item->description ?? '',
-                                'price' => (float) $item->price,
-                                'unit' => $item->unit ?? 'pc',
-                                'image' => $item->image ? asset('storage/' . $item->image) : null,
-                                'rating' => (float) ($item->rating ?? 4.5),
-                                'farmer' => $item->user ? [
-                                    'id' => $item->user->id,
-                                    'name' => $item->user->name ?? 'Unknown Farmer',
-                                    'phone' => $item->user->phone ?? '',
-                                    'rating' => 4.5,
-                                ] : [
-                                    'id' => null,
-                                    'name' => 'Unknown Farmer',
-                                    'phone' => '',
-                                    'rating' => 4.5,
-                                ],
-                                'category' => $item->category ? [
-                                    'id' => $item->category->id,
-                                    'name' => $item->category->name ?? 'Uncategorized',
-                                ] : [
-                                    'id' => null,
-                                    'name' => 'Uncategorized',
-                                ],
-                                'province' => $item->province ? [
-                                    'id' => $item->province->id,
-                                    'province_name' => $item->province->province_name ?? 'Unknown Province',
-                                    'city' => $item->province->city ?? 'Unknown City',
-                                ] : [
-                                    'id' => null,
-                                    'province_name' => 'Unknown Province',
-                                    'city' => 'Unknown City',
-                                ],
-                            ] : [
-                                'id' => null,
-                                'name' => 'Product Not Available',
-                                'description' => '',
-                                'price' => 0,
-                                'unit' => 'pc',
-                                'image' => null,
-                                'rating' => 0,
-                                'farmer' => [
-                                    'id' => null,
-                                    'name' => 'Unknown Farmer',
-                                    'phone' => '',
-                                    'rating' => 0,
-                                ],
-                                'category' => [
-                                    'id' => null,
-                                    'name' => 'Uncategorized',
-                                ],
-                                'province' => [
-                                    'id' => null,
-                                    'province_name' => 'Unknown Province',
-                                    'city' => 'Unknown City',
-                                ],
-                            ]
-                        ];
-                    })
-                ];
-            });
-
-            return response()->json([
-                'message' => 'Orders retrieved successfully',
-                'data' => $transformedOrders,
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Order retrieval error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            
-            return response()->json([
-                'message' => 'Error retrieving orders',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'data' => $orders
+        ], 200);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        try {
-            DB::beginTransaction();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'total_price' => 'required|numeric|min:0',
+            'address' => 'nullable|string|max:255',
+            'status' => 'nullable|in:pending,confirmed,delivered,cancelled',
+        ]);
 
-            $validated = $request->validate([
-                'address' => 'required|string|max:500',
-                'items' => 'required|array|min:1',
-                'items.*.item_id' => 'required|exists:items,id',
-                'items.*.quantity' => 'required|integer|min:1',
-            ]);
-
-            $totalPrice = 0;
-            $orderItems = [];
-
-            foreach ($validated['items'] as $itemData) {
-                $item = Item::findOrFail($itemData['item_id']);
-                $subtotal = $item->price * $itemData['quantity'];
-                $totalPrice += $subtotal;
-
-                $orderItems[] = [
-                    'item_id' => $itemData['item_id'],
-                    'quantity' => $itemData['quantity'],
-                    'price' => $item->price,
-                    'subtotal' => $subtotal,
-                ];
-            }
-
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'address' => $validated['address'],
-                'total_price' => $totalPrice,
-                'status' => 'pending',
-            ]);
-
-            foreach ($orderItems as $item) {
-                $order->items()->create($item);
-            }
-
-            $order->load([
-                'items' => function($query) {
-                    $query->with([
-                        'item' => function($itemQuery) {
-                            $itemQuery->with(['user', 'category', 'province']);
-                        }
-                    ]);
-                }
-            ]);
-
-            DB::commit();
-
+        if ($validator->fails()) {
             return response()->json([
-                'message' => 'Order created successfully',
-                'data' => $this->transformOrder($order),
-            ], 201);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'status' => 'error',
+                'errors' => $validator->errors()
             ], 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Order creation error: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Error creating order',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
         }
+
+        // Find user by name and email
+        $user = User::where('name', $request->name)
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found with the provided name and email'
+            ], 404);
+        }
+
+        // Ensure the found user matches the authenticated user
+        if ($user->id !== Auth::id()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized: Provided name and email do not match authenticated user'
+            ], 403);
+        }
+
+        // Create the order
+        $order = Order::create([
+            'user_id' => $user->id,
+            'total_price' => $request->total_price,
+            'address' => $request->address,
+            'status' => $request->status ?? 'pending',
+        ]);
+
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $order->load(['user', 'items']),
+            'message' => 'Order created successfully'
+        ], 201);
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(string $id)
     {
-        try {
-            $order = Order::with([
-                    'user', 
-                    'items' => function($query) {
-                        $query->with([
-                            'item' => function($itemQuery) {
-                                $itemQuery->with(['user', 'category', 'province']);
-                            }
-                        ]);
-                    }
-                ])
-                ->where('id', $id)
-                ->where('user_id', Auth::id())
-                ->first();
+        $order = Order::with(['user', 'items'])->findOrFail($id);
 
-            if (!$order) {
-                return response()->json([
-                    'message' => 'Order not found'
-                ], 404);
-            }
-
-            return response()->json([
-                'message' => 'Order retrieved successfully',
-                'data' => $this->transformOrder($order)
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Order show error: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Error retrieving order',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'data' => $order
+        ], 200);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
-        try {
-            $order = Order::where('id', $id)
-                ->where('user_id', Auth::id())
+        $order = Order::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255',
+            'total_price' => 'numeric|min:0',
+            'address' => 'nullable|string|max:255',
+            'status' => 'in:pending,confirmed,delivered,cancelled'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // If name and email are provided, find the user
+        if ($request->has('name') && $request->has('email')) {
+            $user = User::where('name', $request->name)
+                ->where('email', $request->email)
                 ->first();
 
-            if (!$order) {
+            if (!$user) {
                 return response()->json([
-                    'message' => 'Order not found'
+                    'status' => 'error',
+                    'message' => 'User not found with the provided name and email'
                 ], 404);
             }
 
-            $validated = $request->validate([
-                'address' => 'sometimes|required|string|max:500',
-                'status' => 'sometimes|in:pending,confirmed,cancelled,delivered',
-            ]);
+            // Ensure the found user matches the authenticated user
+            if ($user->id !== Auth::id()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized: Provided name and email do not match authenticated user'
+                ], 403);
+            }
 
-            $order->update($validated);
-            $order->load([
-                'items' => function($query) {
-                    $query->with([
-                        'item' => function($itemQuery) {
-                            $itemQuery->with(['user', 'category', 'province']);
-                        }
-                    ]);
-                }
-            ]);
-
-            return response()->json([
-                'message' => 'Order updated successfully',
-                'data' => $this->transformOrder($order),
-            ], 200);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Order update error: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Error updating order',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
+            $order->user_id = $user->id;
         }
+
+        $order->update($request->only(['total_price', 'address', 'status']));
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $order->load(['user', 'items']),
+            'message' => 'Order updated successfully'
+        ], 200);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(string $id)
     {
-        try {
-            $order = Order::where('id', $id)
-                ->where('user_id', Auth::id())
-                ->first();
+        $order = Order::findOrFail($id);
 
-            if (!$order) {
-                return response()->json([
-                    'message' => 'Order not found'
-                ], 404);
-            }
+        $order->delete();
 
-            $order->items()->delete();
-            $order->delete();
-
-            return response()->json([
-                'message' => 'Order deleted successfully'
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Order deletion error: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Error deleting order',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
-        }
-    }
-
-    private function transformOrder($order)
-    {
-        return [
-            'id' => $order->id,
-            'total_price' => (float) $order->total_price,
-            'status' => $order->status,
-            'address' => $order->address,
-            'created_at' => $order->created_at->toISOString(),
-            'updated_at' => $order->updated_at->toISOString(),
-            'items' => $order->items->map(function ($orderItem) {
-                $item = $orderItem->item;
-                return [
-                    'id' => $orderItem->id,
-                    'quantity' => $orderItem->quantity,
-                    'price' => (float) $orderItem->price,
-                    'subtotal' => (float) $orderItem->subtotal,
-                    'product' => $item ? [
-                        'id' => $item->id,
-                        'name' => $item->name ?? 'Product Name',
-                        'description' => $item->description ?? '',
-                        'price' => (float) $item->price,
-                        'unit' => $item->unit ?? 'pc',
-                        'image' => $item->image ? asset('storage/' . $item->image) : null,
-                        'rating' => (float) ($item->rating ?? 4.5),
-                        'farmer' => $item->user ? [
-                            'id' => $item->user->id,
-                            'name' => $item->user->name ?? 'Unknown Farmer',
-                            'phone' => $item->user->phone ?? '',
-                            'rating' => 4.5,
-                        ] : [
-                            'id' => null,
-                            'name' => 'Unknown Farmer',
-                            'phone' => '',
-                            'rating' => 4.5,
-                        ],
-                        'category' => $item->category ? [
-                            'id' => $item->category->id,
-                            'name' => $item->category->name ?? 'Uncategorized',
-                        ] : [
-                            'id' => null,
-                            'name' => 'Uncategorized',
-                        ],
-                        'province' => $item->province ? [
-                            'id' => $item->province->id,
-                            'province_name' => $item->province->province_name ?? 'Unknown Province',
-                            'city' => $item->province->city ?? 'Unknown City',
-                        ] : [
-                            'id' => null,
-                            'province_name' => 'Unknown Province',
-                            'city' => 'Unknown City',
-                        ],
-                    ] : [
-                        'id' => null,
-                        'name' => 'Product Not Available',
-                        'description' => '',
-                        'price' => 0,
-                        'unit' => 'pc',
-                        'image' => null,
-                        'rating' => 0,
-                        'farmer' => [
-                            'id' => null,
-                            'name' => 'Unknown Farmer',
-                            'phone' => '',
-                            'rating' => 0,
-                        ],
-                        'category' => [
-                            'id' => null,
-                            'name' => 'Uncategorized',
-                        ],
-                        'province' => [
-                            'id' => null,
-                            'province_name' => 'Unknown Province',
-                            'city' => 'Unknown City',
-                        ],
-                    ]
-                ];
-            })
-        ];
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order deleted successfully'
+        ], 200);
     }
 }

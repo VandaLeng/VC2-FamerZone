@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -19,9 +18,10 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'province_id', // <-- use province_id
+        'province_id',
         'role_id',
-        'image',
+        'role',
+        'image', // Assuming this is a BLOB or base64 string
     ];
 
     protected $hidden = [
@@ -37,42 +37,34 @@ class User extends Authenticatable
     protected $appends = ['image_url'];
 
     /**
-     * A user has one role.
+     * Accessor for image URL (data URL if stored as blob/base64)
      */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
-     * A user belongs to a province.
-     */
-    public function province()
-    {
-        return $this->belongsTo(Province::class, 'province_id');
-    }
-
-    /**
-     * A user (as a seller) can have many items/products.
-     */
-    public function items()
-    {
-        return $this->hasMany(Item::class);
-    }
-
-    /**
-     * A user (as a buyer) can have many orders.
-     */
-    public function orders()
-    {
-        return $this->hasMany(Order::class, 'user_id', 'id');
-    }
-
     public function getImageUrlAttribute()
     {
-        if ($this->image && $this->image !== 'default.jpg') {
-            return url('storage/users/' . $this->image);
+        if ($this->image) {
+            // If image is a base64 string, use it directly
+            if (strpos($this->image, 'base64') !== false) {
+                return 'data:image/jpeg;base64,' . $this->image; // Adjust MIME type if needed
+            }
+            // If image is a binary blob, encode it
+            return 'data:image/jpeg;base64,' . base64_encode($this->image); // Adjust MIME type if needed
         }
-        return url('storage/users/default.jpg');
+        // Fallback to default image (stored as a file)
+        return asset('images/default.jpg');
+    }
+
+    // Relationships and boot method remain the same
+    public function role() { return $this->belongsTo(Role::class); }
+    public function province() { return $this->belongsTo(Province::class, 'province_id', 'id'); }
+    public function items() { return $this->hasMany(Item::class); }
+    public function orders() { return $this->hasMany(Order::class, 'user_id', 'id'); }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($user) {
+            if (!$user->role) $user->role = 'buyer';
+            if (!$user->image) $user->image = null; // No default image if stored in DB
+        });
     }
 }

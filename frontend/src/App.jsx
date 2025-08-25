@@ -15,6 +15,7 @@ import LoginForm from "./views/auth/LoginForm";
 // Layout
 import FarmerLayout from "./layouts/FarmerLayout";
 import PublicLayout from "./layouts/PublicLayout";
+import AdminLayout from "./layouts/AdminLayout"; // New AdminLayout import
 // Farmer System
 import FarmerDashboard from "./views/farmer/DashboardFarmer";
 import FarmerOrders from "./views/farmer/OrderManagementFarmer";
@@ -24,6 +25,14 @@ import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
 import VideoProductManagement from "./views/farmer/VideoProductManagement";
+
+// Admin System
+import AdminDashboard from "./views/admin/AdminDashboard"; 
+import AdminFarmerListManagement from "./views/admin/AdminFarmerListManagement"; 
+import AdminProductManagement from "./views/admin/AdminProductManagement"; 
+import AdminCategoryManagement from "./views/admin/AdminCategoryManagement"; 
+import AdminUserManagement from "./views/admin/AdminUserManagement"; 
+
 // Api
 import { logoutUser } from "./stores/api";
 
@@ -39,7 +48,9 @@ function App() {
   const location = useLocation();
 
   const isFarmerRoute = location.pathname.startsWith('/farmer');
+  const isAdminRoute = location.pathname.startsWith('/admin');
   const isFarmer = userData?.role === 'farmer' || userData?.role?.name === 'farmer';
+  const isAdmin = userData?.role === 'admin' || userData?.role?.name === 'admin';
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -51,7 +62,9 @@ function App() {
         setIsLoggedIn(true);
 
         const userRole = parsedUserData.role?.name || parsedUserData.role;
-        if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
+        if (userRole === 'admin' && !location.pathname.startsWith('/admin')) {
+          navigate('/admin/dashboard');
+        } else if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
           navigate('/farmer/dashboard');
         }
       } catch (e) {
@@ -67,7 +80,10 @@ function App() {
     if (isFarmerRoute && isLoggedIn && !isFarmer) {
       navigate('/');
     }
-  }, [isFarmerRoute, isLoggedIn, isFarmer, navigate]);
+    if (isAdminRoute && isLoggedIn && !isAdmin) {
+      navigate('/');
+    }
+  }, [isFarmerRoute, isAdminRoute, isLoggedIn, isFarmer, isAdmin, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -82,6 +98,27 @@ function App() {
       alert("Logout failed: " + error.message);
     }
   };
+
+  if (isAdminRoute && isAdmin) {
+    return (
+      <ProductProvider>
+        <AdminLayout
+          currentLanguage={currentLanguage}
+          setCurrentLanguage={setCurrentLanguage}
+          userData={userData}
+          handleLogout={handleLogout}
+        >
+          <Routes>
+            <Route path="/admin/dashboard" element={<AdminDashboard currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/farmer_list" element={<AdminFarmerListManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/product_list" element={<AdminProductManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/category_list" element={<AdminCategoryManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/user_list" element={<AdminUserManagement currentLanguage={currentLanguage} userData={userData} />} />
+          </Routes>
+        </AdminLayout>
+      </ProductProvider>
+    );
+  }
 
   if (isFarmerRoute && isFarmer) {
     return (
@@ -130,6 +167,20 @@ function App() {
           {isFarmerRoute && !isFarmer && (
             <Route
               path="/farmer/*"
+              element={
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                    <p className="text-gray-600">You don't have permission to access this page.</p>
+                  </div>
+                </div>
+              }
+            />
+          )}
+          
+          {isAdminRoute && !isAdmin && (
+            <Route
+              path="/admin/*"
               element={
                 <div className="min-h-screen flex items-center justify-center">
                   <div className="text-center">

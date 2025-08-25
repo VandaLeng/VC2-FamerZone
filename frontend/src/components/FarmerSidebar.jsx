@@ -68,7 +68,7 @@ const FarmerSidebar = ({
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {[
           { id: "dashboard", label: "ផ្ទាំងគ្រប់គ្រង", icon: LayoutDashboard, path: "/farmer/dashboard" },
-          { id: "orders", label: "ការបញ្ជាទិញ", icon: ShoppingCart, path: "/farmer/orders", badge: "3" },
+          { id: "orders", label: "ការបញ្ជាទិញ", icon: ShoppingCart, path: "/farmer/orders"},
           { id: "customers", label: "ការគ្រប់គ្រងអតិថិជន", icon: Users, path: "/farmer/customers" },
           { id: "products", label: "ការគ្រប់គ្រងផលិតផល", icon: Package, path: "/farmer/products" },
           { id: "categories", label: "ការគ្រប់គ្រងប្រភេទ", icon: LayoutGrid, path: "/farmer/categories" },
