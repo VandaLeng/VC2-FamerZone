@@ -10,7 +10,7 @@ const AdminProductManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [viewMode, setViewMode] = useState('grid'); // grid or table
+  const [viewMode, setViewMode] = useState('table'); // changed default to table
 
   // Mock data for products
   const products = [
@@ -148,71 +148,6 @@ const AdminProductManagement = () => {
     );
   };
 
-  const ProductCard = ({ product }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 group">
-      <div className="relative">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute top-3 left-3">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[product.status].color}`}>
-            {statusConfig[product.status].label}
-          </span>
-        </div>
-        <div className="absolute top-3 right-3">
-          <button className="p-1 bg-white/80 backdrop-blur rounded-full hover:bg-white transition-colors">
-            <MoreVertical size={16} className="text-gray-600" />
-          </button>
-        </div>
-      </div>
-      
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{product.category}</span>
-          <div className="flex items-center space-x-1">
-            <Star size={14} className="text-yellow-400 fill-current" />
-            <span className="text-sm text-gray-600">{product.rating}</span>
-          </div>
-        </div>
-        
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-        
-        <div className="flex items-center space-x-2 mb-2">
-          <User size={14} className="text-gray-400" />
-          <span className="text-sm text-gray-600 font-medium">Farmer: {product.farmer}</span>
-        </div>
-        
-        <div className="flex items-center space-x-2 mb-3">
-          <MapPin size={14} className="text-gray-400" />
-          <span className="text-sm text-gray-500">Location: {product.farmerLocation}</span>
-        </div>
-        
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-green-600">{product.price.toLocaleString()}៛</span>
-          <span className="text-sm text-gray-500">Stock: {product.stock}</span>
-        </div>
-        
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-          <span>Total Sold: {product.totalSold}</span>
-          <span>Customer Reviews: {product.reviews}</span>
-        </div>
-        
-        <div className="flex space-x-2">
-          <button className="flex-1 bg-green-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-green-700 transition-colors">
-            <Eye size={14} className="inline mr-1" />
-            Review
-          </button>
-          <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-            <Edit size={14} className="inline mr-1" />
-            Manage
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -300,55 +235,73 @@ const AdminProductManagement = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Products ({filteredProducts.length})
-                </h2>
-                {selectedProducts.length > 0 && (
-                  <span className="text-sm text-gray-500">
-                    {selectedProducts.length} products selected
-                  </span>
-                )}
-              </div>
-              
-              {selectedProducts.length > 0 && (
-                <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-2 px-3 py-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                    <CheckCircle size={16} />
-                    <span>Bulk Approve</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-3 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                    <Edit size={16} />
-                    <span>Bulk Edit</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-3 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                    <Trash2 size={16} />
-                    <span>Bulk Reject</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Products Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farmer</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <tr key={product.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => handleSelectProduct(product.id)}
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
+                    <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                      <div className="text-xs text-gray-500">Rating: {product.rating} ⭐</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.farmer}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.category}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.price.toLocaleString()}៛</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.stock}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[product.status].color}`}>
+                      {statusConfig[product.status].label}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+                    <button className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 flex items-center">
+                      <Eye size={14} className="mr-1" /> Review
+                    </button>
+                    <button className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 flex items-center">
+                      <Edit size={14} className="mr-1" /> Manage
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </div>
-            
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <Package size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500">Try using different keywords or adjusting your filters</p>
-              </div>
-            )}
-          </div>
+
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="text-center py-12 text-gray-500">
+                    No products found. Try using different keywords or adjusting your filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
