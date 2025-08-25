@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Search, Filter, Plus, MoreVertical, Edit, Trash2, Eye,
   FolderOpen, TrendingUp, AlertCircle, CheckCircle, Clock,
-  Download, Upload, RefreshCw, Star, Grid, List, Archive,
+  Download, Upload, RefreshCw, Star, Archive,
   Users, Package, Tag, ArrowUp, ArrowDown, BarChart3, Layers
 } from 'lucide-react';
 
@@ -10,7 +10,6 @@ const AdminCategoryManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('name');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -66,7 +65,7 @@ const AdminCategoryManagement = () => {
     },
     {
       id: 4,
-      name: 'សាច់ និង​ត្រី',
+      name: 'សាច់ និងត្រី',
       nameEn: 'Meat & Fish',
       description: 'Fresh meat, poultry and fish products',
       icon: '🐟',
@@ -181,94 +180,6 @@ const AdminCategoryManagement = () => {
     }
   });
 
-  const CategoryCard = ({ category }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group">
-      <div className="relative p-6">
-        <div className="absolute top-4 right-4">
-          <div className="flex items-center space-x-2">
-            {category.trending && (
-              <div className="flex items-center space-x-1 bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">
-                <TrendingUp size={12} />
-                <span>Trending</span>
-              </div>
-            )}
-            <button className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-              <MoreVertical size={16} className="text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl flex items-center justify-center text-3xl">
-            {category.icon}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-1">
-              <h3 className="text-lg font-semibold text-gray-900">{category.nameEn}</h3>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[category.status].color}`}>
-                <span className={`w-2 h-2 rounded-full mr-1 ${statusConfig[category.status].dot}`}></span>
-                {statusConfig[category.status].label}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600 font-medium">{category.name}</p>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 mb-6 line-clamp-2">{category.description}</p>
-
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{category.productCount}</div>
-            <div className="text-xs text-gray-500">Products</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{category.farmerCount}</div>
-            <div className="text-xs text-gray-500">Farmers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">{(category.totalSales / 1000000).toFixed(1)}M</div>
-            <div className="text-xs text-gray-500">Sales (៛)</div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-gray-500">Growth</span>
-          <div className={`flex items-center space-x-1 text-sm font-medium ${category.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-            {category.growth.startsWith('+') ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-            <span>{category.growth}</span>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="text-sm text-gray-600 mb-2">Subcategories ({category.subcategories.length})</div>
-          <div className="flex flex-wrap gap-1">
-            {category.subcategories.slice(0, 3).map((sub, index) => (
-              <span key={index} className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                {sub}
-              </span>
-            ))}
-            {category.subcategories.length > 3 && (
-              <span className="inline-block bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full">
-                +{category.subcategories.length - 3} more
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex space-x-2">
-          <button className="flex-1 bg-green-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-green-700 transition-colors">
-            <Eye size={14} className="inline mr-1" />
-            View Details
-          </button>
-          <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-            <Edit size={14} className="inline mr-1" />
-            Edit Category
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   const TableRow = ({ category }) => {
     const [openMenu, setOpenMenu] = useState(false);
 
@@ -325,7 +236,6 @@ const AdminCategoryManagement = () => {
       </tr>
     );
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -412,20 +322,6 @@ const AdminCategoryManagement = () => {
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                >
-                  <Grid size={16} />
-                </button>
-                <button
-                  onClick={() => setViewMode('table')}
-                  className={`p-2 ${viewMode === 'table' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                >
-                  <List size={16} />
-                </button>
-              </div>
               <button className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <RefreshCw size={16} />
               </button>
@@ -465,34 +361,26 @@ const AdminCategoryManagement = () => {
           </div>
 
           <div className="p-6">
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {sortedCategories.map((category) => (
-                  <CategoryCard key={category.id} category={category} />
-                ))}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farmers</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {sortedCategories.map((category) => (
-                      <TableRow key={category.id} category={category} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farmers</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sortedCategories.map((category) => (
+                    <TableRow key={category.id} category={category} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             {sortedCategories.length === 0 && (
               <div className="text-center py-12">
