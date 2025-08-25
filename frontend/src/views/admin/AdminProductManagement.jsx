@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, Plus, Edit, Trash2, Eye, Package, CheckCircle, Clock, AlertCircle, RefreshCw, Star, X
+  Search, Plus, Edit, Trash2, Package, CheckCircle, Clock, AlertCircle, RefreshCw, X
 } from 'lucide-react';
 
-const FarmerProductManagement = () => {
+const FarmerItemManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(['all']);
-  const [categoryMap, setCategoryMap] = useState({});
+  const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     category_id: '',
@@ -33,44 +31,56 @@ const FarmerProductManagement = () => {
     rejected: { label: 'Rejected', color: 'bg-gray-100 text-gray-800', icon: AlertCircle }
   };
 
-  const fetchProducts = async () => {
+  const fetchItems = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&status=${filterStatus}&category=${filterCategory}`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      // Fetch items
+      const itemResponse = await fetch(`/api/items?search=${encodeURIComponent(searchQuery)}&status=${filterStatus}&category=${filterCategory}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
         }
       });
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Response:', response.status, text);
-        throw new Error(`Failed to fetch products: ${response.statusText}`);
+      if (!itemResponse.ok) {
+        const errorData = await itemResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch items: ${itemResponse.statusText}`);
       }
-      const data = await response.json();
-      setProducts(data.products || []);
-      setCategories(data.categories || ['all']);
-      setStats(data.stats || []);
+      const itemData = await itemResponse.json();
+      setItems(itemData.items || []);
 
-      // Fetch categories with IDs
+      // Fetch categories
       const categoryResponse = await fetch('/api/categories', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
         }
       });
       if (!categoryResponse.ok) {
-        const text = await categoryResponse.text();
-        console.error('Category Response:', categoryResponse.status, text);
-        throw new Error(`Failed to fetch categories: ${categoryResponse.statusText}`);
+        const errorData = await categoryResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch categories: ${categoryResponse.statusText}`);
       }
-      const categoriesData = await categoryResponse.json();
-      const map = {};
-      categoriesData.forEach(cat => {
-        map[cat.name] = cat.id;
+      const categoryData = await categoryResponse.json();
+      setCategories(categoryData || []);
+
+      // Fetch stats
+      const statsResponse = await fetch('/api/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
       });
-      setCategoryMap(map);
+      if (!statsResponse.ok) {
+        const errorData = await statsResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch stats: ${statsResponse.statusText}`);
+      }
+      const statsData = await statsResponse.json();
+      setStats(statsData || []);
     } catch (err) {
       setError(err.message);
       console.error('Fetch Error:', err);
@@ -80,78 +90,102 @@ const FarmerProductManagement = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchItems();
   }, [searchQuery, filterStatus, filterCategory]);
 
-  const handleAddEditProduct = async (e) => {
-    e.preventDefault();
-    try {
-      const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
-      const method = editingProduct ? 'PUT' : 'POST';
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          category_id: categoryMap[formData.category_id] || formData.category_id
-        })
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Response:', response.status, text);
-        throw new Error(editingProduct ? 'Failed to update product' : 'Failed to add product');
-      }
-      setIsModalOpen(false);
-      setFormData({ name: '', category_id: '', price: '', stock: '', description: '', image: '' });
-      setEditingProduct(null);
-      fetchProducts();
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  const handleAddEditItem = async (e) => {
+  e.preventDefault();
 
-  const handleDeleteProduct = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found. Please log in.');
+
+    // Use FormData to handle file uploads
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('category_id', formData.category_id);
+    data.append('price', formData.price);
+    data.append('stock', formData.stock);
+    data.append('unit', formData.unit || 'kg'); // default unit
+    data.append('description', formData.description);
+    data.append('user_id', formData.user_id); // set current user id
+    data.append('province_id', formData.province_id); // set valid province
+    if (formData.image instanceof File) {
+      data.append('image', formData.image); // append File object
+    } else if (formData.image) {
+      // if user enters URL string
+      data.append('image', formData.image);
+    }
+
+    const url = editingItem ? `/api/items/${editingItem.id}` : '/api/items';
+    const method = editingItem ? 'POST' : 'POST'; // Laravel supports POST for create
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        // Do NOT set 'Content-Type', browser sets it automatically for FormData
+      },
+      body: data,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message || 'Failed to save product');
+
+    setIsModalOpen(false);
+    setFormData({ name: '', category_id: '', price: '', stock: '', unit: 'kg', description: '', image: '', user_id: '', province_id: '' });
+    setEditingItem(null);
+    fetchItems(); // refresh the list
+  } catch (err) {
+    setError(err.message);
+    console.error('Add/Edit Error:', err);
+  }
+};
+
+  const handleDeleteItem = async (id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        const response = await fetch(`/api/products/${id}`, {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found. Please log in.');
+        }
+
+        const response = await fetch(`/api/items/${id}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${token}`,
             'Accept': 'application/json'
           }
         });
         if (!response.ok) {
-          const text = await response.text();
-          console.error('Response:', response.status, text);
-          throw new Error('Failed to delete product');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to delete item');
         }
-        fetchProducts();
+        fetchItems();
       } catch (err) {
         setError(err.message);
+        console.error('Delete Error:', err);
       }
     }
   };
 
-  const openEditModal = (product) => {
-    setEditingProduct(product);
+  const openEditModal = (item) => {
+    setEditingItem(item);
     setFormData({
-      name: product.name,
-      category_id: product.category,
-      price: product.price,
-      stock: product.stock,
-      description: product.description || '',
-      image: product.image
+      name: item.name,
+      category_id: item.category_id,
+      price: item.price,
+      stock: item.stock,
+      description: item.description || '',
+      image: item.image
     });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setEditingProduct(null);
+    setEditingItem(null);
     setFormData({ name: '', category_id: '', price: '', stock: '', description: '', image: '' });
   };
 
@@ -193,20 +227,26 @@ const FarmerProductManagement = () => {
         {error && (
           <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg">
             {error}
+            <button 
+              onClick={fetchItems}
+              className="ml-4 text-sm text-blue-600 hover:underline"
+            >
+              Retry
+            </button>
           </div>
         )}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {stats.map((stat, index) => (
               <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center mb-4`}>
-                  <Package className={`${stat.color} w-6 h-6`} />
+                <div className={`w-12 h-12 ${stat.bgColor || 'bg-blue-100'} rounded-lg flex items-center justify-center mb-4`}>
+                  <Package className={`${stat.color || 'text-blue-600'} w-6 h-6`} />
                 </div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-                  <span className={`text-sm font-medium ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                    {stat.change}
+                  <span className={`text-sm font-medium ${stat.change?.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                    {stat.change || '0%'}
                   </span>
                 </div>
               </div>
@@ -234,11 +274,9 @@ const FarmerProductManagement = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 <option value="all">All Status</option>
-                <option value="active">Approved</option>
-                <option value="pending">Pending Review</option>
-                <option value="out_of_stock">Out of Stock</option>
-                <option value="low_stock">Low Stock</option>
-                <option value="rejected">Rejected</option>
+                {Object.keys(statusConfig).map(status => (
+                  <option key={status} value={status}>{statusConfig[status].label}</option>
+                ))}
               </select>
               <select
                 value={filterCategory}
@@ -246,14 +284,14 @@ const FarmerProductManagement = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 <option value="all">All Categories</option>
-                {categories.slice(1).map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
             </div>
             <div className="flex items-center space-x-3">
               <button 
-                onClick={fetchProducts}
+                onClick={fetchItems}
                 className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 <RefreshCw size={16} />
@@ -262,9 +300,10 @@ const FarmerProductManagement = () => {
           </div>
         </div>
 
-        {/* Products Table */}
+        {/* Items Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
+           
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
@@ -276,35 +315,44 @@ const FarmerProductManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {products.map((product) => {
-                const StatusIcon = statusConfig[product.status].icon;
+              {items.map((item) => {
+                const StatusIcon = statusConfig[item.status]?.icon || AlertCircle;
                 return (
-                  <tr key={product.id}>
+                  <tr key={item.id}>
                     <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
-                      <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                      <img 
+                        src={item.image || 'https://via.placeholder.com/50'} 
+                        alt={item.name} 
+                        className="w-12 h-12 object-cover rounded"
+                        onError={(e) => (e.target.src = 'https://via.placeholder.com/50')}
+                      />
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                        <div className="text-xs text-gray-500">Rating: {product.rating} ⭐</div>
+                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                        <div className="text-xs text-gray-500">Rating: {item.rating || 0} ⭐</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.category}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.price.toLocaleString()}៛</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.stock}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {categories.find(cat => cat.id === item.category_id)?.name || 'Unknown'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {(item.price || 0).toLocaleString()}៛
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stock || 0}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[product.status].color} flex items-center`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[item.status]?.color || 'bg-gray-100 text-gray-800'} flex items-center`}>
                         <StatusIcon size={14} className="mr-1" />
-                        {statusConfig[product.status].label}
+                        {statusConfig[item.status]?.label || 'Unknown'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
                       <button 
-                        onClick={() => openEditModal(product)}
+                        onClick={() => openEditModal(item)}
                         className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 flex items-center"
                       >
                         <Edit size={14} className="mr-1" /> Edit
                       </button>
                       <button 
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleDeleteItem(item.id)}
                         className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 flex items-center"
                       >
                         <Trash2 size={14} className="mr-1" /> Delete
@@ -313,7 +361,7 @@ const FarmerProductManagement = () => {
                   </tr>
                 );
               })}
-              {!loading && products.length === 0 && (
+              {!loading && items.length === 0 && (
                 <tr>
                   <td colSpan={6} className="text-center py-12 text-gray-500">
                     No products found. Try adding some products or adjusting your filters.
@@ -325,19 +373,19 @@ const FarmerProductManagement = () => {
         </div>
       </div>
 
-      {/* Add/Edit Product Modal */}
+      {/* Add/Edit Item Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md border border-gray-200">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingProduct ? 'Edit Product' : 'Add New Product'}
+                {editingItem ? 'Edit Product' : 'Add New Product'}
               </h2>
               <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
                 <X size={24} />
               </button>
             </div>
-            <form onSubmit={handleAddEditProduct} className="space-y-4">
+            <form onSubmit={handleAddEditItem} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600">Product Name</label>
                 <input
@@ -360,8 +408,8 @@ const FarmerProductManagement = () => {
                   required
                 >
                   <option value="">Select a category</option>
-                  {categories.filter(cat => cat !== 'all').map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
@@ -375,6 +423,7 @@ const FarmerProductManagement = () => {
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                   placeholder="Enter price..."
                   required
+                  min="0"
                 />
               </div>
               <div>
@@ -387,6 +436,7 @@ const FarmerProductManagement = () => {
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                   placeholder="Enter stock quantity..."
                   required
+                  min="0"
                 />
               </div>
               <div>
@@ -402,7 +452,7 @@ const FarmerProductManagement = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-600">Image URL</label>
                 <input
-                  type="text"
+                  type="url"
                   name="image"
                   value={formData.image}
                   onChange={handleFormChange}
@@ -422,7 +472,7 @@ const FarmerProductManagement = () => {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  {editingProduct ? 'Update Product' : 'Add Product'}
+                  {editingItem ? 'Update Product' : 'Add Product'}
                 </button>
               </div>
             </form>
@@ -433,4 +483,4 @@ const FarmerProductManagement = () => {
   );
 };
 
-export default FarmerProductManagement;
+export default FarmerItemManagement;
