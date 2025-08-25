@@ -132,22 +132,6 @@ const AdminProductManagement = () => {
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const handleSelectProduct = (productId) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedProducts(
-      selectedProducts.length === filteredProducts.length 
-        ? [] 
-        : filteredProducts.map(p => p.id)
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -240,13 +224,6 @@ const AdminProductManagement = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
-                    onChange={handleSelectAll}
-                  />
-                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farmer</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
@@ -259,13 +236,6 @@ const AdminProductManagement = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
                 <tr key={product.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => handleSelectProduct(product.id)}
-                    />
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
                     <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
                     <div>
