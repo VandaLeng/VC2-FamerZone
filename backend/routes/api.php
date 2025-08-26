@@ -156,3 +156,12 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
 
     // Provinces
     Route::get('/provinces', [ProvinceController::class, 'index']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/items', [ItemController::class, 'index']);
+    Route::post('/items', [ItemController::class, 'store']);
+    Route::put('/items/{id}', [ItemController::class, 'update']);
+    Route::delete('/items/{id}', [ItemController::class, 'destroy']);
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/stats', [StatsController::class, 'index']);
+});
