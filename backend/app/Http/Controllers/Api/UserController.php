@@ -28,7 +28,57 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    // Create new user
+    public function show($id)
+    {
+        try {
+            $user = User::with('roles', 'province')->findOrFail($id);
+
+            // Get the primary role name
+            $roleName = null;
+            if ($user->roles->isNotEmpty()) {
+                $roleName = $user->roles->first()->name;
+            }
+
+            // Handle province data properly
+            $provinceName = null;
+            if ($user->province) {
+                $provinceName = $user->province->province_name;
+            }
+
+            return response()->json([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'roles' => $user->roles,
+                'status' => 'active', // Add status logic if you have a status field
+                'province' => [
+                    'province_name' => $provinceName
+                ],
+                'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+                // Add these fields if they exist in your database
+                'address' => $user->address ?? 'N/A',
+                'date_of_birth' => $user->date_of_birth ?? 'N/A',
+                'bio' => $user->bio ?? 'No bio available',
+                'verified' => $user->verified ?? false,
+                'totalProducts' => $user->totalProducts ?? 0,
+                'totalSales' => $user->totalSales ?? 0,
+                'rating' => $user->rating ?? 0,
+                'completedOrders' => $user->completedOrders ?? 0,
+                'responseTime' => $user->responseTime ?? 'N/A',
+                'businessName' => $user->businessName ?? 'N/A'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to fetch user details.'], 500);
+        }
+    }
+
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -172,9 +222,20 @@ class UserController extends Controller
     // Get authenticated user's profile
     public function getProfile(Request $request)
     {
-        $user = $request->user()->load('roles', 'province');
-        $roleName = $user->roles->isNotEmpty() ? $user->roles->first()->name : null;
-        $provinceName = $user->province ? $user->province->province_name : null;
+        $user = $request->user();
+        $user->load(['roles', 'province']);
+
+        // Get the primary role name
+        $roleName = null;
+        if ($user->roles->isNotEmpty()) {
+            $roleName = $user->roles->first()->name;
+        }
+
+        // FIXED: Handle province data properly
+        $provinceName = null;
+        if ($user->province) {
+            $provinceName = $user->province->province_name;
+        }
 
         return response()->json([
             'status' => 'success',
@@ -210,9 +271,20 @@ class UserController extends Controller
         ]);
 
         if ($request->filled('password')) {
-            if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
-                return response()->json(['status' => 'error', 'message' => 'Current password is incorrect'], 403);
+            if (!$request->filled('current_password')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Current password is required when changing password'
+                ], 400);
             }
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Current password is incorrect'
+                ], 403);
+            }
+
             $user->password = Hash::make($request->password);
         }
 
@@ -308,3 +380,4 @@ class UserController extends Controller
         ], 400);
     }
 }
+

@@ -280,7 +280,7 @@ const FarmerProfileSettings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-green-600 text-white p-6 rounded-lg mb-6">
