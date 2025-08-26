@@ -28,6 +28,57 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+    public function show($id)
+    {
+        try {
+            $user = User::with('roles', 'province')->findOrFail($id);
+
+            // Get the primary role name
+            $roleName = null;
+            if ($user->roles->isNotEmpty()) {
+                $roleName = $user->roles->first()->name;
+            }
+
+            // Handle province data properly
+            $provinceName = null;
+            if ($user->province) {
+                $provinceName = $user->province->province_name;
+            }
+
+            return response()->json([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'roles' => $user->roles,
+                'status' => 'active', // Add status logic if you have a status field
+                'province' => [
+                    'province_name' => $provinceName
+                ],
+                'image_url' => $user->image && $user->image !== 'default.jpg' ? url('storage/users/' . $user->image) : null,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+                // Add these fields if they exist in your database
+                'address' => $user->address ?? 'N/A',
+                'date_of_birth' => $user->date_of_birth ?? 'N/A',
+                'bio' => $user->bio ?? 'No bio available',
+                'verified' => $user->verified ?? false,
+                'totalProducts' => $user->totalProducts ?? 0,
+                'totalSales' => $user->totalSales ?? 0,
+                'rating' => $user->rating ?? 0,
+                'completedOrders' => $user->completedOrders ?? 0,
+                'responseTime' => $user->responseTime ?? 'N/A',
+                'businessName' => $user->businessName ?? 'N/A'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to fetch user details.'], 500);
+        }
+    }
+
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -235,19 +286,19 @@ class UserController extends Controller
     {
         $user = $request->user();
         $user->load(['roles', 'province']);
-        
+
         // Get the primary role name
         $roleName = null;
         if ($user->roles->isNotEmpty()) {
             $roleName = $user->roles->first()->name;
         }
-        
+
         // FIXED: Handle province data properly
         $provinceName = null;
         if ($user->province) {
             $provinceName = $user->province->province_name;
         }
-        
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -289,14 +340,14 @@ class UserController extends Controller
                     'message' => 'Current password is required when changing password'
                 ], 400);
             }
-            
+
             if (!Hash::check($request->current_password, $user->password)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Current password is incorrect'
                 ], 403);
             }
-            
+
             $user->password = Hash::make($request->password);
         }
 
