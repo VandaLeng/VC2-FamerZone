@@ -1,12 +1,13 @@
+// AdminSidebar component (unchanged)
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, UserCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, UserCheck, Video } from 'lucide-react';
 
 const AdminSidebar = ({
-  userData,
-  handleLogout,
-  isCollapsed,
-  setIsCollapsed,
+  userData = { name: "Admin User" },
+  handleLogout = () => console.log("Logout"),
+  isCollapsed = false,
+  setIsCollapsed = () => {},
   notificationCount = 0,
 }) => {
   const location = useLocation();
@@ -100,6 +101,12 @@ const AdminSidebar = ({
             label: "Manage Categories", 
             icon: LayoutGrid, 
             path: "/admin/category_list",
+          },
+          {
+            id: "videos",
+            label: "Manage Videos",
+            icon: Video,
+            path: "/admin/video_management",
           },
           { 
             id: "users", 
