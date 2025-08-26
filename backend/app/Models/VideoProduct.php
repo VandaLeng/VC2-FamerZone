@@ -12,7 +12,7 @@ class VideoProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-        'farmer_id',
+        'admin_id',
         'title',
         'url',
         'description',
@@ -33,23 +33,31 @@ class VideoProduct extends Model
     protected $appends = ['embed_url', 'thumbnail_url', 'formatted_views', 'time_ago'];
 
     /**
+     * Get the admin that owns the video
+     */
+    public function admin()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'admin_id');
+    }
+
+    /**
      * Boot the model
      */
     protected static function boot()
     {
         parent::boot();
 
-        static::saving(function ($model) {
-            $model->video_id = $model->extractVideoId($model->url);
+        static::creating(function ($model) {
+            if (!$model->video_id && $model->url) {
+                $model->video_id = $model->extractVideoId($model->url);
+            }
         });
-    }
 
-    /**
-     * Get the farmer that owns the video
-     */
-    public function farmer()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'farmer_id');
+        static::updating(function ($model) {
+            if ($model->isDirty('url')) {
+                $model->video_id = $model->extractVideoId($model->url);
+            }
+        });
     }
 
     /**
@@ -60,8 +68,9 @@ class VideoProduct extends Model
         if (!$url) return null;
         
         $patterns = [
-            '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/',
+            '/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/',
             '/youtube\.com\/v\/([^&\n?#]+)/',
+            '/youtube\.com\/embed\/([^&\n?#]+)/'
         ];
 
         foreach ($patterns as $pattern) {
@@ -78,7 +87,7 @@ class VideoProduct extends Model
     public function getEmbedUrlAttribute()
     {
         if ($this->video_id) {
-            return 'https://www.youtube.com/embed/' . $this->video_id . '?rel=0&modestbranding=1';
+            return 'https://www.youtube.com/embed/' . $this->video_id . '?rel=0&modestbranding=1&autoplay=0';
         }
         return $this->url;
     }
@@ -88,10 +97,12 @@ class VideoProduct extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        if ($this->thumbnail && \Storage::disk('public')->exists($this->thumbnail)) {
+        // First check if there's a custom thumbnail
+        if ($this->thumbnail && Storage::disk('public')->exists($this->thumbnail)) {
             return asset('storage/' . $this->thumbnail);
         }
 
+        // Use YouTube thumbnail if video_id exists
         if ($this->video_id) {
             return 'https://img.youtube.com/vi/' . $this->video_id . '/maxresdefault.jpg';
         }
@@ -136,6 +147,7 @@ class VideoProduct extends Model
     public function incrementViews()
     {
         $this->increment('views');
+        return $this;
     }
 
     /**

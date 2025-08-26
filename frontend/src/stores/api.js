@@ -1,4 +1,3 @@
-// File: api.js
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -6,7 +5,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 // Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 10000,
+    timeout: 30000, // Increased timeout for video operations
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -18,10 +17,10 @@ const getAuthToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("auth_token");
 };
 
-// Create auth headers
+
 const getAuthHeaders = () => {
-    const token = getAuthToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
 };
 
 // ========== PROFILE API ==========
@@ -95,81 +94,237 @@ export const provincesAPI = {
         });
     }
 };
-
-// ========== VIDEO API ==========
+// videoAPI (unchanged, but ensured console logs for debugging)
 export const videoAPI = {
     // Get all videos for homepage (public)
-    getAllVideos: (params = {}) => {
-        const defaultParams = { limit: 6 };
-        return axios.get(`${API_BASE_URL}/videos/all`, {
-            params: {...defaultParams, ...params },
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+    getAllVideos: async(params = {}) => {
+        try {
+            const defaultParams = { limit: 6 };
+            console.log('Fetching public videos with params:', {...defaultParams, ...params });
+
+            const response = await axios.get(`${API_BASE_URL}/videos/all`, {
+                params: {...defaultParams, ...params },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                timeout: 10000
+            });
+
+            console.log('Public videos response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching public videos:', error);
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
             }
-        }).then((response) => response.data);
+            throw error;
+        }
     },
 
     // Increment view count (public)
-    incrementView: (videoId) => {
-        return axios.post(`${API_BASE_URL}/videos/public/${videoId}/view`, {}, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+    incrementView: async(videoId) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/videos/public/${videoId}/view`, {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                timeout: 5000
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error incrementing view:', error);
+            throw error;
+        }
+    },
+
+    // Admin get all videos (protected)
+    adminGetAllVideos: async() => {
+        try {
+            console.log('Fetching admin videos...');
+            const response = await axios.get(`${API_BASE_URL}/admin/video-products`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...getAuthHeaders()
+                },
+                timeout: 10000
+            });
+
+            console.log('Admin videos response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching admin videos:', error);
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
             }
-        }).then((response) => response.data);
+            throw error;
+        }
     },
 
-    // Get farmer's videos (protected)
-    getMyVideos: () => {
-        return axios.get(`${API_BASE_URL}/video-products`, {
-            headers: getAuthHeaders()
-        }).then((response) => response.data);
-    },
+    // Admin create video (protected)
+    adminCreateVideo: async(data) => {
+        try {
+            console.log('Creating video with data:', data);
 
-    // Create video (protected)
-    createVideo: (data) => {
-        return axios.post(`${API_BASE_URL}/video-products`, data, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders()
-            },
-        }).then((response) => response.data);
-    },
-
-    // Update video (protected)
-    updateVideo: (id, data) => {
-        return axios.put(`${API_BASE_URL}/video-products/${id}`, data, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders()
-            },
-        }).then((response) => response.data);
-    },
-
-    // Delete video (protected)
-    deleteVideo: (id) => {
-        return axios.delete(`${API_BASE_URL}/video-products/${id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                ...getAuthHeaders()
+            if (!data.title || !data.title.trim()) {
+                throw new Error('Video title is required');
             }
-        }).then((response) => response.data);
+            if (!data.url || !data.url.trim()) {
+                throw new Error('Video URL is required');
+            }
+
+            try {
+                new URL(data.url.trim());
+            } catch {
+                throw new Error('Please enter a valid URL');
+            }
+
+            const requestData = {
+                title: data.title.trim(),
+                url: data.url.trim(),
+                description: data.description ? data.description.trim() : ''
+            };
+
+            const response = await axios.post(`${API_BASE_URL}/admin/video-products`, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...getAuthHeaders()
+                },
+                timeout: 15000
+            });
+
+            console.log('Video creation response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating video:', error);
+            if (error.response) {
+                const errorMessage =
+                    (error.response.data && error.response.data.message) ||
+                    (error.response.data && error.response.data.error) ||
+                    'Failed to create video';
+                throw new Error(errorMessage);
+            } else if (error.message) {
+                throw error;
+            } else {
+                throw new Error('Network error occurred while creating video');
+            }
+        }
     },
 
-    // Toggle video status (protected)
-    toggleVideoStatus: (id) => {
-        return axios.post(`${API_BASE_URL}/video-products/${id}/toggle-status`, {}, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                ...getAuthHeaders()
+    // Admin update video (protected)
+    adminUpdateVideo: async(id, data) => {
+        try {
+            console.log('Updating video with ID:', id, 'Data:', data);
+
+            if (!data.title || !data.title.trim()) {
+                throw new Error('Video title is required');
             }
-        }).then((response) => response.data);
+            if (!data.url || !data.url.trim()) {
+                throw new Error('Video URL is required');
+            }
+
+            try {
+                new URL(data.url.trim());
+            } catch {
+                throw new Error('Please enter a valid URL');
+            }
+
+            const requestData = {
+                title: data.title.trim(),
+                url: data.url.trim(),
+                description: data.description ? data.description.trim() : ''
+            };
+
+            const response = await axios.put(`${API_BASE_URL}/admin/video-products/${id}`, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...getAuthHeaders()
+                },
+                timeout: 15000
+            });
+
+            console.log('Video update response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating video:', error);
+            if (error.response) {
+                const errorMessage =
+                    (error.response.data && error.response.data.message) ||
+                    (error.response.data && error.response.data.error) ||
+                    'Failed to update video';
+                throw new Error(errorMessage);
+            } else if (error.message) {
+                throw error;
+            } else {
+                throw new Error('Network error occurred while updating video');
+            }
+        }
+    },
+
+    // Admin delete video (protected)
+    adminDeleteVideo: async(id) => {
+        try {
+            console.log('Deleting video with ID:', id);
+            const response = await axios.delete(`${API_BASE_URL}/admin/video-products/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...getAuthHeaders()
+                },
+                timeout: 10000
+            });
+
+            console.log('Video deletion response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting video:', error);
+            if (error.response) {
+                const errorMessage =
+                    (error.response.data && error.response.data.message) ||
+                    (error.response.data && error.response.data.error) ||
+                    'Failed to delete video';
+                throw new Error(errorMessage);
+            } else {
+                throw new Error('Network error occurred while deleting video');
+            }
+        }
+    },
+
+    // Admin toggle video status (protected)
+    adminToggleVideoStatus: async(id) => {
+        try {
+            console.log('Toggling video status for ID:', id);
+            const response = await axios.post(`${API_BASE_URL}/admin/video-products/${id}/toggle-status`, {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...getAuthHeaders()
+                },
+                timeout: 10000
+            });
+
+            console.log('Video status toggle response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error toggling video status:', error);
+            if (error.response) {
+                const errorMessage =
+                    (error.response.data && error.response.data.message) ||
+                    (error.response.data && error.response.data.error) ||
+                    'Failed to toggle video status';
+                throw new Error(errorMessage);
+            } else {
+                throw new Error('Network error occurred while toggling video status');
+            }
+        }
     }
 };
-
 // ========== OTHER EXISTING APIs ==========
 export const itemsAPI = {
     getAll: () => {
@@ -265,7 +420,7 @@ export const userAPI = {
 api.interceptors.request.use(
     function(config) {
         const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
-        console.log('API Request:', method, config.url, config.params);
+        console.log('API Request:', method, config.url, config.params || config.data);
         return config;
     },
     function(error) {
@@ -277,19 +432,22 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
     function(response) {
-        console.log('API Response:', response.status, response.data);
+        console.log('API Response:', response.status, response.config.url, response.data);
         return response;
     },
     function(error) {
         if (error && error.response) {
-            console.error('API Response Error:', error.response.status, error.response.data);
+            console.error('API Response Error:', error.response.status, error.response.config.url, error.response.data);
 
             // Handle 401 Unauthorized
             if (error.response.status === 401) {
                 localStorage.removeItem('auth_token');
                 localStorage.removeItem('user_data');
+                localStorage.removeItem('token');
                 // Redirect to login if needed
-                window.location.href = '/login';
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
             }
         } else {
             console.error('API Error:', error.message);
@@ -318,8 +476,7 @@ export function registerUser(userData) {
                     province_id: data.user.province_id,
                     // FIXED: Handle province data properly
                     province: data.user.province ?
-                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) :
-                        null,
+                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) : null,
                     image: data.user.image,
                     image_url: data.user.image_url,
                 };
@@ -363,8 +520,7 @@ export function loginUser(credentials) {
                     province_id: data.user.province_id,
                     // FIXED: Handle province data properly
                     province: data.user.province ?
-                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) :
-                        null,
+                        (typeof data.user.province === 'object' ? data.user.province.province_name : data.user.province) : null,
                     image: data.user.image,
                     image_url: data.user.image_url,
                 };
@@ -401,6 +557,7 @@ export function logoutUser() {
         .then(function(response) {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user_data');
+            localStorage.removeItem('token');
             return response.data;
         })
         .catch(function(error) {
