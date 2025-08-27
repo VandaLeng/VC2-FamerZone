@@ -6,9 +6,9 @@ const FarmerDashboard = () => {
   const [timeRange, setTimeRange] = useState('weekly');
   const [loading, setLoading] = useState(false);
 
-  // Mock data - replace with actual API calls
+  // Dashboard data state
   const [dashboardData, setDashboardData] = useState({
-    totalEarnings: 2850.75,
+    totalEarnings: 0,
     monthlyEarnings: 1200.50,
     weeklyEarnings: 380.25,
     totalOrders: 142,
@@ -19,6 +19,18 @@ const FarmerDashboard = () => {
     totalCustomers: 89,
     newCustomers: 12
   });
+
+  // Fetch total_price sum from backend
+  useEffect(() => {
+    fetch('http://localhost:8000/api/orders/total-price')
+      .then(res => res.json())
+      .then(data => {
+        setDashboardData(prev => ({ ...prev, totalEarnings: data.total_price }));
+      })
+      .catch(() => {
+        setDashboardData(prev => ({ ...prev, totalEarnings: 0 }));
+      });
+  }, []);
 
   const salesData = {
     weekly: [
@@ -121,7 +133,7 @@ const FarmerDashboard = () => {
               icon={DollarSign}
               title="ចំណូលសរុប"
               value={`$${dashboardData.totalEarnings.toLocaleString()}`}
-              subtitle={`ចំណូលប្រចាំខែ: $${dashboardData.monthlyEarnings}`}
+              subtitle={`សរុបតម្លៃការបញ្ជាទិញទាំងអស់`}
               trend={12.5}
               color="text-green-600"
               bgGradient="from-green-500 to-emerald-500"
