@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X, Upload, Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Trash2, MoreVertical, Filter, X, Upload, Save, Loader2, AlertCircle, CheckCircle, Users, Package, TrendingUp, BarChart3 } from 'lucide-react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CategoryManagementAdmin = () => {
+const AdminCategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -17,6 +17,7 @@ const CategoryManagementAdmin = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [sortBy, setSortBy] = useState('name');
   const actionsMenuRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const CategoryManagementAdmin = () => {
   });
 
   const texts = {
-    categoryManagement: 'Category Management',
+    categoryManagement: 'Admin Category Management',
     searchCategories: 'Search categories...',
     addNewCategory: 'Add New Category',
     filterByStatus: 'Filter by Status',
@@ -37,6 +38,7 @@ const CategoryManagementAdmin = () => {
     categoryName: 'Category',
     description: 'Description',
     products: 'Products',
+    farmers: 'Farmers',
     createdDate: 'Created Date',
     status: 'Status',
     actions: 'Actions',
@@ -67,17 +69,26 @@ const CategoryManagementAdmin = () => {
     loginFirst: 'Please log in first',
     loginPrompt: 'You need to be logged in to manage categories',
     loginButton: 'Go to Login',
-    manageCategories: 'Manage your product categories',
+    manageCategories: 'Manage all product categories and view farmer statistics',
     totalCategories: 'Total Categories',
     activeCount: 'Active',
     inactiveCount: 'Inactive',
+    totalProducts: 'Total Products',
+    totalFarmers: 'Total Farmers',
     refresh: 'Refresh',
+    sortBy: 'Sort By',
+    sortByName: 'Sort by Name',
+    sortByProducts: 'Sort by Products',
+    sortByFarmers: 'Sort by Farmers',
+    sortByCreated: 'Sort by Date',
+    growth: 'Growth',
+    adminDashboard: 'Admin Dashboard - Category Overview'
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
   const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 
-  // Check if user is logged in
+  // Check if user is logged in and is admin
   useEffect(() => {
     const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
     const userId = localStorage.getItem("user_id");
@@ -96,8 +107,9 @@ const CategoryManagementAdmin = () => {
       
       setCurrentUser({
         id: userId || user?.id,
-        name: userName || user?.name || "User",
-        token: token
+        name: userName || user?.name || "Admin",
+        token: token,
+        role: user?.role || 'admin' // Assuming admin role
       });
     }
   }, []);
@@ -112,32 +124,66 @@ const CategoryManagementAdmin = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(CATEGORIES_ENDPOINT);
-      // Get all products/items for current user
-      let myProducts = [];
+      
+      // Get ALL products/items (not filtered by user)
+      let allProducts = [];
       try {
         const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
         const itemsRes = await axios.get(`${API_BASE_URL.replace(/\/api$/, '')}/api/items`, {
           headers: { Authorization: token ? `Bearer ${token}` : undefined },
         });
-        const userId = localStorage.getItem("user_id") || (localStorage.getItem("user_data") ? JSON.parse(localStorage.getItem("user_data")).id : null);
-        myProducts = itemsRes.data.data.filter(item => String(item.user_id) === String(userId));
+        allProducts = itemsRes.data.data || [];
       } catch (e) {
-        // If items fetch fails, fallback to zero counts
-        myProducts = [];
+        console.warn("Failed to fetch items:", e);
+        allProducts = [];
       }
+
+      // Get ALL users (farmers)
+      let allUsers = [];
+      try {
+        const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+        const usersRes = await axios.get(`${API_BASE_URL}/users`, {
+          headers: { Authorization: token ? `Bearer ${token}` : undefined },
+        });
+        allUsers = usersRes.data.data || [];
+      } catch (e) {
+        console.warn("Failed to fetch users:", e);
+        allUsers = [];
+      }
+
       const transformedCategories = response.data.data.map((category) => {
-        // Count only current user's products for this category
-        const count = myProducts.filter(item => String(item.category_id) === String(category.id)).length;
+        // Count ALL products for this category (from all farmers)
+        const categoryProducts = allProducts.filter(item => String(item.category_id) === String(category.id));
+        const productCount = categoryProducts.length;
+        
+        // Count unique farmers who have products in this category
+        const farmerIds = [...new Set(categoryProducts.map(item => item.user_id))];
+        const farmerCount = farmerIds.length;
+        
+        // Calculate total sales (mock data for now)
+        const totalSales = categoryProducts.reduce((sum, product) => {
+          return sum + (product.price * (product.sold_quantity || Math.floor(Math.random() * 50)));
+        }, 0);
+
+        // Calculate growth (mock data)
+        const growth = Math.floor(Math.random() * 30) - 5; // Random growth between -5% and +25%
+
         return {
           id: category.id,
           name: category.name,
           description: category.description || '',
-          productCount: count,
+          productCount: productCount,
+          farmerCount: farmerCount,
+          totalSales: totalSales,
+          growth: `${growth > 0 ? '+' : ''}${growth}%`,
           createdAt: category.created_at,
           status: category.status,
           image_url: category.image_url,
+          trending: growth > 15,
+          subcategories: [], // Can be populated if you have subcategory data
         };
       });
+      
       setCategories(transformedCategories);
       setError(null);
     } catch (err) {
@@ -162,6 +208,23 @@ const CategoryManagementAdmin = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const sortedCategories = [...filteredCategories].sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'products':
+        return b.productCount - a.productCount;
+      case 'farmers':
+        return b.farmerCount - a.farmerCount;
+      case 'sales':
+        return b.totalSales - a.totalSales;
+      case 'created':
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      default:
+        return 0;
+    }
+  });
+
   const handleOpenModal = (mode, category = null) => {
     setModalMode(mode);
     setSelectedCategory(category);
@@ -182,7 +245,7 @@ const CategoryManagementAdmin = () => {
     }
     setShowModal(true);
     setDropdownOpen(null);
-    setError(null); // Clear error
+    setError(null);
   };
 
   const handleCloseModal = () => {
@@ -194,7 +257,7 @@ const CategoryManagementAdmin = () => {
       status: 'active',
       image: null,
     });
-    setError(null); // Clear error
+    setError(null);
   };
 
   const handleSave = async () => {
@@ -224,48 +287,20 @@ const CategoryManagementAdmin = () => {
             headers: { 'Content-Type': 'multipart/form-data' },
           }
         );
-        setCategories(
-          categories.map((cat) =>
-            cat.id === selectedCategory.id
-              ? {
-                ...cat,
-                name: response.data.data.name,
-                description: response.data.data.description,
-                status: response.data.data.status,
-                image_url: response.data.data.image_url,
-                productCount: response.data.data.productCount,
-              }
-              : cat
-          )
-        );
       } else if (modalMode === 'add') {
         response = await axios.post(CATEGORIES_ENDPOINT, formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        const newCategory = {
-          id: response.data.data.id,
-          name: response.data.data.name,
-          description: response.data.data.description,
-          productCount: response.data.data.productCount || 0,
-          createdAt: response.data.data.created_at,
-          status: response.data.data.status,
-          image_url: response.data.data.image_url,
-        };
-        setCategories([newCategory, ...categories]);
       }
 
       handleCloseModal();
+      fetchCategories(); // Refresh data
       setError(null);
       toast.success(texts.categorySaved);
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Failed to save category';
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error('Save Category Error:', {
-        message: err.message,
-        code: err.code,
-        response: err.response,
-      });
     } finally {
       setIsLoading(false);
     }
@@ -290,11 +325,6 @@ const CategoryManagementAdmin = () => {
       const errorMessage = err.response?.data?.message || 'Failed to delete category';
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error('Delete Category Error:', {
-        message: err.message,
-        code: err.code,
-        response: err.response,
-      });
     } finally {
       setIsLoading(false);
     }
@@ -303,18 +333,14 @@ const CategoryManagementAdmin = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         toast.error("Image size should be less than 2MB");
         return;
       }
-
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         toast.error("Please select a valid image file");
         return;
       }
-
       setFormData({ ...formData, image: file });
       toast.success("Image selected successfully");
     }
@@ -343,7 +369,6 @@ const CategoryManagementAdmin = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // If user is not logged in, show login prompt
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -365,6 +390,43 @@ const CategoryManagementAdmin = () => {
   const totalCategories = categories.length;
   const activeCategories = categories.filter(cat => cat.status === 'active').length;
   const inactiveCategories = categories.filter(cat => cat.status === 'inactive').length;
+  const totalProducts = categories.reduce((sum, cat) => sum + cat.productCount, 0);
+  const totalFarmers = categories.reduce((sum, cat) => sum + cat.farmerCount, 0);
+
+  const stats = [
+    {
+      title: texts.totalCategories,
+      value: totalCategories.toString(),
+      change: '+2',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      icon: Filter
+    },
+    {
+      title: texts.activeCount,
+      value: activeCategories.toString(),
+      change: '+1',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      icon: CheckCircle
+    },
+    {
+      title: texts.totalProducts,
+      value: totalProducts.toString(),
+      change: `+${Math.floor(totalProducts * 0.1)}`,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      icon: Package
+    },
+    {
+      title: texts.totalFarmers,
+      value: totalFarmers.toString(),
+      change: `+${Math.floor(totalFarmers * 0.15)}`,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      icon: Users
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -383,13 +445,13 @@ const CategoryManagementAdmin = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {texts.categoryManagement}
+                {texts.adminDashboard}
               </h1>
               <p className="text-gray-600">
                 {texts.manageCategories}
               </p>
               {currentUser && (
-                <p className="text-sm text-green-600 mt-1">Welcome back, {currentUser.name}!</p>
+                <p className="text-sm text-blue-600 mt-1">Welcome, {currentUser.name} (Admin)</p>
               )}
             </div>
             <div className="flex gap-2">
@@ -398,7 +460,7 @@ const CategoryManagementAdmin = () => {
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2"
                 disabled={isLoading}
               >
-                {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Filter size={20} />}
+                {isLoading ? <Loader2 size={20} className="animate-spin" /> : <BarChart3 size={20} />}
                 {texts.refresh}
               </button>
               <button
@@ -413,18 +475,31 @@ const CategoryManagementAdmin = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 font-medium mb-1">{texts.totalCategories}</p>
-                <p className="text-2xl font-bold text-gray-800">{totalCategories}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {stats.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex justify-between items-center">
+                <div>
+                  <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center mb-4`}>
+                    <IconComponent className={`${stat.color} w-6 h-6`} />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
+                    <span className="text-sm font-medium text-green-600">
+                      {stat.change}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Move the blue icon to be inside the same parent */}
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <Filter className="h-6 w-6 text-blue-600" />
+                </div>
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Filter className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
+            )
+          })}
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
@@ -453,7 +528,7 @@ const CategoryManagementAdmin = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="relative flex-1">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -467,26 +542,41 @@ const CategoryManagementAdmin = () => {
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               />
             </div>
-            <div className="relative">
+            
+            <div className="flex gap-4">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-6 py-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 <option value="all">{texts.allCategories}</option>
                 <option value="active">{texts.activeCategories}</option>
                 <option value="inactive">{texts.inactiveCategories}</option>
               </select>
-              <Filter
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-                size={18}
-              />
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+              >
+                <option value="name">{texts.sortByName}</option>
+                <option value="products">{texts.sortByProducts}</option>
+                <option value="farmers">{texts.sortByFarmers}</option>
+                <option value="created">{texts.sortByCreated}</option>
+              </select>
             </div>
           </div>
         </div>
 
         {/* Categories Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <BarChart3 size={20} />
+              <span>Categories Overview ({sortedCategories.length})</span>
+            </h2>
+          </div>
+          
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
@@ -495,16 +585,19 @@ const CategoryManagementAdmin = () => {
                     {texts.categoryName}
                   </th>
                   <th className="px-6 py-4 text-left font-semibold text-gray-800">
-                    {texts.description}
+                    {texts.status}
                   </th>
                   <th className="px-6 py-4 text-left font-semibold text-gray-800">
                     {texts.products}
                   </th>
                   <th className="px-6 py-4 text-left font-semibold text-gray-800">
-                    {texts.createdDate}
+                    {texts.farmers}
                   </th>
                   <th className="px-6 py-4 text-left font-semibold text-gray-800">
-                    {texts.status}
+                    Total Sales
+                  </th>
+                  <th className="px-6 py-4 text-left font-semibold text-gray-800">
+                    {texts.growth}
                   </th>
                   <th className="px-6 py-4 text-center font-semibold text-gray-800">
                     {texts.actions}
@@ -514,57 +607,65 @@ const CategoryManagementAdmin = () => {
               <tbody className="divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex justify-center items-center">
                         <Loader2 className="animate-spin h-8 w-8 text-green-600" />
                         <span className="ml-2 text-gray-600">{texts.loading}</span>
                       </div>
                     </td>
                   </tr>
-                ) : filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => (
+                ) : sortedCategories.length > 0 ? (
+                  sortedCategories.map((category) => (
                     <tr key={category.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          {category.image_url ? (
-                            <img
-                              src={category.image_url || "/placeholder.svg"}
-                              alt={category.name}
-                              className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                            />
-                          ) : (
-                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Filter className="w-6 h-6 text-gray-400" />
-                            </div>
-                          )}
-                          <div className="font-medium text-gray-800">
-                            {category.name}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg flex items-center justify-center text-lg">
+                            {category.image_url ? (
+                              <img
+                                src={category.image_url}
+                                alt={category.name}
+                                className="w-10 h-10 object-cover rounded-lg"
+                              />
+                            ) : (
+                              '📁'
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">{category.name}</div>
+                            <div className="text-sm text-gray-500">{category.description}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-gray-600 line-clamp-2 max-w-xs">
-                          {category.description || 'No description'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                          {category.productCount} {texts.products}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">
-                        {new Date(category.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             category.status === 'active'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}
                         >
+                          <span className={`w-2 h-2 rounded-full mr-1 ${
+                            category.status === 'active' ? 'bg-green-400' : 'bg-red-400'
+                          }`}></span>
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{category.productCount}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{category.farmerCount}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        ${(category.totalSales / 1000).toFixed(1)}K
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className={`flex items-center space-x-1 text-sm font-medium ${
+                          category.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {category.growth.startsWith('+') ? (
+                            <TrendingUp size={14} />
+                          ) : (
+                            <TrendingUp size={14} className="rotate-180" />
+                          )}
+                          <span>{category.growth}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-center relative">
                         <button
@@ -606,7 +707,7 @@ const CategoryManagementAdmin = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-600 text-lg">{texts.noCategories}</p>
                     </td>
@@ -692,7 +793,7 @@ const CategoryManagementAdmin = () => {
                   )}
                   {selectedCategory?.image_url && (
                     <img
-                      src={selectedCategory.image_url || "/placeholder.svg"}
+                      src={selectedCategory.image_url}
                       alt={selectedCategory.name}
                       className="w-40 h-40 object-cover rounded-lg mt-2 border border-gray-200"
                     />
@@ -788,4 +889,4 @@ const CategoryManagementAdmin = () => {
   );
 };
 
-export default CategoryManagementAdmin;
+export default AdminCategoryManagement;
