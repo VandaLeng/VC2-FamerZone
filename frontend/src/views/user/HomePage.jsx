@@ -1,5 +1,4 @@
-"use client"
-
+// HomePage component (unchanged)
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { videoAPI } from '../../stores/api';
@@ -175,7 +174,6 @@ export default function HomePage({ currentLanguage }) {
                         <div className="mt-4">
                             <p className="text-gray-600">{selectedVideo.description || 'No description available'}</p>
                             <p className="text-sm text-gray-500 mt-2">
-                                By {selectedVideo.farmer?.name || 'Anonymous Farmer'} • 
                                 {selectedVideo.formatted_views || selectedVideo.views || 0} views • 
                                 {selectedVideo.time_ago || (selectedVideo.created_at ? new Date(selectedVideo.created_at).toLocaleDateString() : 'Recently')}
                             </p>
@@ -306,7 +304,7 @@ export default function HomePage({ currentLanguage }) {
                                 title: currentTexts.feature2Title || "Direct Connection",
                                 desc: currentTexts.feature2Desc || "Connect with local farmers",
                                 color: "blue",
-                                image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=UOuur8q5SRru_fy1OdDybUlm9BuCq9Pw2XjLDkZ5aCY=",
+                                image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=ZQH45iwu1T-sq6ECmZhrjPzTJNV48_C6G4o12B9OXTY=",
                                 icon: (
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -419,7 +417,7 @@ export default function HomePage({ currentLanguage }) {
                     <div
                         className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -764,16 +762,6 @@ export default function HomePage({ currentLanguage }) {
                                                 {video.description || (currentLanguage === "kh" ? "មិនមានការពិពណ៌នា" : "No description available")}
                                             </p>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center space-x-2">
-                                                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                        <span className="text-green-600 font-semibold text-sm">
-                                                            {video.farmer?.name?.charAt(0) || 'F'}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-sm text-gray-700 font-medium">
-                                                        {video.farmer?.name || 'Anonymous Farmer'}
-                                                    </span>
-                                                </div>
                                                 <span className="text-xs text-gray-500">
                                                     {video.time_ago || (video.created_at ? new Date(video.created_at).toLocaleDateString() : 'Recently')}
                                                 </span>

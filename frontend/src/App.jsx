@@ -15,6 +15,7 @@ import LoginForm from "./views/auth/LoginForm";
 // Layout
 import FarmerLayout from "./layouts/FarmerLayout";
 import PublicLayout from "./layouts/PublicLayout";
+import AdminLayout from "./layouts/AdminLayout";
 // Farmer System
 import FarmerDashboard from "./views/farmer/DashboardFarmer";
 import FarmerOrders from "./views/farmer/OrderManagementFarmer";
@@ -23,13 +24,18 @@ import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
-import VideoProductManagement from "./views/farmer/VideoProductManagement";
+
+// Admin System
+import AdminDashboard from "./views/admin/AdminDashboard"; 
+import AdminProductManagement from "./views/admin/AdminProductManagement"; 
+import AdminCategoryManagement from "./views/admin/AdminCategoryManagement"; 
+import AdminUserManagement from "./views/admin/AdminUserManagement";
+import AdminVideoManagement from "./views/admin/AdminVideoManagement"; // New import
+
 // Api
 import { logoutUser } from "./stores/api";
 
 import { ProductProvider } from './services/ProductContext';
-import ProductsPage from '../src/views/user/ProductPage';
-import ProductManagement from '../src/views/farmer/ProductManagementFarmer';
 
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState("kh");
@@ -39,7 +45,9 @@ function App() {
   const location = useLocation();
 
   const isFarmerRoute = location.pathname.startsWith('/farmer');
+  const isAdminRoute = location.pathname.startsWith('/admin');
   const isFarmer = userData?.role === 'farmer' || userData?.role?.name === 'farmer';
+  const isAdmin = userData?.role === 'admin' || userData?.role?.name === 'admin';
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -51,7 +59,9 @@ function App() {
         setIsLoggedIn(true);
 
         const userRole = parsedUserData.role?.name || parsedUserData.role;
-        if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
+        if (userRole === 'admin' && !location.pathname.startsWith('/admin')) {
+          navigate('/admin/dashboard');
+        } else if (userRole === 'farmer' && !location.pathname.startsWith('/farmer')) {
           navigate('/farmer/dashboard');
         }
       } catch (e) {
@@ -67,7 +77,10 @@ function App() {
     if (isFarmerRoute && isLoggedIn && !isFarmer) {
       navigate('/');
     }
-  }, [isFarmerRoute, isLoggedIn, isFarmer, navigate]);
+    if (isAdminRoute && isLoggedIn && !isAdmin) {
+      navigate('/');
+    }
+  }, [isFarmerRoute, isAdminRoute, isLoggedIn, isFarmer, isAdmin, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -82,6 +95,27 @@ function App() {
       alert("Logout failed: " + error.message);
     }
   };
+
+  if (isAdminRoute && isAdmin) {
+    return (
+      <ProductProvider>
+        <AdminLayout
+          currentLanguage={currentLanguage}
+          setCurrentLanguage={setCurrentLanguage}
+          userData={userData}
+          handleLogout={handleLogout}
+        >
+          <Routes>
+            <Route path="/admin/dashboard" element={<AdminDashboard currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/product_list" element={<AdminProductManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/category_list" element={<AdminCategoryManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/user_list" element={<AdminUserManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/video_management" element={<AdminVideoManagement currentLanguage={currentLanguage} userData={userData} />} />
+          </Routes>
+        </AdminLayout>
+      </ProductProvider>
+    );
+  }
 
   if (isFarmerRoute && isFarmer) {
     return (
@@ -100,7 +134,6 @@ function App() {
             <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
             <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
             <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
-            <Route path="/farmer/video-product" element={<VideoProductManagement currentLanguage={currentLanguage} />} />
           </Routes>
         </FarmerLayout>
       </ProductProvider>
@@ -140,9 +173,20 @@ function App() {
               }
             />
           )}
-
-          <Route path="/manage-products" element={<ProductManagement />} />
-          <Route path="/products" element={<ProductsPage />} />
+          
+          {isAdminRoute && !isAdmin && (
+            <Route
+              path="/admin/*"
+              element={
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                    <p className="text-gray-600">You don't have permission to access this page.</p>
+                  </div>
+                </div>
+              }
+            />
+          )}
         </Routes>
       </PublicLayout>
     </ProductProvider>

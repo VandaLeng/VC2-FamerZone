@@ -78,51 +78,54 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const data = await login({
-        email: formData.email,
-        password: formData.password,
+  e.preventDefault();
+  if (!validateForm()) {
+    return;
+  }
+  setIsLoading(true);
+  try {
+    const data = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (data && data.access_token) {
+      setIsLoggedIn(true);
+      setUserData({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        phone: data.user.phone,
+        province: data.user.province,
       });
-      if (data && data.access_token) {
-        setIsLoggedIn(true);
-        setUserData({
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role,
-          phone: data.user.phone,
-          province: data.user.province,
-        });
-        alert(currentTexts.loginSuccess);
-        console.log("Login successful. Token stored:", localStorage.getItem("auth_token"));
-        console.log("User data stored:", localStorage.getItem("user_data"));
-        if (data.user.role === "farmer") {
-          console.log("Navigating to /farmer/dashboard");
-          navigate("/farmer/dashboard");
-        } else {
-          console.log("Navigating to /");
-          if (onClose) {
-            onClose();
-          } else {
-            navigate("/");
-          }
-        }
+      alert(currentTexts.loginSuccess);
+      console.log("Login successful. Token stored:", localStorage.getItem("auth_token"));
+      console.log("User data stored:", localStorage.getItem("user_data"));
+      if (data.user.email === "admin@gmail.com" && data.user.role === "admin") {
+        console.log("Navigating to /admin/dashboard");
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "farmer") {
+        console.log("Navigating to /farmer/dashboard");
+        navigate("/farmer/dashboard");
       } else {
-        throw new Error("Login successful but no access token received.");
+        console.log("Navigating to /");
+        if (onClose) {
+          onClose();
+        } else {
+          navigate("/");
+        }
       }
-    } catch (error) {
-      const errorMsg = error.message || currentTexts.loginFailed;
-      setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.loginFailed });
-      alert(errorMsg);
-    } finally {
-      setIsLoading(false);
+    } else {
+      throw new Error("Login successful but no access token received.");
     }
-  };
+  } catch (error) {
+    const errorMsg = error.message || currentTexts.loginFailed;
+    setErrors({ general: typeof errorMsg === "string" ? errorMsg : currentTexts.loginFailed });
+    alert(errorMsg);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleRegister = () => {
     navigate("/register");
