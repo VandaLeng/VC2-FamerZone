@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, Plus, Edit, Trash2, Package, CheckCircle, Clock, AlertCircle, RefreshCw, X
-} from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Package, CheckCircle, Clock, AlertCircle, RefreshCw, X, LogIn, LogOut } from 'lucide-react';
 
 const FarmerItemManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,13 +12,17 @@ const FarmerItemManagement = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [userProvinceId, setUserProvinceId] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     category_id: '',
     price: '',
     stock: '',
+    unit: 'piece',
     description: '',
-    image: ''
+    image: null,
+    province_id: ''
   });
 
   const statusConfig = {
@@ -31,16 +33,50 @@ const FarmerItemManagement = () => {
     rejected: { label: 'Rejected', color: 'bg-gray-100 text-gray-800', icon: AlertCircle }
   };
 
+  const checkAuth = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        return false;
+      }
+
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      const response = await fetch('/api/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        setIsAuthenticated(false);
+        localStorage.removeItem('token');
+        return false;
+      }
+      const user = await response.json();
+      setIsAuthenticated(true);
+      setUserProvinceId(user.province_id || 'KH-1'); // Default to KH-1 if not set
+      setFormData(prev => ({ ...prev, province_id: user.province_id || 'KH-1' }));
+      return true;
+    } catch (err) {
+      setIsAuthenticated(false);
+      return false;
+    }
+  };
+
   const fetchItems = async () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+      const isValid = await checkAuth();
+      if (!isValid) {
+        setError('Please log in to view your products.');
+        return;
       }
 
-      // Fetch items
+      const token = localStorage.getItem('token');
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
       const itemResponse = await fetch(`/api/items?search=${encodeURIComponent(searchQuery)}&status=${filterStatus}&category=${filterCategory}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -54,7 +90,6 @@ const FarmerItemManagement = () => {
       const itemData = await itemResponse.json();
       setItems(itemData.items || []);
 
-      // Fetch categories
       const categoryResponse = await fetch('/api/categories', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -68,7 +103,6 @@ const FarmerItemManagement = () => {
       const categoryData = await categoryResponse.json();
       setCategories(categoryData || []);
 
-      // Fetch stats
       const statsResponse = await fetch('/api/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -90,66 +124,68 @@ const FarmerItemManagement = () => {
   };
 
   useEffect(() => {
-    fetchItems();
+    checkAuth().then((isValid) => {
+      if (isValid) fetchItems();
+    });
   }, [searchQuery, filterStatus, filterCategory]);
 
   const handleAddEditItem = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('No authentication token found. Please log in.');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Please log in to add or edit products.');
+        return;
+      }
 
-    // Use FormData to handle file uploads
-    const data = new FormData();
-    data.append('name', formData.name);
-    data.append('category_id', formData.category_id);
-    data.append('price', formData.price);
-    data.append('stock', formData.stock);
-    data.append('unit', formData.unit || 'kg'); // default unit
-    data.append('description', formData.description);
-    data.append('user_id', formData.user_id); // set current user id
-    data.append('province_id', formData.province_id); // set valid province
-    if (formData.image instanceof File) {
-      data.append('image', formData.image); // append File object
-    } else if (formData.image) {
-      // if user enters URL string
-      data.append('image', formData.image);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('category_id', formData.category_id);
+      data.append('price', formData.price);
+      data.append('stock', formData.stock);
+      data.append('unit', formData.unit);
+      data.append('description', formData.description);
+      data.append('province_id', formData.province_id);
+      if (formData.image instanceof File) {
+        data.append('image', formData.image);
+      }
+
+      const url = editingItem ? `/api/items/${editingItem.id}` : '/api/items';
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) throw new Error(result.message || 'Failed to save product');
+
+      setIsModalOpen(false);
+      setFormData({ name: '', category_id: '', price: '', stock: '', unit: 'piece', description: '', image: null, province_id: userProvinceId });
+      setEditingItem(null);
+      fetchItems();
+    } catch (err) {
+      setError(err.message);
+      console.error('Add/Edit Error:', err);
     }
-
-    const url = editingItem ? `/api/items/${editingItem.id}` : '/api/items';
-    const method = editingItem ? 'POST' : 'POST'; // Laravel supports POST for create
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        // Do NOT set 'Content-Type', browser sets it automatically for FormData
-      },
-      body: data,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) throw new Error(result.message || 'Failed to save product');
-
-    setIsModalOpen(false);
-    setFormData({ name: '', category_id: '', price: '', stock: '', unit: 'kg', description: '', image: '', user_id: '', province_id: '' });
-    setEditingItem(null);
-    fetchItems(); // refresh the list
-  } catch (err) {
-    setError(err.message);
-    console.error('Add/Edit Error:', err);
-  }
-};
+  };
 
   const handleDeleteItem = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          throw new Error('No authentication token found. Please log in.');
+          setError('Please log in to delete products.');
+          return;
         }
+
+        await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
 
         const response = await fetch(`/api/items/${id}`, {
           method: 'DELETE',
@@ -170,6 +206,15 @@ const FarmerItemManagement = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setItems([]);
+    setCategories([]);
+    setStats([]);
+    setError('You have been logged out. Please log in again.');
+  };
+
   const openEditModal = (item) => {
     setEditingItem(item);
     setFormData({
@@ -177,8 +222,10 @@ const FarmerItemManagement = () => {
       category_id: item.category_id,
       price: item.price,
       stock: item.stock,
+      unit: item.unit,
       description: item.description || '',
-      image: item.image
+      image: null,
+      province_id: item.province_id
     });
     setIsModalOpen(true);
   };
@@ -186,16 +233,20 @@ const FarmerItemManagement = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingItem(null);
-    setFormData({ name: '', category_id: '', price: '', stock: '', description: '', image: '' });
+    setFormData({ name: '', category_id: '', price: '', stock: '', unit: 'piece', description: '', image: null, province_id: userProvinceId });
   };
 
   const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+    if (name === 'image') {
+      setFormData({ ...formData, [name]: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -204,281 +255,338 @@ const FarmerItemManagement = () => {
               <p className="text-gray-600 mt-1">Manage your product listings</p>
             </div>
             <div className="flex items-center space-x-3">
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <Plus size={20} />
-                <span>Add Product</span>
-              </button>
+              {isAuthenticated === false && (
+                <a 
+                  href="/login" 
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <LogIn size={20} />
+                  <span>Log In</span>
+                </a>
+              )}
+              {isAuthenticated && (
+                <>
+                  <button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <Plus size={20} />
+                    <span>Add Product</span>
+                  </button>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <LogOut size={20} />
+                    <span>Log Out</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="px-6 py-6">
-        {loading && (
+        {isAuthenticated === null && (
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-500 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading your products...</p>
+            <p className="text-gray-600 mt-4">Checking authentication...</p>
           </div>
         )}
-        {error && (
+        {isAuthenticated === false && (
           <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg">
-            {error}
-            <button 
-              onClick={fetchItems}
-              className="ml-4 text-sm text-blue-600 hover:underline"
-            >
-              Retry
-            </button>
+            Please log in to view and manage your products.
+            <a href="/login" className="ml-4 text-sm text-blue-600 hover:underline">Go to Login</a>
           </div>
         )}
-        {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {stats.map((stat, index) => (
-              <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <div className={`w-12 h-12 ${stat.bgColor || 'bg-blue-100'} rounded-lg flex items-center justify-center mb-4`}>
-                  <Package className={`${stat.color || 'text-blue-600'} w-6 h-6`} />
-                </div>
-                <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-                  <span className={`text-sm font-medium ${stat.change?.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                    {stat.change || '0%'}
-                  </span>
-                </div>
+        {isAuthenticated && (
+          <>
+            {loading && (
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-500 mx-auto"></div>
+                <p className="text-gray-600 mt-4">Loading your products...</p>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Filters and Search */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-              <div className="relative">
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search your products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none w-full sm:w-80"
-                />
+            )}
+            {error && (
+              <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg">
+                {error}
+                <button 
+                  onClick={fetchItems}
+                  className="ml-4 text-sm text-blue-600 hover:underline"
+                >
+                  Retry
+                </button>
               </div>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-              >
-                <option value="all">All Status</option>
-                {Object.keys(statusConfig).map(status => (
-                  <option key={status} value={status}>{statusConfig[status].label}</option>
-                ))}
-              </select>
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-              >
-                <option value="all">All Categories</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button 
-                onClick={fetchItems}
-                className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <RefreshCw size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Items Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-           
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {items.map((item) => {
-                const StatusIcon = statusConfig[item.status]?.icon || AlertCircle;
-                return (
-                  <tr key={item.id}>
-                    <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
-                      <img 
-                        src={item.image || 'https://via.placeholder.com/50'} 
-                        alt={item.name} 
-                        className="w-12 h-12 object-cover rounded"
-                        onError={(e) => (e.target.src = 'https://via.placeholder.com/50')}
-                      />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                        <div className="text-xs text-gray-500">Rating: {item.rating || 0} ⭐</div>
+            )}
+            {!loading && !error && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  {stats.map((stat, index) => (
+                    <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                      <div className={`w-12 h-12 ${stat.bgColor || 'bg-blue-100'} rounded-lg flex items-center justify-center mb-4`}>
+                        <Package className={`${stat.color || 'text-blue-600'} w-6 h-6`} />
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {categories.find(cat => cat.id === item.category_id)?.name || 'Unknown'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {(item.price || 0).toLocaleString()}៛
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stock || 0}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[item.status]?.color || 'bg-gray-100 text-gray-800'} flex items-center`}>
-                        <StatusIcon size={14} className="mr-1" />
-                        {statusConfig[item.status]?.label || 'Unknown'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
-                      <button 
-                        onClick={() => openEditModal(item)}
-                        className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 flex items-center"
-                      >
-                        <Edit size={14} className="mr-1" /> Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 flex items-center"
-                      >
-                        <Trash2 size={14} className="mr-1" /> Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-              {!loading && items.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-500">
-                    No products found. Try adding some products or adjusting your filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Add/Edit Item Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">
-                {editingItem ? 'Edit Product' : 'Add New Product'}
-              </h2>
-              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
-                <X size={24} />
-              </button>
-            </div>
-            <form onSubmit={handleAddEditItem} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Product Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  placeholder="Enter product name..."
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Category</label>
-                <select
-                  name="category_id"
-                  value={formData.category_id}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  required
-                >
-                  <option value="">Select a category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
+                        <span className={`text-sm font-medium ${stat.change?.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                          {stat.change || '0%'}
+                        </span>
+                      </div>
+                    </div>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Price (៛)</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  placeholder="Enter price..."
-                  required
-                  min="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Stock</label>
-                <input
-                  type="number"
-                  name="stock"
-                  value={formData.stock}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  placeholder="Enter stock quantity..."
-                  required
-                  min="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  placeholder="Describe your product..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Image URL</label>
-                <input
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleFormChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                  placeholder="Enter image URL..."
-                />
-              </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                      <div className="relative">
+                        <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search your products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none w-full sm:w-80"
+                        />
+                      </div>
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                      >
+                        <option value="all">All Status</option>
+                        {Object.keys(statusConfig).map(status => (
+                          <option key={status} value={status}>{statusConfig[status].label}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={filterCategory}
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                      >
+                        <option value="all">All Categories</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <button 
+                        onClick={fetchItems}
+                        className="p-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                      >
+                        <RefreshCw size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {items.map((item) => {
+                        const StatusIcon = statusConfig[item.status]?.icon || AlertCircle;
+                        return (
+                          <tr key={item.id}>
+                            <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
+                              <img 
+                                src={item.image || 'https://via.placeholder.com/50'} 
+                                alt={item.name} 
+                                className="w-12 h-12 object-cover rounded"
+                                onError={(e) => (e.target.src = 'https://via.placeholder.com/50')}
+                              />
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                                <div className="text-xs text-gray-500">Rating: {item.rating || 0} ⭐</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                              {item.category?.name || 'Unknown'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                              {(item.price || 0).toLocaleString()}៛
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stock || 0}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig[item.status]?.color || 'bg-gray-100 text-gray-800'} flex items-center`}>
+                                <StatusIcon size={14} className="mr-1" />
+                                {statusConfig[item.status]?.label || 'Unknown'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+                              <button 
+                                onClick={() => openEditModal(item)}
+                                className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 flex items-center"
+                              >
+                                <Edit size={14} className="mr-1" /> Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteItem(item.id)}
+                                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 flex items-center"
+                              >
+                                <Trash2 size={14} className="mr-1" /> Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {!loading && items.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="text-center py-12 text-gray-500">
+                            No products found. Try adding some products or adjusting your filters.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {isModalOpen && isAuthenticated && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {editingItem ? 'Edit Product' : 'Add New Product'}
+                </h2>
+                <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
+                  <X size={24} />
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  {editingItem ? 'Update Product' : 'Add Product'}
-                </button>
               </div>
-            </form>
+              <form onSubmit={handleAddEditItem} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Product Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Enter product name..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Category</label>
+                  <select
+                    name="category_id"
+                    value={formData.category_id}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Price (៛)</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Enter price..."
+                    required
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Stock</label>
+                  <input
+                    type="number"
+                    name="stock"
+                    value={formData.stock}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Enter stock quantity..."
+                    required
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Unit</label>
+                  <input
+                    type="text"
+                    name="unit"
+                    value={formData.unit}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Enter unit (e.g., piece, kg)..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Describe your product..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Image</label>
+                  <input
+                    type="file"
+                    name="image"
+                    onChange={handleFormChange}
+                    accept="image/*"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Province ID</label>
+                  <input
+                    type="text"
+                    name="province_id"
+                    value={formData.province_id}
+                    onChange={handleFormChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    placeholder="Enter province ID..."
+                    required
+                    readOnly // Make read-only since it's fetched from user
+                  />
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    {editingItem ? 'Update Product' : 'Add Product'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
