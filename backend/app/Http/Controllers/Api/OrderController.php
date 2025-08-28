@@ -24,7 +24,9 @@ class OrderController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        // Make index, show, and getTotalPrice public (no auth required)
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'getTotalPrice']);
+        // If you add more public methods, add them to the except array above
     }
 
     /**
