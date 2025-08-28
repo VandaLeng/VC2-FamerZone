@@ -15,7 +15,7 @@ import LoginForm from "./views/auth/LoginForm";
 // Layout
 import FarmerLayout from "./layouts/FarmerLayout";
 import PublicLayout from "./layouts/PublicLayout";
-import AdminLayout from "./layouts/AdminLayout"; // New AdminLayout import
+import AdminLayout from "./layouts/AdminLayout";
 // Farmer System
 import FarmerDashboard from "./views/farmer/DashboardFarmer";
 import FarmerOrders from "./views/farmer/OrderManagementFarmer";
@@ -24,21 +24,18 @@ import FarmerProducts from "./views/farmer/ProductManagementFarmer";
 import FarmerCategories from "./views/farmer/CategoryManagementFarmer";
 import FarmerNotifications from "./views/farmer/FarmerNotification";
 import FarmerSettings from "./views/farmer/FarmerSetting";
-import VideoProductManagement from "./views/farmer/VideoProductManagement";
 
 // Admin System
 import AdminDashboard from "./views/admin/AdminDashboard"; 
-import AdminFarmerListManagement from "./views/admin/AdminFarmerListManagement"; 
 import AdminProductManagement from "./views/admin/AdminProductManagement"; 
 import AdminCategoryManagement from "./views/admin/AdminCategoryManagement"; 
-import AdminUserManagement from "./views/admin/AdminUserManagement"; 
+import AdminUserManagement from "./views/admin/AdminUserManagement";
+import AdminVideoManagement from "./views/admin/AdminVideoManagement"; // New import
 
 // Api
 import { logoutUser } from "./stores/api";
 
 import { ProductProvider } from './services/ProductContext';
-import ProductsPage from '../src/views/user/ProductPage';
-import ProductManagement from '../src/views/farmer/ProductManagementFarmer';
 
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState("kh");
@@ -110,10 +107,10 @@ function App() {
         >
           <Routes>
             <Route path="/admin/dashboard" element={<AdminDashboard currentLanguage={currentLanguage} userData={userData} />} />
-            <Route path="/admin/farmer_list" element={<AdminFarmerListManagement currentLanguage={currentLanguage} userData={userData} />} />
             <Route path="/admin/product_list" element={<AdminProductManagement currentLanguage={currentLanguage} userData={userData} />} />
             <Route path="/admin/category_list" element={<AdminCategoryManagement currentLanguage={currentLanguage} userData={userData} />} />
             <Route path="/admin/user_list" element={<AdminUserManagement currentLanguage={currentLanguage} userData={userData} />} />
+            <Route path="/admin/video_management" element={<AdminVideoManagement currentLanguage={currentLanguage} userData={userData} />} />
           </Routes>
         </AdminLayout>
       </ProductProvider>
@@ -137,7 +134,6 @@ function App() {
             <Route path="/farmer/categories" element={<FarmerCategories currentLanguage={currentLanguage} />} />
             <Route path="/farmer/notifications" element={<FarmerNotifications currentLanguage={currentLanguage} />} />
             <Route path="/farmer/settings" element={<FarmerSettings currentLanguage={currentLanguage} />} />
-            <Route path="/farmer/video-product" element={<VideoProductManagement currentLanguage={currentLanguage} />} />
           </Routes>
         </FarmerLayout>
       </ProductProvider>
@@ -191,9 +187,6 @@ function App() {
               }
             />
           )}
-
-          <Route path="/manage-products" element={<ProductManagement />} />
-          <Route path="/products" element={<ProductsPage />} />
         </Routes>
       </PublicLayout>
     </ProductProvider>

@@ -100,7 +100,6 @@ function ProductCard({
   };
 
   const productImage = product.image_url || getImageUrl(product.image);
-  const farmerAvatar = farmer.avatar ? getImageUrl(farmer.avatar) : "/placeholder.svg?height=100&width=100";
 
   if (viewMode === "list") {
     return (
@@ -203,15 +202,12 @@ function ProductCard({
 
             <div className="flex items-center justify-between pt-4 border-t border-stone-200">
               <div className="flex items-center gap-3">
-                <img
-                  src={farmerAvatar}
-                  alt={farmerName}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-stone-200"
-                  onError={(e) => {
-                    console.error(`Failed to load farmer avatar: ${farmerName}`);
-                    e.target.src = "/placeholder.svg?height=100&width=100";
-                  }}
-                />
+                {/* Avatar replaced with initial button */}
+                <button
+                  className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-lg"
+                >
+                  {farmerName?.charAt(0).toUpperCase() || "F"}
+                </button>
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{farmerName}</p>
                   <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -344,15 +340,12 @@ function ProductCard({
 
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 farmer-avatar">
-            <img
-              src={farmerAvatar}
-              alt={farmerName}
-              className="w-8 h-8 rounded-full object-cover border border-stone-200"
-              onError={(e) => {
-                console.error(`Failed to load farmer avatar: ${farmerName}`);
-                e.target.src = "/placeholder.svg?height=100&width=100";
-              }}
-            />
+            {/* Avatar replaced with initial button (smaller) */}
+            <button
+              className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm"
+            >
+              {farmerName?.charAt(0).toUpperCase() || "F"}
+            </button>
             <div className="min-w-0 flex-1">
               <span className="text-sm font-medium text-gray-700 truncate block">{farmerName}</span>
               <div className="flex items-center gap-1 text-xs text-gray-500">

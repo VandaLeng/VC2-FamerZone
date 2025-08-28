@@ -30,7 +30,7 @@ const AboutPage = ({ currentLanguage }) => {
               <div className="mb-8">
                 <div className="inline-block px-6 py-3 bg-yellow-400/20 rounded-full border border-yellow-400/30 backdrop-blur-sm mb-6 animate-fade-in-up delay-100">
                   <span className="text-yellow-300 font-semibold text-sm uppercase tracking-wider">
-                    Agricultural Innovation
+                    ការបង្កើតថ្មីក្នុងវិស័យកសិកម្ម
                   </span>
                 </div>
                 <h1
@@ -86,7 +86,7 @@ const AboutPage = ({ currentLanguage }) => {
             <div className="absolute top-8 right-8 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-300">
               <div className="text-3xl font-black text-green-800 mb-2">1000+</div>
               <div className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                Active Farmers
+                កសិករសកម្ម
               </div>
             </div>
             <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-400">

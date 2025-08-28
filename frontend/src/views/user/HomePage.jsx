@@ -1,5 +1,4 @@
-"use client"
-
+// HomePage component (unchanged)
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { videoAPI } from '../../stores/api';
@@ -175,7 +174,6 @@ export default function HomePage({ currentLanguage }) {
                         <div className="mt-4">
                             <p className="text-gray-600">{selectedVideo.description || 'No description available'}</p>
                             <p className="text-sm text-gray-500 mt-2">
-                                By {selectedVideo.farmer?.name || 'Anonymous Farmer'} • 
                                 {selectedVideo.formatted_views || selectedVideo.views || 0} views • 
                                 {selectedVideo.time_ago || (selectedVideo.created_at ? new Date(selectedVideo.created_at).toLocaleDateString() : 'Recently')}
                             </p>
@@ -236,8 +234,8 @@ export default function HomePage({ currentLanguage }) {
                                             </svg>
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-gray-800">100% Fresh</p>
-                                            <p className="text-sm text-gray-600">Direct from Farm</p>
+                                            <p className="font-semibold text-gray-800">ស្រស់ៗ​ ១០០%</p>
+                                            <p className="text-sm text-gray-600">ពីកសិដ្ឋានផ្ទាល់</p>
                                         </div>
                                     </div>
                                 </div>
@@ -397,7 +395,7 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.getStartedTitle || (currentLanguage === "kh" ? "ចាប់ផ្តើមលក់ជាកសិករនៅថ្ងៃនេះ" : "Start Selling as a Farmer Today")}
                             </h3>
                             <p className="text-gray-600 mb-6 leading-relaxed">
-                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FramerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
+                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FarmerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
                             </p>
                             <button
                                 onClick={navigateToRegisterAsFarmer}
@@ -419,17 +417,17 @@ export default function HomePage({ currentLanguage }) {
                     <div
                         className={`text-center mb-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Simple Process
+                            ដំណើរការងាយស្រួល
                         </div>
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.howItWorksTitle}
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Connect directly with local farmers in three simple steps
+                           ភ្ជាប់ផ្ទាល់ជាមួយកសិករមូលដ្ឋានតាមរយៈជំហានងាយៗបីនេះ
                         </p>
                     </div>
 
@@ -504,7 +502,7 @@ export default function HomePage({ currentLanguage }) {
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                                                     'bg-orange-100 text-orange-700'
                                                 }`}>
-                                                    Step {step.number}
+                                                    ជំហានទី {step.number}
                                                 </span>
                                             </div>
                                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -537,7 +535,7 @@ export default function HomePage({ currentLanguage }) {
                         className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
                         <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            <span>Get Started Today</span>
+                            <span>ចាប់ផ្តើមថ្ងៃនេះ</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
@@ -764,16 +762,6 @@ export default function HomePage({ currentLanguage }) {
                                                 {video.description || (currentLanguage === "kh" ? "មិនមានការពិពណ៌នា" : "No description available")}
                                             </p>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center space-x-2">
-                                                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                        <span className="text-green-600 font-semibold text-sm">
-                                                            {video.farmer?.name?.charAt(0) || 'F'}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-sm text-gray-700 font-medium">
-                                                        {video.farmer?.name || 'Anonymous Farmer'}
-                                                    </span>
-                                                </div>
                                                 <span className="text-xs text-gray-500">
                                                     {video.time_ago || (video.created_at ? new Date(video.created_at).toLocaleDateString() : 'Recently')}
                                                 </span>

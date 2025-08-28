@@ -1,12 +1,13 @@
+// AdminSidebar component (unchanged)
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, UserCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Package, LayoutGrid, Bell, Settings, LogOut, User, X, UserCheck, Video } from 'lucide-react';
 
 const AdminSidebar = ({
-  userData,
-  handleLogout,
-  isCollapsed,
-  setIsCollapsed,
+  userData = { name: "Admin User" },
+  handleLogout = () => console.log("Logout"),
+  isCollapsed = false,
+  setIsCollapsed = () => {},
   notificationCount = 0,
 }) => {
   const location = useLocation();
@@ -77,6 +78,7 @@ const AdminSidebar = ({
       {/* Navigation Menu */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {[
+          
           { 
             id: "dashboard", 
             label: "Dashboard", 
@@ -84,10 +86,10 @@ const AdminSidebar = ({
             path: "/admin/dashboard",
           },
           { 
-            id: "farmers", 
-            label: "Manage Farmers", 
-            icon: UserCheck, 
-            path: "/admin/farmer_list",
+            id: "users", 
+            label: "Manage Users", 
+            icon: Users, 
+            path: "/admin/user_list",
           },
           { 
             id: "products", 
@@ -101,11 +103,11 @@ const AdminSidebar = ({
             icon: LayoutGrid, 
             path: "/admin/category_list",
           },
-          { 
-            id: "users", 
-            label: "Manage Users", 
-            icon: Users, 
-            path: "/admin/user_list",
+          {
+            id: "videos",
+            label: "Manage Videos",
+            icon: Video,
+            path: "/admin/video_management",
           },
         ].map((item) => {
           const Icon = item.icon;
