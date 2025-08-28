@@ -128,7 +128,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
       emergencyHours: "Available 24/7 for emergencies"
     },
     kh: {
-      heroTitle: "ទាក់ទង FramerZone",
+      heroTitle: "ទាក់ទង FarmerZone",
       heroSubtitle: "តភ្ជាប់ជាមួយសហគមន៍កសិកម្មកម្ពុជា",
       heroDescription: "យើងនៅទីនេះដើម្បីជួយកសិករ អ្នកទិញ និងដៃគូសាងសង់ការតភ្ជាប់កសិកម្មកាន់តែរឹងមាំ។ ទាក់ទងមកយើងសម្រាប់ការគាំទ្រ ភាពជាដៃគូ ឬសំណួរណាមួយអំពីវេទិការបស់យើង។",
       contactInfoTitle: "ទាក់ទងមកយើង",
@@ -137,26 +137,26 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
           title: "ការិយាល័យកណ្តាល",
           address: "ភ្នំពេញ កម្ពុជា",
           phone: "+855 23 xxx xxx",
-          email: "info@framerzone.com",
+          email: "info@farmerzone.com",
           hours: "ច័ន្ទ - សុក្រ: 8:00 ព្រឹក - 6:00 ល្ងាច"
         },
         support: {
           title: "ការគាំទ្រអតិថិជន",
           description: "ត្រូវការជំនួយជាមួយគណនី ការបញ្ជាទិញ ឬលក្ខណៈពិសេសវេទិកា?",
-          email: "support@framerzone.com",
+          email: "support@farmerzone.com",
           phone: "+855 23 xxx xxx",
           hours: "មាន 24/7"
         },
         partnerships: {
           title: "ភាពជាដៃគូអាជីវកម្ម",
-          description: "ចាប់អារម្មណ៍ក្នុងការសហការ ឬភាពជាដៃគូជាមួយ FramerZone?",
-          email: "partnerships@framerzone.com",
+          description: "ចាប់អារម្មណ៍ក្នុងការសហការ ឬភាពជាដៃគូជាមួយ FarmerZone?",
+          email: "partnerships@farmerzone.com",
           phone: "+855 23 xxx xxx"
         },
         technical: {
           title: "ការគាំទ្របច្ចេកទេស",
           description: "កំពុងជួបបញ្ហាបច្ចេកទេស ឬត្រូវការជំនួយវេទិកា?",
-          email: "tech@framerzone.com",
+          email: "tech@farmerzone.com",
           hours: "ច័ន្ទ - សៅរ៍: 7:00 ព្រឹក - 9:00 ល្ងាច"
         }
       },
@@ -202,14 +202,14 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         },
         {
           title: "ការគាំទ្រវេទិកា",
-          description: "ជំនួយបច្ចេកទេស ការគ្រប់គ្រងគណនី បារម្ភសុវត្ថិភាព និងការណែនាំវេទិកាទូទៅសម្រាប់អ្នកប្រើប្រាស់ទាំងអស់�।",
+          description: "ជំនួយបច្ចេកទេស ការគ្រប់គ្រងគណនី បារម្ភសុវត្ថិភាព និងការណែនាំវេទិកាទូទៅសម្រាប់អ្នកប្រើប្រាស់ទាំងអស់។",
           features: ["ការស្តារគណនី", "ការណែនាំសុវត្ថិភាព", "ការបង្រៀនលក្ខណៈពិសេស", "ការរាយការណ៍កំហុស"]
         }
       ],
       faqTitle: "សំណួរដែលសួរញឹកញាប់",
       faqs: [
         {
-          question: "តើខ្ញុំចាប់ផ្តើមលក់នៅលើ FramerZone យ៉ាងដូចម្តេច?",
+          question: "តើខ្ញុំចាប់ផ្តើមលក់នៅលើ FarmerZone យ៉ាងដូចម្តេច?",
           answer: "បង្កើតគណនីកសិករ បញ្ចប់ការផ្ទៀងផ្ទាត់ប្រវត្តិរូបរបស់អ្នក ហើយចាប់ផ្តើមចុះបញ្ជីផលិតផលរបស់អ្នក។ ក្រុមគាំទ្ររបស់យើងនឹងណែនាំអ្នកតាមដំណើរការទាំងមូល។"
         },
         {
@@ -218,19 +218,19 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
         },
         {
           question: "តើខ្ញុំធានាគុណភាព និងភាពស្រស់របស់ផលិតផលយ៉ាងដូចម្តេច?",
-          answer: "យើងមានប្រព័ន្ធវាយតម្លៃ ដំណើរការផ្ទៀងផ្ទាត់កសិករ និងគោលការណ៍ណែនាំគុណភាព�। អ្នកទិញក៏អាចទំនាក់ទំនងដោយផ្ទាល់ជាមួយកសិករអំពីកាលបរិច្ឆេទប្រមូលផល និងការដោះស្រាយ។"
+          answer: "យើងមានប្រព័ន្ធវាយតម្លៃ ដំណើរការផ្ទៀងផ្ទាត់កសិករ និងគោលការណ៍ណែនាំគុណភាព។​ អ្នកទិញក៏អាចទំនាក់ទំនងដោយផ្ទាល់ជាមួយកសិករអំពីកាលបរិច្ឆេទប្រមូលផល និងការដោះស្រាយ។"
         },
         {
-          question: "តើខ្ញុំអាចប្រើ FramerZone នៅលើទូរស័ព្ទរបស់ខ្ញុំបានទេ?",
-          answer: "បាទ! FramerZone ឆ្លើយតបពេញលេញ និងដំណើរការល្អឥតខ្ចោះនៅលើស្មាតហ្វូន ថេប្លេត និងកំព្យូទ័រ។ អ្នកអាចគ្រប់គ្រងគណនី និងធ្វើការទិញពីកន្លែងណាក៏បាន។"
+          question: "តើខ្ញុំអាចប្រើ FarmerZone នៅលើទូរស័ព្ទរបស់ខ្ញុំបានទេ?",
+          answer: "បាទ! FarmerZone ឆ្លើយតបពេញលេញ និងដំណើរការល្អឥតខ្ចោះនៅលើស្មាតហ្វូន ថេប្លេត និងកំព្យូទ័រ។ អ្នកអាចគ្រប់គ្រងគណនី និងធ្វើការទិញពីកន្លែងណាក៏បាន។"
         },
         {
           question: "តើការទូទាត់ដំណើរការយ៉ាងដូចម្តេច?",
-          answer: "យើងគាំទ្រវិធីសាស្ត្រទូទាត់ផ្សេងៗរួមទាំងលុយទូរស័ព្ទ ការផ្ទេរប្រាក់ធនាគារ និងការទូទាត់សាច់ប្រាក់នៅពេលដឹកជញ្ជូន�। ប្រតិបត្តិការទាំងអស់មានសុវត្ថិភាព និងការពារ។"
+          answer: "យើងគាំទ្រវិធីសាស្ត្រទូទាត់ផ្សេងៗរួមទាំងលុយទូរស័ព្ទ ការផ្ទេរប្រាក់ធនាគារ និងការទូទាត់សាច់ប្រាក់នៅពេលដឹកជញ្ជូន។​​ ប្រតិបត្តិការទាំងអស់មានសុវត្ថិភាព និងការពារ។"
         },
         {
           question: "តើប្រសិនបើខ្ញុំមានបញ្ហាជាមួយការបញ្ជាទិញរបស់ខ្ញុំ?",
-          answer: "ទាក់ទងក្រុមគាំទ្ររបស់យើងភ្លាមៗ។ យើងមានដំណើរការដោះស្រាយជម្លោះ ហើយធ្វើការជាមួយទាំងកសិករ និងអ្នកទិញដើម្បីធានាលទ្ធផលយុត្តិធម៌�।"
+          answer: "ទាក់ទងក្រុមគាំទ្ររបស់យើងភ្លាមៗ។ យើងមានដំណើរការដោះស្រាយជម្លោះ ហើយធ្វើការជាមួយទាំងកសិករ និងអ្នកទិញដើម្បីធានាលទ្ធផលយុត្តិធម៌។"
         }
       ],
       emergencyTitle: "ការគាំទ្រអាសន្ន",
@@ -312,7 +312,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
                     {currentLanguage === 'kh' ? 'ទាក់ទង' : 'Contact'}
                   </span>
                   <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent animate-slide-in-left animate-delay-200">
-                    FramerZone
+                    FarmerZone
                   </span>
                 </h1>
 
@@ -364,7 +364,7 @@ const ContactPage = ({ currentLanguage = 'en' }) => {
                       </div>
                       <div>
                         <p className="text-white font-semibold">Email Support</p>
-                        <p className="text-emerald-200 text-sm">info@framerzone.com</p>
+                        <p className="text-emerald-200 text-sm">info@farmerzone.com</p>
                       </div>
                     </div>
                     <div className="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer group animate-slide-in-right animate-delay-500">

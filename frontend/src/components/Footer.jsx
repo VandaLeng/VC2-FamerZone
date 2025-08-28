@@ -4,7 +4,7 @@ export default function Footer({ currentLanguage }) {
   // Language texts
   const texts = {
     kh: {
-      companyName: "FramerZone",
+      companyName: "FarmerZone",
       companyDesc: "ភ្ជាប់កសិករ និងអ្នកទិញដោយផ្ទាល់ តាមរយៈវេទិកាអនឡាញទំនើប សម្រាប់ផលិតផលកសិកម្មស្រស់ៗ",
       explore: "ស្វែងរក",
       home: "ទំព័រដើម",
@@ -13,7 +13,7 @@ export default function Footer({ currentLanguage }) {
       learningCenter: "មជ្ឈមណ្ឌលសិក្សា",
       contact: "ទំនាក់ទំនង",
       farmers: "ជួបកសិករ",
-      newsTitle: "ព័ត៌មានថ្មីរបស់ FramerZone",
+      newsTitle: "ព័ត៌មានថ្មីរបស់ FarmerZone",
       news1: "វគ្គសិក្សាថ្មីដែលបានណែនាំសម្រាប់កសិករ",
       news1Desc: "ស្វែងរកវគ្គសិក្សាកសិកម្មថ្មីដែលបានជ្រើសរើសដើម្បីបង្កើនទិន្នផលដំណាំ និងស្ទាត់ជំនាញបច្ចេកទេសកសិកម្មទំនើប!",
       news1Link: "/learning-center",
@@ -22,7 +22,7 @@ export default function Footer({ currentLanguage }) {
       news2Link: "/products",
       contactTitle: "ទំនាក់ទំនង",
       phone: "០១២ ៣៤៥ ៦៧៨",
-      email: "needhelp@framerzone.com",
+      email: "needhelp@farmerzone.com",
       address: "ភ្នំពេញ កម្ពុជា",
       emailPlaceholder: "អាសយដ្ឋានអ៊ីមែលរបស់អ្នក",
       allRights: "រក្សាសិទ្ធិគ្រប់យ៉ាង",
@@ -31,7 +31,7 @@ export default function Footer({ currentLanguage }) {
       privacyPolicy: "គោលការណ៍ភាពឯកជន",
     },
     en: {
-      companyName: "FramerZone",
+      companyName: "FarmerZone",
       companyDesc:
         "Connecting farmers and buyers directly through our modern online platform for fresh agricultural products.",
       explore: "Explore",
@@ -75,7 +75,7 @@ export default function Footer({ currentLanguage }) {
                 </svg>
               </div>
               <span className="text-2xl font-bold">
-                <span className="text-green-400">Framer</span>
+                <span className="text-green-400">Farmer</span>
                 <span className="text-white">Zone</span>
               </span>
             </div>
@@ -196,7 +196,7 @@ export default function Footer({ currentLanguage }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-sm">
-              © {currentTexts.allRights} 2025 {currentTexts.by} <span className="text-green-400">FramerZone</span>
+              © {currentTexts.allRights} 2025 {currentTexts.by} <span className="text-green-400">FarmerZone</span>
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">

@@ -13,7 +13,7 @@ const homeData = {
         happyCustomers: "អតិថិជនពេញចិត្ត",
 
         // Features
-        featuresTitle: "ហេតុអ្វីត្រូវជ្រើសរើស FramerZone?",
+        featuresTitle: "ហេតុអ្វីត្រូវជ្រើសរើស FarmerZone?",
         feature1Title: "ផលិតផលស្រស់ពីកសិករ",
         feature1Desc: "ទទួលបានបន្លែ ផ្លែឈើ និងផលិតផលកសិកម្មស្រស់ៗ ដោយផ្ទាល់ពីកសិករក្នុងស្រុក",
         feature2Title: "គ្មានអ្នកកណ្តាល",
