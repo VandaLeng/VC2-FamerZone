@@ -115,6 +115,12 @@ const FarmerDashboard = () => {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.data)) {
+          // Count unique users who placed orders
+          const userIds = new Set();
+          data.data.forEach(order => {
+            if (order.user_id) userIds.add(order.user_id);
+          });
+
           // Map API data to table format
           const orders = data.data.map(order => ({
             id: `#ORD-${order.id.toString().padStart(3, '0')}`,
@@ -128,6 +134,10 @@ const FarmerDashboard = () => {
             date: order.date
           }));
           setRecentOrders(orders);
+          setDashboardData(prev => ({
+            ...prev,
+            totalCustomers: userIds.size
+          }));
         }
       });
   }, []);
@@ -346,10 +356,6 @@ const FarmerDashboard = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-6 border-b border-gray-100">
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-0">ការបញ្ជាទិញថ្មីៗ</h3>
-            <button className="text-green-600 hover:text-green-700 font-semibold text-xs sm:text-sm transition-colors flex items-center bg-green-50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-green-100">
-              មើលទាំងអស់
-              <Eye className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
-            </button>
           </div>
           <div className="overflow-x-auto touch-auto">
             <table className="w-full min-w-[640px]">
