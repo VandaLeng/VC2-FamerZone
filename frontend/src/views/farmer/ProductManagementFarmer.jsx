@@ -33,80 +33,81 @@ const ProductManagement = () => {
 
   const texts = {
     en: {
-      productManagement: "Product Management",
-      manageProducts: "Manage your products and inventory",
-      addNewProduct: "Add New Product",
-      searchProducts: "Search products...",
-      allCategories: "All Categories",
-      allProvinces: "All Provinces",
-      allStatus: "All Status",
-      active: "Active",
-      inactive: "Inactive",
-      totalProducts: "Total Products",
-      activeProducts: "Active Products",
-      outOfStock: "Out of Stock",
-      totalRevenue: "Total Revenue",
-      product: "Product",
-      category: "Category",
-      province: "Province",
-      price: "Price",
-      stock: "Stock",
-      status: "Status",
-      orders: "Orders",
-      actions: "Actions",
-      edit: "Edit",
-      delete: "Delete",
-      view: "View",
-      save: "Save",
-      cancel: "Cancel",
-      productName: "Product Name",
-      selectCategory: "Select Category",
-      selectProvince: "Select Province",
-      pricePerUnit: "Price per Unit",
-      stockQuantity: "Stock Quantity",
-      unit: "Unit",
-      kg: "kg",
-      lb: "lb",
-      piece: "Piece",
-      dozen: "Dozen",
-      liter: "Liter",
-      productImage: "Product Image",
-      uploadImage: "Upload an image for your product",
-      selectFile: "Select File",
-      error: "Error: ",
-      validationError: "Please correct the following errors:",
-      nameRequired: "Product name is required",
-      productAdded: "Product added successfully and will appear on the website!",
-      productUpdated: "Product updated successfully!",
-      productDeleted: "Product deleted successfully!",
-      provinceRequired: "Please select a province",
-      categoryRequired: "Please select a category",
-      authRequired: "Please log in to add a product",
-      deleteConfirm: "Are you sure you want to delete this product?",
-      description: "Description",
-      location: "Location",
-      farmer: "Farmer",
-      rating: "Rating",
-      loading: "Loading...",
-      noProducts: "No products found",
-      refresh: "Refresh",
-      viewOnWebsite: "View on Website",
-      loginFirst: "Please log in first",
-      loginPrompt: "You need to be logged in to manage products",
-      loginButton: "Go to Login",
-      imageUploaded: "Image uploaded successfully",
-      priceRequired: "Price is required",
-      stockRequired: "Stock quantity is required",
-      unitRequired: "Unit is required",
-      descriptionPlaceholder: "Enter a detailed description of your product...",
-      currentImage: "Current Image",
-      changeImage: "Change Image",
-      noImage: "No image uploaded",
-      productDetails: "Product Details",
-      farmerInfo: "Farmer Information",
-      createdAt: "Created At",
-      lastUpdated: "Last Updated",
-      imageLoadError: "Failed to load image",
+      productManagement: "ការគ្រប់គ្រងផលិតផល",
+      manageProducts: "គ្រប់គ្រងផលិតផល និងស្តុករបស់អ្នក",
+      addNewProduct: "បន្ថែមផលិតផលថ្មី",
+      searchProducts: "ស្វែងរកផលិតផល...",
+      allCategories: "ប្រភេទទាំងអស់",
+      allProvinces: "ខេត្តទាំងអស់",
+      allStatus: "ស្ថានភាពទាំងអស់",
+      active: "សកម្ម",
+      inactive: "អសកម្ម",
+      totalProducts: "ផលិតផលសរុប",
+      activeProducts: "ផលិតផលសកម្ម",
+      outOfStock: "អស់ពីស្តុក",
+      totalRevenue: "ប្រាក់ចំណូលសរុប",
+      product: "ផលិតផល",
+      category: "ប្រភេទ",
+      province: "ខេត្ត",
+      price: "តម្លៃ",
+      stock: "ស្តុក",
+      status: "ស្ថានភាព",
+      orders: "ការបញ្ជាទិញ",
+      actions: "សកម្មភាព",
+      edit: "កែប្រែ",
+      delete: "លុប",
+      view: "មើល",
+      save: "រក្សាទុក",
+      cancel: "បោះបង់",
+      productName: "ឈ្មោះផលិតផល",
+      selectCategory: "ជ្រើសរើសប្រភេទ",
+      selectProvince: "ជ្រើសរើសខេត្ត",
+      pricePerUnit: "តម្លៃក្នុងមួយឯកតា",
+      stockQuantity: "បរិមាណស្តុក",
+      unit: "ឯកតា",
+      kg: "គីឡូក្រាម",
+      lb: "ផោន",
+      piece: "ដុំ",
+      dozen: "ដប់ពីរ",
+      liter: "លីត្រ",
+      productImage: "រូបភាពផលិតផល",
+      uploadImage: "បញ្ចូលរូបភាពសម្រាប់ផលិតផលរបស់អ្នក",
+      selectFile: "ជ្រើសរើសឯកសារ",
+      error: "កំហុស៖ ",
+      validationError: "សូមកែតម្រូវកំហុសដូចខាងក្រោម៖",
+      nameRequired: "ត្រូវការផ្ដល់ឈ្មោះផលិតផល",
+      productAdded: "បានបន្ថែមផលិតផលដោយជោគជ័យ ហើយនឹងបង្ហាញលើគេហទំព័រ!",
+      productUpdated: "បានកែប្រែផលិតផលដោយជោគជ័យ!",
+      productDeleted: "បានលុបផលិតផលដោយជោគជ័យ!",
+      provinceRequired: "សូមជ្រើសរើសខេត្ត",
+      categoryRequired: "សូមជ្រើសរើសប្រភេទ",
+      authRequired: "សូមចូលគណនីដើម្បីបន្ថែមផលិតផល",
+      deleteConfirm: "តើអ្នកប្រាកដជាចង់លុបផលិតផលនេះឬ?",
+      description: "ការពិពណ៌នា",
+      location: "ទីតាំង",
+      farmer: "កសិករ",
+      rating: "ការវាយតម្លៃ",
+      loading: "កំពុងផ្ទុក...",
+      noProducts: "មិនមានផលិតផល",
+      refresh: "ផ្ទុកឡើងវិញ",
+      viewOnWebsite: "មើលលើគេហទំព័រ",
+      loginFirst: "សូមចូលគណនីជាមុនសិន",
+      loginPrompt: "អ្នកត្រូវតែចូលគណនីដើម្បីគ្រប់គ្រងផលិតផល",
+      loginButton: "ទៅកាន់ការចូលគណនី",
+      imageUploaded: "រូបភាពបានផ្ទុកដោយជោគជ័យ",
+      priceRequired: "តម្លៃត្រូវបានទាមទារ",
+      stockRequired: "បរិមាណស្តុកត្រូវបានទាមទារ",
+      unitRequired: "ឯកតាត្រូវបានទាមទារ",
+      descriptionPlaceholder: "សូមបញ្ចូលការពិពណ៌នាលម្អិតអំពីផលិតផលរបស់អ្នក...",
+      currentImage: "រូបភាពបច្ចុប្បន្ន",
+      changeImage: "ផ្លាស់ប្តូររូបភាព",
+      noImage: "មិនមានរូបភាពបានផ្ទុក",
+      productDetails: "ព័ត៌មានលម្អិតអំពីផលិតផល",
+      farmerInfo: "ព័ត៌មានកសិករ",
+      createdAt: "ថ្ងៃបង្កើត",
+      lastUpdated: "កាលបរិច្ឆេទកែប្រែលើកចុងក្រោយ",
+      imageLoadError: "មិនអាចផ្ទុករូបភាពបាន",
+
     },
   };
 
@@ -117,7 +118,7 @@ const ProductManagement = () => {
     const userId = localStorage.getItem("user_id");
     const userName = localStorage.getItem("user_name");
     const userData = localStorage.getItem("user_data");
-    
+
     if (token && (userId || userData)) {
       let user = null;
       if (userData) {
@@ -127,7 +128,7 @@ const ProductManagement = () => {
           console.error("Failed to parse user data:", e);
         }
       }
-      
+
       setCurrentUser({
         id: userId || user?.id,
         name: userName || user?.name || "User",
@@ -225,7 +226,7 @@ const ProductManagement = () => {
         return false;
       }
       const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = filterCategory === "" || product.category?.id?.toString() === filterCategory;
       const matchesStatus = filterStatus === "" || product.status === filterStatus;
       const matchesProvince = filterProvince === "" || product.province_id === filterProvince;
@@ -271,10 +272,10 @@ const ProductManagement = () => {
   const handleDeleteConfirm = async (productId) => {
     try {
       const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
-      
+
       // Call API to delete from database
       const response = await axios.delete(`${API_BASE_URL}/api/items/${productId}`, {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -305,7 +306,7 @@ const ProductManagement = () => {
   const handleEditSave = async (updatedProduct) => {
     try {
       // Update the product in the local state
-      setProducts(prevProducts => 
+      setProducts(prevProducts =>
         prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
       );
       // Only show one success message - removed duplicate toast
@@ -374,27 +375,27 @@ const ProductManagement = () => {
 
     const validateForm = () => {
       const errors = {};
-      
+
       if (!formData.name.trim()) {
         errors.name = texts.en.nameRequired;
       }
-      
+
       if (!formData.category_id) {
         errors.category_id = texts.en.categoryRequired;
       }
-      
+
       if (!formData.province_id) {
         errors.province_id = texts.en.provinceRequired;
       }
-      
+
       if (!formData.price || formData.price <= 0) {
         errors.price = texts.en.priceRequired;
       }
-      
+
       if (!formData.stock || formData.stock < 0) {
         errors.stock = texts.en.stockRequired;
       }
-      
+
       if (!formData.unit) {
         errors.unit = texts.en.unitRequired;
       }
@@ -405,7 +406,7 @@ const ProductManagement = () => {
 
     const handleSubmit = async (e) => {
       e.preventDefault();
-      
+
       if (!validateForm()) {
         toast.error(texts.en.validationError);
         return;
@@ -521,9 +522,8 @@ const ProductManagement = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${
-                      validationErrors.name ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${validationErrors.name ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Enter product name"
                     required
                   />
@@ -539,9 +539,8 @@ const ProductManagement = () => {
                   <select
                     value={formData.category_id}
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${
-                      validationErrors.category_id ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${validationErrors.category_id ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     required
                   >
                     <option value="">{texts.en.selectCategory}</option>
@@ -567,9 +566,8 @@ const ProductManagement = () => {
                   <select
                     value={formData.province_id}
                     onChange={(e) => setFormData({ ...formData, province_id: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${
-                      validationErrors.province_id ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${validationErrors.province_id ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     required
                   >
                     <option value="">{texts.en.selectProvince}</option>
@@ -614,9 +612,8 @@ const ProductManagement = () => {
                       min="0"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${
-                        validationErrors.price ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${validationErrors.price ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="0.00"
                       required
                     />
@@ -634,9 +631,8 @@ const ProductManagement = () => {
                       min="0"
                       value={formData.stock}
                       onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${
-                        validationErrors.stock ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${validationErrors.stock ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="0"
                       required
                     />
@@ -689,7 +685,7 @@ const ProductManagement = () => {
                         <p className="text-gray-600">{texts.en.uploadImage}</p>
                       </div>
                     )}
-                    
+
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif"
@@ -762,7 +758,7 @@ const ProductManagement = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <div className="max-w-7xl mx-auto">
         {error && !Object.keys(validationErrors).length && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -776,7 +772,7 @@ const ProductManagement = () => {
               <h1 className="text-3xl font-bold text-gray-800 mb-2">{texts.en.productManagement}</h1>
               <p className="text-gray-600">{texts.en.manageProducts}</p>
               {currentUser && (
-                <p className="text-sm text-green-600 mt-1">Welcome back, {currentUser.name}!</p>
+                <p className="text-sm text-green-600 mt-1">សូមស្វាគមន៍ត្រឡប់មកវិញ, {currentUser.name}!</p>
               )}
             </div>
             <div className="flex gap-2">
@@ -912,28 +908,28 @@ const ProductManagement = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.product}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.category}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.province}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.price}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.stock}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.status}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.orders}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left font-semibold text-gray-800">
                       {texts.en.actions}
                     </th>
                   </tr>
@@ -969,11 +965,10 @@ const ProductManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            product.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${product.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {product.status}
                         </span>

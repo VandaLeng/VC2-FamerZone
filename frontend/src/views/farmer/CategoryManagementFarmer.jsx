@@ -27,51 +27,52 @@ const CategoryManagement = () => {
   });
 
   const texts = {
-    categoryManagement: 'Category Management',
-    searchCategories: 'Search categories...',
-    addNewCategory: 'Add New Category',
-    filterByStatus: 'Filter by Status',
-    allCategories: 'All Categories',
-    activeCategories: 'Active Categories',
-    inactiveCategories: 'Inactive Categories',
-    categoryName: 'Category',
-    description: 'Description',
-    products: 'Products',
-    createdDate: 'Created Date',
-    status: 'Status',
-    actions: 'Actions',
-    active: 'Active',
-    inactive: 'Inactive',
-    view: 'View',
-    edit: 'Edit',
-    delete: 'Delete',
-    addCategory: 'Add Category',
-    editCategory: 'Edit Category',
-    viewCategory: 'View Category',
-    categoryNameEn: 'Category Name',
-    descriptionEn: 'Description',
-    save: 'Save',
-    cancel: 'Cancel',
-    close: 'Close',
-    confirmDelete: 'Confirm Delete',
-    deleteConfirmText: 'Are you sure you want to delete this category? This action cannot be undone.',
-    confirmDeleteBtn: 'Yes, Delete',
-    cancelDelete: 'Cancel',
-    noCategories: 'No categories found',
-    categoryDeleted: 'Category deleted successfully',
-    categorySaved: 'Category saved successfully',
-    image: 'Image',
-    uploadImage: 'Upload Image',
-    loading: 'Loading...',
-    nameRequired: 'Category name is required',
-    loginFirst: 'Please log in first',
-    loginPrompt: 'You need to be logged in to manage categories',
-    loginButton: 'Go to Login',
-    manageCategories: 'Manage your product categories',
-    totalCategories: 'Total Categories',
-    activeCount: 'Active',
-    inactiveCount: 'Inactive',
-    refresh: 'Refresh',
+    categoryManagement: 'ការគ្រប់គ្រងប្រភេទ',
+    searchCategories: 'ស្វែងរកប្រភេទ...',
+    addNewCategory: 'បន្ថែមប្រភេទថ្មី',
+    filterByStatus: 'តម្រៀបតាមស្ថានភាព',
+    allCategories: 'ប្រភេទទាំងអស់',
+    activeCategories: 'ប្រភេទសកម្ម',
+    inactiveCategories: 'ប្រភេទអសកម្ម',
+    categoryName: 'ប្រភេទ',
+    description: 'ការពិពណ៌នា',
+    products: 'ផលិតផល',
+    createdDate: 'ថ្ងៃបង្កើត',
+    status: 'ស្ថានភាព',
+    actions: 'សកម្មភាព',
+    active: 'សកម្ម',
+    inactive: 'អសកម្ម',
+    view: 'មើល',
+    edit: 'កែប្រែ',
+    delete: 'លុប',
+    addCategory: 'បន្ថែមប្រភេទ',
+    editCategory: 'កែប្រែប្រភេទ',
+    viewCategory: 'មើលប្រភេទ',
+    categoryNameEn: 'ឈ្មោះប្រភេទ',
+    descriptionEn: 'ការពិពណ៌នា',
+    save: 'រក្សាទុក',
+    cancel: 'បោះបង់',
+    close: 'បិទ',
+    confirmDelete: 'បញ្ជាក់ការលុប',
+    deleteConfirmText: 'តើអ្នកប្រាកដជាចង់លុបប្រភេទនេះឬ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបាន។',
+    confirmDeleteBtn: 'យល់ព្រម, លុប',
+    cancelDelete: 'បោះបង់',
+    noCategories: 'មិនមានប្រភេទទេ',
+    categoryDeleted: 'បានលុបប្រភេទដោយជោគជ័យ',
+    categorySaved: 'បានរក្សាប្រភេទដោយជោគជ័យ',
+    image: 'រូបភាព',
+    uploadImage: 'ផ្ទុករូបភាព',
+    loading: 'កំពុងផ្ទុក...',
+    nameRequired: 'ត្រូវការឈ្មោះប្រភេទ',
+    loginFirst: 'សូមចូលគណនីជាមុនសិន',
+    loginPrompt: 'អ្នកត្រូវតែចូលគណនីដើម្បីគ្រប់គ្រងប្រភេទ',
+    loginButton: 'ទៅកាន់ការចូលគណនី',
+    manageCategories: 'គ្រប់គ្រងប្រភេទផលិតផលរបស់អ្នក',
+    totalCategories: 'ចំនួនប្រភេទសរុប',
+    activeCount: 'សកម្ម',
+    inactiveCount: 'អសកម្ម',
+    refresh: 'ផ្ទុកឡើងវិញ',
+
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -83,7 +84,7 @@ const CategoryManagement = () => {
     const userId = localStorage.getItem("user_id");
     const userName = localStorage.getItem("user_name");
     const userData = localStorage.getItem("user_data");
-    
+
     if (token && (userId || userData)) {
       let user = null;
       if (userData) {
@@ -93,7 +94,7 @@ const CategoryManagement = () => {
           console.error("Failed to parse user data:", e);
         }
       }
-      
+
       setCurrentUser({
         id: userId || user?.id,
         name: userName || user?.name || "User",
@@ -369,7 +370,7 @@ const CategoryManagement = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <div className="max-w-7xl mx-auto">
         {error && (
           <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex items-center gap-2">
@@ -389,7 +390,7 @@ const CategoryManagement = () => {
                 {texts.manageCategories}
               </p>
               {currentUser && (
-                <p className="text-sm text-green-600 mt-1">Welcome back, {currentUser.name}!</p>
+                <p className="text-sm text-green-600 mt-1">សូមស្វាគមន៍ត្រឡប់មកវិញ, {currentUser.name}!</p>
               )}
             </div>
             <div className="flex gap-2">
@@ -557,11 +558,10 @@ const CategoryManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                            category.status === 'active'
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${category.status === 'active'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
-                          }`}
+                            }`}
                         >
                           {category.status === 'active' ? texts.active : texts.inactive}
                         </span>

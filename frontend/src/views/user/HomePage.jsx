@@ -234,8 +234,8 @@ export default function HomePage({ currentLanguage }) {
                                             </svg>
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-gray-800">100% Fresh</p>
-                                            <p className="text-sm text-gray-600">Direct from Farm</p>
+                                            <p className="font-semibold text-gray-800">ស្រស់ៗ​ ១០០%</p>
+                                            <p className="text-sm text-gray-600">ពីកសិដ្ឋានផ្ទាល់</p>
                                         </div>
                                     </div>
                                 </div>
@@ -304,7 +304,7 @@ export default function HomePage({ currentLanguage }) {
                                 title: currentTexts.feature2Title || "Direct Connection",
                                 desc: currentTexts.feature2Desc || "Connect with local farmers",
                                 color: "blue",
-                                image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=ZQH45iwu1T-sq6ECmZhrjPzTJNV48_C6G4o12B9OXTY=",
+                                image: "https://media.istockphoto.com/id/1061400948/photo/farmer-giving-box-of-veg-to-customer-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=UOuur8q5SRru_fy1OdDybUlm9BuCq9Pw2XjLDkZ5aCY=",
                                 icon: (
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -395,7 +395,7 @@ export default function HomePage({ currentLanguage }) {
                                 {currentTexts.getStartedTitle || (currentLanguage === "kh" ? "ចាប់ផ្តើមលក់ជាកសិករនៅថ្ងៃនេះ" : "Start Selling as a Farmer Today")}
                             </h3>
                             <p className="text-gray-600 mb-6 leading-relaxed">
-                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FramerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
+                                {currentTexts.getStartedDesc || (currentLanguage === "kh" ? "ចូលរួមជាមួយ FarmerZone ដើម្បីលក់ផលិតផលស្រស់ៗរបស់អ្នកដោយផ្ទាល់ទៅកាន់អ្នកទិញ រកប្រាក់បានច្រើនជាងមុនដោយគ្មានឈ្មួញកណ្តាល និងពង្រីកអាជីវកម្មរបស់អ្នកដោយភាពងាយស្រួល។" : "Join FramerZone to sell your fresh produce directly to buyers, earn more without middlemen, and grow your business with ease.")}
                             </p>
                             <button
                                 onClick={navigateToRegisterAsFarmer}
@@ -421,13 +421,13 @@ export default function HomePage({ currentLanguage }) {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Simple Process
+                            ដំណើរការងាយស្រួល
                         </div>
                         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                             {currentTexts.howItWorksTitle}
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Connect directly with local farmers in three simple steps
+                           ភ្ជាប់ផ្ទាល់ជាមួយកសិករមូលដ្ឋានតាមរយៈជំហានងាយៗបីនេះ
                         </p>
                     </div>
 
@@ -502,7 +502,7 @@ export default function HomePage({ currentLanguage }) {
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                                                     'bg-orange-100 text-orange-700'
                                                 }`}>
-                                                    Step {step.number}
+                                                    ជំហានទី {step.number}
                                                 </span>
                                             </div>
                                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -535,7 +535,7 @@ export default function HomePage({ currentLanguage }) {
                         className={`text-center mt-16 transition-all duration-500 ${isVisible["how-it-works"] ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
                         <button className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            <span>Get Started Today</span>
+                            <span>ចាប់ផ្តើមថ្ងៃនេះ</span>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
