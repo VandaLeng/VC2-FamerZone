@@ -11,37 +11,46 @@ const FarmerDashboard = () => {
     totalEarnings: 0,
     monthlyEarnings: 1200.50,
     weeklyEarnings: 380.25,
-    totalOrders: 142,
+    totalOrders: 0,
     pendingOrders: 8,
     completedOrders: 134,
     totalProducts: 24,
     activeProducts: 22,
     totalCustomers: 89,
     newCustomers: 12,
-    totalOrderItems: 0
+    ordersWithoutItems: 0
   });
 
-  // Fetch total_price sum from backend
+  // ...existing code...
+
   useEffect(() => {
-    // Fetch total order_items from backend
-    fetch('http://127.0.0.1:8000/api/order-items')
-      .then(res => res.json())
-      .then(data => {
-        // If API returns { total: ... }
-        if (typeof data.total === 'number') {
-          setDashboardData(prev => ({ ...prev, totalOrderItems: data.total }));
-        } else if (Array.isArray(data)) {
-          // If API returns array of items
-          setDashboardData(prev => ({ ...prev, totalOrderItems: data.length }));
-        } else {
-          setDashboardData(prev => ({ ...prev, totalOrderItems: 0 }));
+    // Fetch all orders and sum total_price for total earnings, count total orders, and count orders with no order_items
+    fetch("http://127.0.0.1:8000/api/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        let totalEarnings = 0;
+        let ordersWithoutItems = 0;
+        let totalOrders = 0;
+        if (Array.isArray(data.data)) {
+          totalOrders = data.data.length;
+          data.data.forEach(order => {
+            if (order.total_price) {
+              totalEarnings += parseFloat(order.total_price) || 0;
+            }
+            // Count orders with no order_items (empty array or undefined)
+            if (!order.items || (Array.isArray(order.items) && order.items.length === 0)) {
+              ordersWithoutItems++;
+            }
+          });
         }
-      })
-      .catch(() => {
-        setDashboardData(prev => ({ ...prev, totalOrderItems: 0 }));
+        setDashboardData(prev => ({
+          ...prev,
+          totalEarnings: totalEarnings,
+          totalOrders: totalOrders,
+          ordersWithoutItems: ordersWithoutItems
+        }));
       });
   }, []);
-
   const salesData = {
     weekly: [
       { name: 'ច័ន្ទ', sales: 120, orders: 5 },
@@ -151,8 +160,8 @@ const FarmerDashboard = () => {
             <StatCard
               icon={ShoppingCart}
               title="ការបញ្ជាទិញសរុប"
-              value={dashboardData.totalOrderItems}
-              subtitle={`ការបញ្ជាទិញសរុប: ${dashboardData.totalOrderItems}`}
+              value={dashboardData.totalOrders}
+              subtitle={`ចំនួនការបញ្ជាទិញសរុប: ${dashboardData.totalOrders}`}
               trend={8.2}
               color="text-blue-600"
               bgGradient="from-blue-500 to-cyan-500"
