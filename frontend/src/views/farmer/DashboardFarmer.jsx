@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+// NOTE: Make sure your backend has the following route and controller method:
+// Route::get('/orders/total-price', [OrderController::class, 'getTotalPrice']);
+// public function getTotalPrice() {
+//     $total = \App\Models\Order::sum('total_price');
+//     return response()->json(['total_price' => $total]);
+// }
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, Eye, ArrowUpRight, Star } from 'lucide-react';
 
@@ -312,7 +318,7 @@ const FarmerDashboard = () => {
                       </span>
                     </td>
                     <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-500">
-                      {new Date().toLocaleDateString('km-KH')}
+                        {order.date}
                     </td>
                   </tr>
                 ))}
