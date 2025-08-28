@@ -3,6 +3,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, Eye, ArrowUpRight, Star } from 'lucide-react';
 
 const FarmerDashboard = () => {
+  // Chart data states for daily and weekly orders
+  const [dailyOrderChart, setDailyOrderChart] = useState([]);
+  const [weeklyOrderChart, setWeeklyOrderChart] = useState([]);
   const [timeRange, setTimeRange] = useState('weekly');
   const [loading, setLoading] = useState(false);
 
@@ -24,13 +27,25 @@ const FarmerDashboard = () => {
   // ...existing code...
 
   useEffect(() => {
-    // Fetch all orders and sum total_price for total earnings, count total orders, and count orders with no order_items
+    // Fetch all orders and sum total_price for total earnings, count total orders, count orders with no order_items, and aggregate daily/weekly orders
     fetch("http://127.0.0.1:8000/api/orders")
       .then((res) => res.json())
       .then((data) => {
         let totalEarnings = 0;
         let ordersWithoutItems = 0;
         let totalOrders = 0;
+        // Aggregation objects
+        const dailyCounts = {};
+        const weeklyCounts = {};
+        // Helper for week number
+        function getWeekNumber(date) {
+          const tempDate = new Date(date.getTime());
+          tempDate.setHours(0, 0, 0, 0);
+          tempDate.setDate(tempDate.getDate() + 4 - (tempDate.getDay() || 7));
+          const yearStart = new Date(tempDate.getFullYear(), 0, 1);
+          const weekNo = Math.ceil((((tempDate - yearStart) / 86400000) + 1) / 7);
+          return weekNo;
+        }
         if (Array.isArray(data.data)) {
           totalOrders = data.data.length;
           data.data.forEach(order => {
@@ -41,8 +56,24 @@ const FarmerDashboard = () => {
             if (!order.items || (Array.isArray(order.items) && order.items.length === 0)) {
               ordersWithoutItems++;
             }
+            // Aggregate by day
+            if (order.created_at) {
+              const date = new Date(order.created_at);
+              const dayKey = date.toISOString().slice(0, 10);
+              dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
+              // Aggregate by week
+              const weekYear = date.getFullYear();
+              const weekNum = getWeekNumber(date);
+              const weekKey = `${weekYear}-W${weekNum}`;
+              weeklyCounts[weekKey] = (weeklyCounts[weekKey] || 0) + 1;
+            }
           });
         }
+        // Prepare chart data arrays
+        const dailyOrderChart = Object.entries(dailyCounts).map(([date, count]) => ({ name: date, orders: count }));
+        const weeklyOrderChart = Object.entries(weeklyCounts).map(([week, count]) => ({ name: week, orders: count }));
+        setDailyOrderChart(dailyOrderChart);
+        setWeeklyOrderChart(weeklyOrderChart);
         setDashboardData(prev => ({
           ...prev,
           totalEarnings: totalEarnings,
@@ -189,42 +220,51 @@ const FarmerDashboard = () => {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Sales Overview Chart */}
+          {/* Sales Overview Chart (Order Tracking) */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-0">ទិដ្ឋភាពលក់ដូរ</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-0" style={{ fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif' }}>ទិដ្ឋភាពលក់ដូរ</h3>
               <div className="flex bg-gray-50 rounded-xl p-1 border border-gray-200">
                 <button
                   onClick={() => setTimeRange('weekly')}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg font-medium transition-all ${timeRange === 'weekly'
+                  className={`px-4 py-2 text-sm rounded-lg font-bold transition-all ${timeRange === 'weekly'
                     ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                    : 'bg-white text-gray-600 border border-gray-200'
                     }`}
+                  style={{ fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif' }}
                 >
                   ប្រចាំសប្តាហ៍
                 </button>
                 <button
-                  onClick={() => setTimeRange('monthly')}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg font-medium transition-all ${timeRange === 'monthly'
+                  onClick={() => setTimeRange('daily')}
+                  className={`px-4 py-2 text-sm rounded-lg font-bold transition-all ${timeRange === 'daily'
                     ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                    : 'bg-white text-gray-600 border border-gray-200'
                     }`}
+                  style={{ fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif' }}
                 >
-                  ប្រចាំខែ
+                  ប្រចាំថ្ងៃ
                 </button>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={280} className="min-w-[200px]">
-              <BarChart data={salesData[timeRange]} margin={{ top: 15, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <BarChart
+                data={timeRange === 'weekly' ? weeklyOrderChart : dailyOrderChart}
+                margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+                barCategoryGap="30%"
+                barGap={5}
+              >
+                <CartesianGrid vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: '#64748b' }}
+                  tick={{ fontSize: 14, fill: '#374151', fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif' }}
                   axisLine={{ stroke: '#e2e8f0' }}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: '#64748b' }}
+                  tick={{ fontSize: 12, fill: '#64748b', fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif' }}
                   axisLine={{ stroke: '#e2e8f0' }}
+                  tickLine={false}
+                  gridLine={{ stroke: '#e2e8f0', strokeDasharray: '3 3' }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -232,13 +272,16 @@ const FarmerDashboard = () => {
                     border: '1px solid #e2e8f0',
                     borderRadius: '12px',
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    fontSize: '12px'
+                    fontSize: '14px',
+                    fontFamily: 'Kantumruy, Khmer OS, Arial, sans-serif'
                   }}
+                  formatter={(value) => [`${value} ការបញ្ជាទិញ`, 'orders']}
                 />
                 <Bar
-                  dataKey="sales"
+                  dataKey="orders"
                   fill="url(#colorGradient)"
                   radius={[6, 6, 0, 0]}
+                  barSize={40}
                 />
                 <defs>
                   <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
