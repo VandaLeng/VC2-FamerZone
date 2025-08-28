@@ -17,7 +17,7 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
   const texts = {
     kh: {
       title: "ចូលប្រើគណនី",
-      subtitle: "ចូលទៅកាន់ FramerZone",
+      subtitle: "ចូលទៅកាន់ FarmerZone",
       email: "អ៊ីមែល",
       emailPlaceholder: "your@email.com",
       password: "លេខសម្ងាត់",
@@ -32,7 +32,7 @@ export default function LoginForm({ currentLanguage = "en", onClose, setIsLogged
     },
     en: {
       title: "Login to Account",
-      subtitle: "Access your FramerZone account",
+      subtitle: "Access your FarmerZone account",
       email: "Email Address",
       emailPlaceholder: "your@email.com",
       password: "Password",

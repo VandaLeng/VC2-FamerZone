@@ -502,7 +502,7 @@ export default function HomePage({ currentLanguage }) {
                                                     step.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                                                     'bg-orange-100 text-orange-700'
                                                 }`}>
-                                                    Step {step.number}
+                                                    ជំហានទី {step.number}
                                                 </span>
                                             </div>
                                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
