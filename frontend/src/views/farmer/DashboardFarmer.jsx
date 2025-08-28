@@ -1,10 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// NOTE: Make sure your backend has the following route and controller method:
-// Route::get('/orders/total-price', [OrderController::class, 'getTotalPrice']);
-// public function getTotalPrice() {
-//     $total = \App\Models\Order::sum('total_price');
-//     return response()->json(['total_price' => $total]);
-// }
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Package, ShoppingCart, DollarSign, Users, Bell, Calendar, Eye, ArrowUpRight, Star } from 'lucide-react';
 
@@ -23,18 +17,28 @@ const FarmerDashboard = () => {
     totalProducts: 24,
     activeProducts: 22,
     totalCustomers: 89,
-    newCustomers: 12
+    newCustomers: 12,
+    totalOrderItems: 0
   });
 
   // Fetch total_price sum from backend
   useEffect(() => {
-    fetch('http://localhost:8000/api/orders/total-price')
+    // Fetch total order_items from backend
+    fetch('http://127.0.0.1:8000/api/order-items')
       .then(res => res.json())
       .then(data => {
-        setDashboardData(prev => ({ ...prev, totalEarnings: data.total_price }));
+        // If API returns { total: ... }
+        if (typeof data.total === 'number') {
+          setDashboardData(prev => ({ ...prev, totalOrderItems: data.total }));
+        } else if (Array.isArray(data)) {
+          // If API returns array of items
+          setDashboardData(prev => ({ ...prev, totalOrderItems: data.length }));
+        } else {
+          setDashboardData(prev => ({ ...prev, totalOrderItems: 0 }));
+        }
       })
       .catch(() => {
-        setDashboardData(prev => ({ ...prev, totalEarnings: 0 }));
+        setDashboardData(prev => ({ ...prev, totalOrderItems: 0 }));
       });
   }, []);
 
@@ -147,8 +151,8 @@ const FarmerDashboard = () => {
             <StatCard
               icon={ShoppingCart}
               title="ការបញ្ជាទិញសរុប"
-              value={dashboardData.totalOrders}
-              subtitle={`ការបញ្ជាទិញកំពុងរង់ចាំ: ${dashboardData.pendingOrders}`}
+              value={dashboardData.totalOrderItems}
+              subtitle={`ការបញ្ជាទិញសរុប: ${dashboardData.totalOrderItems}`}
               trend={8.2}
               color="text-blue-600"
               bgGradient="from-blue-500 to-cyan-500"
@@ -318,7 +322,7 @@ const FarmerDashboard = () => {
                       </span>
                     </td>
                     <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-500">
-                        {order.date}
+                      {new Date().toLocaleDateString('km-KH')}
                     </td>
                   </tr>
                 ))}
