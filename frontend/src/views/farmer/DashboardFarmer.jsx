@@ -56,14 +56,15 @@ const FarmerDashboard = () => {
             if (!order.items || (Array.isArray(order.items) && order.items.length === 0)) {
               ordersWithoutItems++;
             }
-            // Aggregate by day
-            if (order.created_at) {
-              const date = new Date(order.created_at);
-              const dayKey = date.toISOString().slice(0, 10);
+            // Aggregate by date field (not created_at)
+            if (order.date) {
+              // Use only date part (YYYY-MM-DD)
+              const dayKey = order.date.split(' ')[0];
               dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
-              // Aggregate by week
-              const weekYear = date.getFullYear();
-              const weekNum = getWeekNumber(date);
+              // Aggregate by week using date field
+              const dateObj = new Date(order.date);
+              const weekYear = dateObj.getFullYear();
+              const weekNum = getWeekNumber(dateObj);
               const weekKey = `${weekYear}-W${weekNum}`;
               weeklyCounts[weekKey] = (weeklyCounts[weekKey] || 0) + 1;
             }
