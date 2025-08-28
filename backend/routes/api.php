@@ -86,6 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{id}', [OrderController::class, 'update']);
     Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+
+// Public route to get total price of all orders
+Route::get('/orders/total-price', [OrderController::class, 'getTotalPrice']);
 });
 
 

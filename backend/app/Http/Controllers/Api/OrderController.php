@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
     /**
+     * Get the total price of all orders.
+     */
+    public function getTotalPrice()
+    {
+        $total = Order::sum('total_price');
+        return response()->json(['total_price' => $total]);
+    }
+    /**
      * Create a new controller instance.
      */
     public function __construct()
