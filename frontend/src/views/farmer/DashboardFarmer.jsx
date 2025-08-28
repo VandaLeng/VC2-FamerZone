@@ -108,13 +108,29 @@ const FarmerDashboard = () => {
     { name: 'ការ៉ុត', sales: 28, revenue: 280, color: '#166534' }
   ];
 
-  const recentOrders = [
-    { id: '#ORD-001', customer: 'សុភា ចាន់', product: 'ប៉េងប៉ោះធម្មជាតិ', quantity: 5, total: 25.00, status: 'pending', date: '2025-01-20' },
-    { id: '#ORD-002', customer: 'សរិទ្ធ សុខ', product: 'សាឡាត់ស្រស់', quantity: 3, total: 15.00, status: 'confirmed', date: '2025-01-20' },
-    { id: '#ORD-003', customer: 'វិចិត្រ គឹម', product: 'ម្ទេសប្លោក', quantity: 8, total: 40.00, status: 'delivered', date: '2025-01-19' },
-    { id: '#ORD-004', customer: 'សុវណ្ណ លី', product: 'ការ៉ុត', quantity: 10, total: 20.00, status: 'confirmed', date: '2025-01-19' },
-    { id: '#ORD-005', customer: 'សុជាតិ សេង', product: 'ប៉េងប៉ោះធម្មជាតិ', quantity: 12, total: 60.00, status: 'pending', date: '2025-01-18' }
-  ];
+  const [recentOrders, setRecentOrders] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.data)) {
+          // Map API data to table format
+          const orders = data.data.map(order => ({
+            id: `#ORD-${order.id.toString().padStart(3, '0')}`,
+            customer: order.user?.name || order.customer_name || `User ${order.user_id}`,
+            product: Array.isArray(order.items) && order.items.length > 0
+              ? order.items.map(item => item.name).join(', ')
+              : order.product_name || '-',
+            quantity: order.quantity || '-',
+            total: order.total_price ? parseFloat(order.total_price) : 0,
+            status: order.status,
+            date: order.date
+          }));
+          setRecentOrders(orders);
+        }
+      });
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -341,8 +357,6 @@ const FarmerDashboard = () => {
                 <tr className="bg-gray-50 border-b border-gray-100">
                   <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">លេខរៀងការបញ្ជាទិញ</th>
                   <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">អតិថិជន</th>
-                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">ផលិតផល</th>
-                  <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">បរិមាណ</th>
                   <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">សរុប</th>
                   <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">ស្ថានភាព</th>
                   <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-700">កាលបរិច្ឆេទ</th>
@@ -364,8 +378,6 @@ const FarmerDashboard = () => {
                         <span className="text-xs sm:text-sm text-gray-900 font-medium">{order.customer}</span>
                       </div>
                     </td>
-                    <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-700">{order.product}</td>
-                    <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-700 font-medium">{order.quantity}</td>
                     <td className="p-3 sm:p-4 text-xs sm:text-sm font-bold text-green-600">${order.total.toFixed(2)}</td>
                     <td className="p-3 sm:p-4">
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold border ${getStatusColor(order.status)}`}>
@@ -375,7 +387,7 @@ const FarmerDashboard = () => {
                       </span>
                     </td>
                     <td className="p-3 sm:p-4 text-xs sm:text-sm text-gray-500">
-                      {new Date().toLocaleDateString('km-KH')}
+                        {new Date(order.date).toLocaleDateString('km-KH')}
                     </td>
                   </tr>
                 ))}
