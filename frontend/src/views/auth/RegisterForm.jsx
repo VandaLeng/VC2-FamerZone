@@ -48,7 +48,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
   const texts = {
     kh: {
       title: "ចុះឈ្មោះ",
-      subtitle: "បង្កើតគណនីរបស់អ្នកនៅ FramerZone",
+      subtitle: "បង្កើតគណនីរបស់អ្នកនៅ FarmerZone",
       name: "ឈ្មោះ",
       namePlaceholder: "បញ្ចូលឈ្មោះរបស់អ្នក",
       email: "អ៊ីមែល",
@@ -66,8 +66,8 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
       alreadyHaveAccount: "មានគណនីហើយ?",
       signIn: "ចូលប្រើ",
       roles: {
-        buyer: "អ្នកទិញ (ក្រុមគ្រួសារ)",
-        farmer: "កសិករ (អ្នកលក់)",
+        buyer: "អ្នកទិញ",
+        farmer: "កសិករ",
       },
       passwordRequirements: "លេខសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់៨តួរអក្សរ",
       creating: "កំពុងបង្កើតគណនី...",
@@ -78,7 +78,7 @@ export default function RegisterForm({ currentLanguage = "en", onClose, setIsLog
     },
     en: {
       title: "Create Account",
-      subtitle: "Join the FramerZone community",
+      subtitle: "Join the FarmerZone community",
       name: "Full Name",
       namePlaceholder: "Enter your full name",
       email: "Email Address",

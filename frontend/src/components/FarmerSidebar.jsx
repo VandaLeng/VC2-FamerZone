@@ -36,7 +36,7 @@ const FarmerSidebar = ({
           </button>
           {!collapsed && (
             <div>
-              <h1 className="text-xl text-gray-800 font-bold">FramerZone</h1>
+              <h1 className="text-xl text-gray-800 font-bold">FarmerZone</h1>
               <p className="text-sm text-gray-500">ផ្ទាំងកសិករ</p>
             </div>
           )}

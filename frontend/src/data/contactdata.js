@@ -1,6 +1,6 @@
 const contactData = {
     en: {
-        heroTitle: "Contact FramerZone",
+        heroTitle: "Contact FarmerZone",
         heroSubtitle: "Connect with Cambodia's Agricultural Community",
         heroDescription: "We're here to help farmers, buyers, and partners build stronger agricultural connections. Get in touch with us for support, partnerships, or any questions about our platform.",
 
@@ -115,7 +115,7 @@ const contactData = {
     },
 
     kh: {
-        heroTitle: "ទាក់ទង FramerZone",
+        heroTitle: "ទាក់ទង FarmerZone",
         heroSubtitle: "តភ្ជាប់ជាមួយសហគមន៍កសិកម្មកម្ពុជា",
         heroDescription: "យើងនៅទីនេះដើម្បីជួយកសិករ អ្នកទិញ និងដៃគូសាងសង់ការតភ្ជាប់កសិកម្មកាន់តែរឹngមាំ។ ទាក់ទងមកយើngសម្រាប់ការគាំទ្រ ភាពជាដៃគូ ឬសំណួរណាមួយអំពីវេទិការបស់យើng។",
 
@@ -211,7 +211,7 @@ const contactData = {
             },
             {
                 question: "តើខ្ញុmអាចប្រើ FramerZone នៅលើទូរស័ព្ធរបស់ខ្ញុmបានទេ?",
-                answer: "បាទ! FramerZone ឆ្លើយtបពេញលេញ និngដំណើrការល្អឥtខ្ចោhនៅលើស្មាតហ្វូn ថេប្លេt និngកmព្យូទ័r។ អ្នkអាចគ្រប់គrណី និngធ្វើការទិញពីកn្លែngណាក៏បាន។"
+                answer: "បាទ! FarmerZone ឆ្លើយtបពេញលេញ និngដំណើrការល្អឥtខ្ចោhនៅលើស្មាតហ្វូn ថេប្លេt និngកmព្យូទ័r។ អ្នkអាចគ្រប់គrណី និngធ្វើការទិញពីកn្លែngណាក៏បាន។"
             },
             {
                 question: "តើការទូទាត់ដំណើrការយ៉ាงដូចm្តេច?",
