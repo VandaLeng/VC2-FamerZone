@@ -78,6 +78,7 @@ const AdminSidebar = ({
       {/* Navigation Menu */}
       <div className="flex-1 p-2 space-y-1 overflow-y-auto">
         {[
+          
           { 
             id: "dashboard", 
             label: "Dashboard", 
@@ -85,10 +86,10 @@ const AdminSidebar = ({
             path: "/admin/dashboard",
           },
           { 
-            id: "farmers", 
-            label: "Manage Farmers", 
-            icon: UserCheck, 
-            path: "/admin/farmer_list",
+            id: "users", 
+            label: "Manage Users", 
+            icon: Users, 
+            path: "/admin/user_list",
           },
           { 
             id: "products", 
@@ -107,12 +108,6 @@ const AdminSidebar = ({
             label: "Manage Videos",
             icon: Video,
             path: "/admin/video_management",
-          },
-          { 
-            id: "users", 
-            label: "Manage Users", 
-            icon: Users, 
-            path: "/admin/user_list",
           },
         ].map((item) => {
           const Icon = item.icon;
