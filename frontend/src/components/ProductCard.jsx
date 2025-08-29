@@ -16,7 +16,7 @@ function ProductCard({
   categories = [],
   onShowDetail,
   showDistance = false,
-}) {
+}) {  
   const { addToCart, cartItems } = useContext(CartContext);
 
   if (!product) {
