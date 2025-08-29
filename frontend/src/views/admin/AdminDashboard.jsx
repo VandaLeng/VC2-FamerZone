@@ -30,29 +30,29 @@ import {
 } from 'lucide-react';
 import { videoAPI } from '../../stores/api';
 
-const AdminDashboard = () => {
+const FarmerDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState([
     {
-      title: 'Total Users',
+      title: 'Total Orders',
       value: '0',
       change: '+0%',
       trend: 'up',
-      icon: Users,
+      icon: ShoppingCart,
       color: 'bg-blue-500'
     },
     {
-      title: 'Active Farmers',
-      value: '0',
+      title: 'Total Revenue',
+      value: '$0',
       change: '+0%',
       trend: 'up',
-      icon: UserCheck,
+      icon: TrendingUp,
       color: 'bg-green-500'
     },
     {
-      title: 'Total Products',
+      title: 'My Products',
       value: '0',
       change: '+0%',
       trend: 'up',
@@ -60,17 +60,16 @@ const AdminDashboard = () => {
       color: 'bg-purple-500'
     },
     {
-      title: 'Total Videos',
+      title: 'Pending Orders',
       value: '0',
       change: '+0%',
       trend: 'up',
-      icon: Video,
+      icon: Clock,
       color: 'bg-orange-500'
     }
   ]);
-  const [recentUsers, setRecentUsers] = useState([]);
   const [recentProducts, setRecentProducts] = useState([]);
-  const [recentVideos, setRecentVideos] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
 
   const API_BASE_URL = "http://localhost:8000";
 
@@ -114,9 +113,8 @@ const AdminDashboard = () => {
 
       // Fetch data from all endpoints
       const promises = [
-        fetchUsers().catch(err => ({ error: err.message, type: 'users' })),
         fetchProducts().catch(err => ({ error: err.message, type: 'products' })),
-        fetchVideos().catch(err => ({ error: err.message, type: 'videos' }))
+        fetchOrders().catch(err => ({ error: err.message, type: 'orders' }))
       ];
 
       const results = await Promise.all(promises);
@@ -133,57 +131,6 @@ const AdminDashboard = () => {
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch users data - FIXED to use the same API as UserManagement
-  const fetchUsers = async () => {
-    try {
-      // Use the same API endpoint as UserManagement component
-      const response = await fetchWithAuth('/api/users');
-      
-      if (response && response.data) {
-        const users = response.data || [];
-        
-        // Process users data with the same structure as UserManagement
-        const processedUsers = users.slice(0, 5).map(user => ({
-          id: user.id,
-          name: user.name || 'Unknown User',
-          email: user.email || 'No Email',
-          role: user.roles?.[0]?.name || user.role || 'User',
-          status: user.status || 'active', // Changed from 'Active' to 'active' to match backend
-          joinDate: user.created_at || new Date().toISOString()
-        }));
-
-        setRecentUsers(processedUsers);
-
-        // Update user stats with real data
-        const totalUsers = users.length;
-        const activeFarmers = users.filter(u => {
-          const role = u.roles?.[0]?.name || u.role || '';
-          const status = u.status || 'active';
-          return role.toLowerCase() === 'farmer' && status === 'active';
-        }).length;
-
-        // Calculate growth percentages (you can implement real calculation based on previous data)
-        const userGrowth = totalUsers > 0 ? '+12%' : '+0%';
-        const farmerGrowth = activeFarmers > 0 ? '+8%' : '+0%';
-
-        setStats(prevStats => prevStats.map(stat => {
-          if (stat.title === 'Total Users') {
-            return { ...stat, value: totalUsers.toString(), change: userGrowth };
-          }
-          if (stat.title === 'Active Farmers') {
-            return { ...stat, value: activeFarmers.toString(), change: farmerGrowth };
-          }
-          return stat;
-        }));
-
-        console.log('✅ Users data loaded:', { totalUsers, activeFarmers, processedUsers });
-      }
-    } catch (err) {
-      console.error('Error fetching users:', err);
-      throw err;
     }
   };
 
@@ -237,7 +184,7 @@ const AdminDashboard = () => {
         const productGrowth = totalProducts > 0 ? '+23%' : '+0%';
         
         setStats(prevStats => prevStats.map(stat => {
-          if (stat.title === 'Total Products') {
+          if (stat.title === 'My Products') {
             return { ...stat, value: totalProducts.toString(), change: productGrowth };
           }
           return stat;
@@ -251,40 +198,50 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch videos data
-  const fetchVideos = async () => {
+  // Fetch orders data
+  const fetchOrders = async () => {
     try {
-      const response = await videoAPI.adminGetAllVideos();
+      const response = await fetchWithAuth('/api/orders');
       
       if (response && response.data) {
-        const videos = response.data || [];
+        const orders = response.data || [];
         
-        // Process videos data
-        const processedVideos = videos.slice(0, 4).map(video => ({
-          id: video.id,
-          title: video.title || 'Untitled Video',
-          views: video.views || 0,
-          status: video.is_active ? 'Active' : 'Inactive',
-          created_at: video.created_at || new Date().toISOString()
+        // Process orders data
+        const processedOrders = orders.slice(0, 5).map(order => ({
+          id: order.id,
+          customer: order.user?.name || 'Unknown Customer',
+          amount: `$${order.total || 0}`,
+          status: order.status || 'Processing',
+          date: order.created_at || new Date().toISOString()
         }));
 
-        setRecentVideos(processedVideos);
+        setRecentOrders(processedOrders);
 
-        // Update video stats
-        const totalVideos = videos.length;
-        const videoGrowth = totalVideos > 0 ? '+15%' : '+0%';
-        
+        // Update order stats
+        const totalOrders = orders.length;
+        const pendingOrders = orders.filter(o => o.status.toLowerCase() === 'pending').length;
+        const totalRevenue = orders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+        const orderGrowth = totalOrders > 0 ? '+10%' : '+0%';
+        const revenueGrowth = totalRevenue > 0 ? '+15%' : '+0%';
+        const pendingGrowth = pendingOrders > 0 ? '+5%' : '+0%';
+
         setStats(prevStats => prevStats.map(stat => {
-          if (stat.title === 'Total Videos') {
-            return { ...stat, value: totalVideos.toString(), change: videoGrowth };
+          if (stat.title === 'Total Orders') {
+            return { ...stat, value: totalOrders.toString(), change: orderGrowth };
+          }
+          if (stat.title === 'Total Revenue') {
+            return { ...stat, value: `$${totalRevenue.toFixed(2)}`, change: revenueGrowth };
+          }
+          if (stat.title === 'Pending Orders') {
+            return { ...stat, value: pendingOrders.toString(), change: pendingGrowth };
           }
           return stat;
         }));
 
-        console.log('✅ Videos data loaded:', { totalVideos, processedVideos });
+        console.log('✅ Orders data loaded:', { totalOrders, totalRevenue, pendingOrders, processedOrders });
       }
     } catch (err) {
-      console.error('Error fetching videos:', err);
+      console.error('Error fetching orders:', err);
       throw err;
     }
   };
@@ -340,8 +297,8 @@ const AdminDashboard = () => {
         {/* Header with refresh button */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">Overview of your platform's performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">Farmer Dashboard</h1>
+            <p className="text-gray-600 mt-1">Overview of your sales and orders</p>
           </div>
           <button
             onClick={handleRefresh}
@@ -399,10 +356,10 @@ const AdminDashboard = () => {
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Users Chart */}
+              {/* Sales Chart */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">User Growth</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Sales Growth</h3>
                   <select className="text-sm border border-gray-300 rounded-lg px-3 py-1">
                     <option>Last 7 days</option>
                     <option>Last 30 days</option>
@@ -412,9 +369,9 @@ const AdminDashboard = () => {
                 <div className="h-64 flex items-center justify-center text-gray-400">
                   <div className="text-center">
                     <TrendingUp size={48} className="mx-auto mb-2" />
-                    <p>User growth trends</p>
+                    <p>Sales growth trends</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Total users: {stats.find(s => s.title === 'Total Users')?.value || '0'}
+                      Total revenue: {stats.find(s => s.title === 'Total Revenue')?.value || '$0'}
                     </p>
                   </div>
                 </div>
@@ -435,7 +392,7 @@ const AdminDashboard = () => {
                     <Package size={48} className="mx-auto mb-2" />
                     <p>Product analytics</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Total products: {stats.find(s => s.title === 'Total Products')?.value || '0'}
+                      Total products: {stats.find(s => s.title === 'My Products')?.value || '0'}
                     </p>
                   </div>
                 </div>
@@ -444,51 +401,6 @@ const AdminDashboard = () => {
 
             {/* Recent Activity Tables */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {/* Recent Users */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Users</h3>
-                    <button className="text-sm text-green-600 hover:text-green-700 font-medium">View all</button>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {recentUsers.length > 0 ? (
-                        recentUsers.map((user) => (
-                          <tr key={user.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4">
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                                <div className="text-sm text-gray-500">{user.email}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-900 capitalize">{user.role}</td>
-                            <td className="px-6 py-4">
-                              <StatusBadge status={user.status} />
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
-                            No users found
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
               {/* Recent Products */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
@@ -543,14 +455,12 @@ const AdminDashboard = () => {
                   </table>
                 </div>
               </div>
-            </div>
 
-            {/* Recent Videos */}
-            {recentVideos.length > 0 && (
+              {/* Recent Orders */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Videos</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
                     <button className="text-sm text-green-600 hover:text-green-700 font-medium">View all</button>
                   </div>
                 </div>
@@ -558,132 +468,40 @@ const AdminDashboard = () => {
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Video</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {recentVideos.map((video) => (
-                        <tr key={video.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center">
-                              <Video size={16} className="text-gray-400 mr-3" />
-                              <div className="text-sm font-medium text-gray-900">{video.title}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">{video.views}</td>
-                          <td className="px-6 py-4">
-                            <StatusBadge status={video.status} />
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {new Date(video.created_at).toLocaleDateString()}
+                      {recentOrders.length > 0 ? (
+                        recentOrders.map((order) => (
+                          <tr key={order.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm text-gray-900">{order.id}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{order.customer}</td>
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{order.amount}</td>
+                            <td className="px-6 py-4">
+                              <StatusBadge status={order.status} />
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                            No orders found
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
-            )}
-
-            {/* Orders Placeholder */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
-                  <button className="text-sm text-green-600 hover:text-green-700 font-medium">View all</button>
-                </div>
-              </div>
-              <div className="p-12 text-center text-gray-400">
-                <ShoppingCart size={48} className="mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Orders Module Coming Soon</h3>
-                <p>Order management functionality will be available in future updates.</p>
-                <div className="mt-6 grid grid-cols-3 gap-4 text-sm">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">0</div>
-                    <div className="text-gray-600">Total Orders</div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">$0</div>
-                    <div className="text-gray-600">Revenue</div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">0</div>
-                    <div className="text-gray-600">Pending</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}
 
-        {selectedTab === 'users' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                <h2 className="text-xl font-semibold text-gray-900">Users Management</h2>
-                <div className="flex items-center space-x-3">
-                  <button className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-                    <Filter size={16} className="mr-2" />
-                    Filter
-                  </button>
-                  <button className="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-                    <Download size={16} className="mr-2" />
-                    Export
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {recentUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
-                            <span className="text-sm font-medium text-gray-700">{user.name.charAt(0)}</span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 capitalize">{user.role}</td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={user.status} />
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {new Date(user.joinDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          <button className="p-1 text-gray-400 hover:text-red-600">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {selectedTab !== 'overview' && selectedTab !== 'users' && (
+        {selectedTab !== 'overview' && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
             <div className="text-center text-gray-400">
               <div className="text-4xl mb-4">🚧</div>
@@ -697,4 +515,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default FarmerDashboard;

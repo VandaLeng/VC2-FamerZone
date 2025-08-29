@@ -792,24 +792,28 @@ const AdminProductManagement = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center mb-4`}>
-                <stat.icon className={`${stat.color} w-6 h-6`} />
-              </div>
-              <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-                <span className={`text-sm font-medium ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                  {stat.change}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+  {stats.map((stat, index) => (
+    <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center mb-4`}>
+        <stat.icon className={`${stat.color} w-6 h-6`} />
+      </div>
+      <h3 className="text-sm font-medium text-gray-600 mb-1">{stat.title}</h3>
+      <div className="flex items-center justify-between">
+        <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
+        <span
+          className={`text-sm font-medium ${
+            stat.change?.startsWith('+') ? 'text-green-600' : 'text-red-600'
+          }`}
+        >
+          {stat.change || '0%'}
+        </span>
+      </div>
+    </div>
+  ))}
+</div>
+
 
         {/* Filters and Search */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
